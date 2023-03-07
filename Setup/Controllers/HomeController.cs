@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Setup.Models;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace Setup.Controllers
 {
@@ -8,11 +9,15 @@ namespace Setup.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        private readonly HttpClient _httpClient;
+
         private const string PageViews = "PageViews";
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = new Uri("http://localhost:5074");
         }
 
         public IActionResult Index()
@@ -23,6 +28,11 @@ namespace Setup.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult ProfileView(PersonModel p)
+        {
+            return View(p);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
