@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 namespace WebDevAPI.Repositories
 {
     public class BaseRepository<T, TId> : IBaseRepository<T, TId> where T : class
-{
-    protected readonly WebDevDbContext _context;
+    {
+        protected readonly WebDevDbContext _context;
         protected readonly DbSet<T> _dbSet;
 
         public BaseRepository(WebDevDbContext context)
@@ -54,3 +54,4 @@ namespace WebDevAPI.Repositories
             return (succes, result);
         }
     }
+}

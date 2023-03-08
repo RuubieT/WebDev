@@ -5,7 +5,7 @@ namespace WebDevAPI
 {
     public class WebDevDbContext : DbContext
     {
-        public WebDevDbContext(DbContextOptions<WebDevDbContext> options)
+        public WebDevDbContext(DbContextOptions options)
         : base(options)
         {
         }

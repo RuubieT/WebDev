@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Net.Mail;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace WebDevAPI.Models
 {
     public class Contactform
     {
-        public int Id { get; set; }
+        [Key] public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Subject { get; set; }
