@@ -9,7 +9,7 @@ namespace WebDevAPI.Models
 {
     public class Contactform
     {
-        [Key] public int Id { get; set; }
+        [Key] public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Subject { get; set; }

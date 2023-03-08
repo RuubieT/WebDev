@@ -44,7 +44,7 @@ namespace WebDevAPI.Controllers
         // PUT: api/ContactformModels/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutContactformModel(int id, Contactform contactformModel)
+        public async Task<IActionResult> PutContactformModel(Guid id, Contactform contactformModel)
         {
             if (id != contactformModel.Id)
             {
@@ -106,7 +106,7 @@ namespace WebDevAPI.Controllers
             return NoContent();
         }
 
-        private bool ContactformModelExists(int id)
+        private bool ContactformModelExists(Guid id)
         {
             return _context.Contactforms.Any(e => e.Id == id);
         }

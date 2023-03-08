@@ -6,8 +6,8 @@ namespace WebDevAPI.Models
     public class Person
     {
         [Key] public Guid Id { get; set; }
-        [Required] public string Name { get { return "Ruben"; } }
-        public string Description { get { return "ICTER"; } }
+        [Required] public string Name { get; set; }
+        public string Description { get; set; }
         public int Age { get; set; }
 
         public Person()
