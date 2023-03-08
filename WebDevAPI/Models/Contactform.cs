@@ -7,7 +7,7 @@ using System.Net.Mail;
 
 namespace WebDevAPI.Models
 {
-    public class ContactformModel
+    public class Contactform
     {
         public int Id { get; set; }
         public string Name { get; set; }

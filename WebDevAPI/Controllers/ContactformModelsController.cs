@@ -13,23 +13,23 @@ namespace WebDevAPI.Controllers
     [ApiController]
     public class ContactformModelsController : ControllerBase
     {
-        private readonly ContactformContext _context;
+        private readonly WebDevDbContext _context;
 
-        public ContactformModelsController(ContactformContext context)
+        public ContactformModelsController(WebDevDbContext context)
         {
             _context = context;
         }
 
         // GET: api/ContactformModels
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ContactformModel>>> GetContactforms()
+        public async Task<ActionResult<IEnumerable<Contactform>>> GetContactforms()
         {
             return await _context.Contactforms.ToListAsync();
         }
 
         // GET: api/ContactformModels/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ContactformModel>> GetContactformModel(int id)
+        public async Task<ActionResult<Contactform>> GetContactformModel(int id)
         {
             var contactformModel = await _context.Contactforms.FindAsync(id);
 
@@ -44,7 +44,7 @@ namespace WebDevAPI.Controllers
         // PUT: api/ContactformModels/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutContactformModel(int id, ContactformModel contactformModel)
+        public async Task<IActionResult> PutContactformModel(int id, Contactform contactformModel)
         {
             if (id != contactformModel.Id)
             {
@@ -75,7 +75,7 @@ namespace WebDevAPI.Controllers
         // POST: api/ContactformModels
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ContactformModel>> PostContactformModel(ContactformModel contactformModel)
+        public async Task<ActionResult<Contactform>> PostContactformModel(Contactform contactformModel)
         {
             if (contactformModel == null) return NotFound();
             if (contactformModel.Description.Length > contactformModel.MaxDescriptionLength) return BadRequest("Description is too long!");

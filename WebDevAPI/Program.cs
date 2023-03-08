@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using WebDevAPI.Models;
+using WebDevAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<ContactformContext>(opt =>
+builder.Services.AddDbContext<WebDevDbContext>(opt =>
     opt.UseInMemoryDatabase("TodoList"));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
