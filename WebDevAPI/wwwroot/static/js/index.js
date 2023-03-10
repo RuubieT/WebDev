@@ -1,6 +1,5 @@
 import Dashboard from "./views/Dashboard.js";
-import Posts from "./views/Posts.js";
-import PostView from "./views/PostView.js";
+import Contact from "./views/Contact.js";
 import Profile from "./views/Profile.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -22,8 +21,7 @@ const navigateTo = url => {
 const router = async () => {
     const routes = [
         { path: "/", view: Dashboard },
-        { path: "/posts", view: Posts },
-        { path: "/posts/:id", view: PostView },
+        { path: "/contact", view: Contact },
         { path: "/profile", view: Profile }
     ];
 
