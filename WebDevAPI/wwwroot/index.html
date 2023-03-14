@@ -10,7 +10,6 @@
     
     <script defer src="/static/js/gdpr.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    
 </head>
 <body>
     <nav class="nav">
@@ -19,20 +18,42 @@
         <a href="/profile" class="nav__link" data-link>Profile</a>
     </nav>
     <div id="app"></div>
+    
+    <section class="contact">
+        <div hidden id="recaptcha" class="g-recaptcha" data-sitekey="6LeRgakkAAAAAIf6C1lJ9oNJDhK_fRSSjBu6ItJx" data-callback="verifyCaptcha"></div>
+        <div id="g-recaptcha-error"></div>
+    
+    
+        <div hidden id="contactform" class="form-contactpagina__inputelement">
+            <input hidden type="submit" name="submit" id="submit" value="Verstuur!">
+        </div>
+    </section>
+   
 
     <script type="module" src="/static/js/index.js"></script>
 
-</section>
-<section class="gdpr-consent hide">
-   <div class="gdpr-consent__description">
-       <p>Deze website maakt gebruik van cookies.
-           We gebruiken cookies om content te personaliseren, voor social media en het analyseren
-           van verkeer op de website, advertenties.</p>
-   </div>
-   <div class="gdpr-consent__choice">
-       <button class="gdpr-consent__button--accept">Ja, natuurlijk</button>
-       <button class="gdpr-consent__button--reject">Nee, liever niet</button>
-   </div>
-</section>
+    <script>
+        var recaptcha_response = '';         
+        function verifyCaptcha(token) {
+            recaptcha_response = token;
+            document.getElementById('g-recaptcha-error').innerHTML = '';
+        }
+        </script>
+
+        <section class="gdpr-consent hide">
+            <div class="gdpr-consent__description">
+                <p>
+                    Deze website maakt gebruik van cookies.
+                    We gebruiken cookies om content te personaliseren, voor social media en het analyseren
+                    van verkeer op de website, advertenties.
+                </p>
+            </div>
+            <div class="gdpr-consent__choice" >
+                <button class="gdpr-consent__button--accept">Ja, natuurlijk</button>
+                <button class="gdpr-consent__button--reject">Nee, liever niet</button>
+            </div>
+        </section>
+    </section>
+
 </body>
 </html>

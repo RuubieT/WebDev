@@ -9,17 +9,15 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: var(--nav-width);
-    height: 100vh;
+    overflow: auto;
+    width: 100%;
     background: #222222;
 }
 
 .nav__link {
-    display: block;
     padding: 12px 18px;
     text-decoration: none;
     color: #eeeeee;
-    font-weight: 500;
 }
 
 .nav__link:hover {
