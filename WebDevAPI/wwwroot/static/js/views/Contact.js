@@ -6,6 +6,7 @@ window.addEventListener('load', function () {
     console.log("loaded Contact.js");
 }); 
 
+const uri = 'api/ContactformModels';
 
 
 export default class extends AbstractView {
@@ -16,30 +17,44 @@ export default class extends AbstractView {
         document.querySelector("#contactform").hidden =false;
         document.querySelector("#submit").hidden =false;
 
-        document.querySelector("#submit").addEventListener("submit", async (event) => {
-            console.log("Form submitted now ");
-            console.log(event);
-            // Then we prevent the form from being sent by canceling the event
-            event.preventDefault();
-        
-            /* if the name, subject or description is not filled in show the appropriate message
-            if (!thename.value || !subject.value || !description.value || !email.validity.valid) {
-                showError();
-                return;
-            }*/
-        
-            /*
-                let response = await fetch('http://localhost:3000/form', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({email: email.value})
-                });
+        var button = document.getElementById("submit");
+        button.onclick = async function(){
+            const inputFields = document.querySelectorAll("input");
+            const validInputs = Array.from(inputFields).filter(input=>input.value!=="");
+            const contactForm = {
+                name: "",
+                email: "",
+                subject: "",
+                description: ""
+            }
+            validInputs.forEach(input =>{
+                switch(input.id){
+                    case "name":
+                        contactForm.name = input.value;
+                        break;
+                    case "email":
+                        contactForm.email = input.value;
+                        break;
+                    case "subject":
+                        contactForm.subject = input.value;
+                        break;
+                    case "description":
+                        contactForm.description = input.value;
+                        break;
+                }
+            })
+
             
-                let data = await response.json();
-                alert(JSON.stringify(data))
-            */
-        
-        })
+            let response = await fetch(uri, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({Name: contactForm.name, Email: contactForm.email, Subject: contactForm.subject, Description: contactForm.description})
+            });
+                
+            let data = await response.json();
+            alert(JSON.stringify(data));
+            
+        };
     }
 
     async getHtml() {
@@ -63,13 +78,13 @@ export default class extends AbstractView {
           </div>
     
           <div class="form-contactpagina__inputelement fx-col">
-            <label for="email">Onderwerp: </label>
+            <label for="subject">Onderwerp: </label>
             <input type="text" name="subject" id="subject" maxlength="200">
             <span class="error" aria-live="polite"></span>
           </div>
     
           <div class="form-contactpagina__inputelement fx-col">
-            <label for="email">Beschrijving: </label>
+            <label for="description">Beschrijving: </label>
             <input type="text" name="description" id="description" maxlength="600">
             <span class="error" aria-live="polite"></span>
           </div>
