@@ -13,9 +13,8 @@ export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("Contact");
-        document.querySelector("#recaptcha").hidden =false;
-        document.querySelector("#contactform").hidden =false;
-        document.querySelector("#submit").hidden =false;
+
+        document.getElementById("contact").style.display = 'block';
 
         var button = document.getElementById("submit");
         button.onclick = async function(){

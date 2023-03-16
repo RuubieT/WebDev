@@ -15,50 +15,54 @@ namespace WebDevAPI.Db.Seeders
                 serviceProvider.GetRequiredService<
                     DbContextOptions<WebDevDbContext>>()))
             {
-                if (context.Persons.Any())
+                if (context.Users.Any())
                 {
                     return;
                 }
-                context.Persons.AddRange(
-                    new Models.Person
+                context.Users.AddRange(
+                    new Models.User
                     {
                         Id = Guid.NewGuid(),
-                        Name = "TestPerson1",
+                        FirstName = "Test",
+                        LastName = "Person",
+                        Email = "test@test.nl",
                         Description = "Description1",
-                        Age = 20,
                     },
-                     new Models.Person
+                     new Models.User
                      {
                          Id = Guid.NewGuid(),
-                         Name = "TestPerson2",
+                         FirstName = "Tist",
+                         LastName = "Person2",
+                         Email = "test@test.com",
                          Description = "Description2",
-                         Age = 21,
                      },
-                      new Models.Person
+                      new Models.User
                       {
                           Id = Guid.NewGuid(),
-                          Name = "TestPerson3",
+                          FirstName = "Tost",
+                          LastName = "Person3",
+                          Email = "test@test.com",
                           Description = "Description3",
-                          Age = 22,
                       },
-                       new Models.Person
+                       new Models.User
                        {
                            Id = Guid.NewGuid(),
-                           Name = "TestPerson4",
+                           FirstName = "T3st",
+                           LastName = "Person4",
+                           Email = "test@test.com",
                            Description = "Description4",
-                           Age = 23,
                        },
-                        new Models.Person
+                        new Models.User
                         {
                             Id = Guid.NewGuid(),
-                            Name = "TestPerson5",
+                            FirstName = "Tester",
+                            LastName = "Person5",
+                            Email = "test@test.com",
                             Description = "Description5",
-                            Age = 24,
                         });
                 context.Contactforms.AddRange(
                     new Models.Contactform
                     {
-
                         Id = Guid.NewGuid(),
                         Name = "TestPerson1",
                         Email = "email@email.nl",

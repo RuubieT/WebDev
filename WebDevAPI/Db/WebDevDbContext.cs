@@ -11,6 +11,6 @@ namespace WebDevAPI.Db
         }
 
         public DbSet<Contactform> Contactforms { get; set; }
-        public DbSet<Person> Persons { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

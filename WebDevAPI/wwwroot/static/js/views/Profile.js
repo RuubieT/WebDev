@@ -5,9 +5,7 @@ export default class extends AbstractView {
         super(params);
         this.setTitle("Profile");
 
-        document.querySelector("#recaptcha").hidden = true;
-        document.querySelector("#contactform").hidden = true;
-        document.querySelector("#submit").hidden = true;
+        document.getElementById("contact").style.display = 'none';
     }
 
     async getHtml() {

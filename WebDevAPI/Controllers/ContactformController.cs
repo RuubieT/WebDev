@@ -6,31 +6,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db;
+using WebDevAPI.Db.Dto_s.Contactform;
 using WebDevAPI.Db.Models;
+using WebDevAPI.Db.Repositories;
 
 namespace WebDevAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Contactform")]
     [ApiController]
-    public class ContactformModelsController : ControllerBase
+    public class ContactformController : ControllerBase
     {
         private readonly WebDevDbContext _context;
 
-        public ContactformModelsController(WebDevDbContext context)
+        public ContactformController(WebDevDbContext context)
         {
             _context = context;
         }
 
         // GET: api/ContactformModels
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Contactform>>> GetContactforms()
+        public async Task<ActionResult<IEnumerable<GetContactformDto>>> GetContactforms()
         {
-            return await _context.Contactforms.ToListAsync();
+            var contactforms = await _context.Contactforms.ToListAsync();
+            var getContactforms = new List<GetContactformDto>();
+            foreach (var contactform in contactforms) {
+                getContactforms.Add(contactform.GetContactformDto());
+            }
+            return Ok(getContactforms);
         }
 
         // GET: api/ContactformModels/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Contactform>> GetContactformModel(int id)
+        public async Task<ActionResult<GetContactformDto>> GetContactformModel(Guid id)
         {
             var contactformModel = await _context.Contactforms.FindAsync(id);
 
@@ -39,9 +46,10 @@ namespace WebDevAPI.Controllers
                 return NotFound();
             }
 
-            return contactformModel;
+            return Ok(contactformModel.GetContactformDto());
         }
 
+        #region put endpoint
         // PUT: api/ContactformModels/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -72,25 +80,30 @@ namespace WebDevAPI.Controllers
 
             return NoContent();
         }
+        #endregion 
+
 
         // POST: api/ContactformModels
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Contactform>> PostContactformModel(Contactform contactformModel)
+        public async Task<ActionResult<GetContactformDto>> PostContactformModel(PostContactformDto contactformModel)
         {
             if (contactformModel == null) return NotFound();
-            if (contactformModel.Description.Length > contactformModel.MaxDescriptionLength) return BadRequest("Description is too long!");
-            if (contactformModel.Subject.Length > contactformModel.MaxSubjectLength) return BadRequest("Subject is too long!");
-            if (!contactformModel.IsValidEmail(contactformModel.Email)) return BadRequest("Not a valid email!");
-            
-            _context.Contactforms.Add(contactformModel);
+            var contactform = new Contactform(new Guid(), contactformModel.Name, contactformModel.Email, contactformModel.Subject, contactformModel.Description);
+
+            if (contactformModel.Description.Length > contactform.MaxDescriptionLength) return BadRequest("Description is too long!");
+            if (contactformModel.Subject.Length > contactform.MaxSubjectLength) return BadRequest("Subject is too long!");
+            if (!contactform.IsValidEmail(contactformModel.Email)) return BadRequest("Not a valid email!");
+
+            _context.Contactforms.Add(contactform);
             await _context.SaveChangesAsync();
 
-            contactformModel.SendMailAsync(contactformModel.Email).Wait();
+            contactform.SendMailAsync(contactformModel.Email).Wait();
 
-            return Ok(contactformModel);
+            return Ok(contactform.GetContactformDto());
         }
 
+        #region delete endpoint
         // DELETE: api/ContactformModels/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteContactformModel(int id)
@@ -106,6 +119,7 @@ namespace WebDevAPI.Controllers
 
             return NoContent();
         }
+        #endregion
 
         private bool ContactformModelExists(Guid id)
         {

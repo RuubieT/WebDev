@@ -1,4 +1,5 @@
 ﻿using WebDevAPI.Db;
+using WebDevAPI.Db.Dto_s.Contactform;
 using WebDevAPI.Db.Models;
 
 namespace WebDevAPI.Db.Repositories
@@ -7,6 +8,7 @@ namespace WebDevAPI.Db.Repositories
     {
         public ContactFormRepository(WebDevDbContext context) : base(context)
         {
+
         }
     }
 }

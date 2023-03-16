@@ -1,15 +1,18 @@
 body {
-    --nav-width: 200px;
-    margin: 0 0 0 var(--nav-width);
+    margin: 0;
     font-family: 'Quicksand', sans-serif;
     font-size: 18px;
+}
+
+div {
+    align-content: center;
+    display: block;
 }
 
 .nav {
     position: fixed;
     top: 0;
     left: 0;
-    overflow: auto;
     width: 100%;
     background: #222222;
 }
@@ -25,7 +28,7 @@ body {
 }
 
 #app {
-    margin: 2em;
+    margin: 0;
     line-height: 1.5;
     font-weight: 500;
 }
