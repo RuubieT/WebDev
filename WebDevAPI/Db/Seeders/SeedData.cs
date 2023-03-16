@@ -71,7 +71,6 @@ namespace WebDevAPI.Db.Seeders
                     },
                     new Models.Contactform
                     {
-
                         Id = Guid.NewGuid(),
                         Name = "TestPerson2",
                         Email = "emailer@email.com",
@@ -80,7 +79,6 @@ namespace WebDevAPI.Db.Seeders
                     },
                     new Models.Contactform
                     {
-
                         Id = Guid.NewGuid(),
                         Name = "TestPerson3",
                         Email = "email@at.de",
@@ -89,7 +87,6 @@ namespace WebDevAPI.Db.Seeders
                     },
                     new Models.Contactform
                     {
-
                         Id = Guid.NewGuid(),
                         Name = "TestPerson4",
                         Email = "email@email.last",
@@ -98,7 +95,6 @@ namespace WebDevAPI.Db.Seeders
                     },
                     new Models.Contactform
                     {
-
                         Id = Guid.NewGuid(),
                         Name = "TestPerson5",
                         Email = "myemailer@email.nl",

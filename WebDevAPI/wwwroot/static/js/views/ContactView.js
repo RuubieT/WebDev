@@ -1,3 +1,4 @@
+import { Contactform } from "../../models/Contactform.js";
 import AbstractView from "./AbstractView.js";
 
 window.addEventListener("input", (event) => { checkInput(event.target.id) });
@@ -19,13 +20,8 @@ export default class extends AbstractView {
         var button = document.getElementById("submit");
         button.onclick = async function(){
             const inputFields = document.querySelectorAll("input");
-            const validInputs = Array.from(inputFields).filter(input=>input.value!=="");
-            const contactForm = {
-                name: "",
-                email: "",
-                subject: "",
-                description: ""
-            }
+            const validInputs = Array.from(inputFields).filter(input => input.value !== "");
+            const contactForm = new Contactform();
             validInputs.forEach(input =>{
                 switch(input.id){
                     case "name":
