@@ -1,6 +1,7 @@
-﻿using WebDevAPI.Models;
+﻿using WebDevAPI.Db;
+using WebDevAPI.Db.Models;
 
-namespace WebDevAPI.Repositories
+namespace WebDevAPI.Db.Repositories
 {
     public class ContactFormRepository : BaseRepository<Contactform, Guid>
     {

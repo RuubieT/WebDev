@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using WebDevAPI;
+using WebDevAPI.Db;
+using WebDevAPI.Db.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -2,8 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using WebDevAPI.Db;
 
-namespace WebDevAPI
+namespace WebDevAPI.Db.Seeders
 
 {
     public static class SeedData
@@ -14,7 +15,8 @@ namespace WebDevAPI
                 serviceProvider.GetRequiredService<
                     DbContextOptions<WebDevDbContext>>()))
             {
-                if(context.Persons.Any()) {
+                if (context.Persons.Any())
+                {
                     return;
                 }
                 context.Persons.AddRange(

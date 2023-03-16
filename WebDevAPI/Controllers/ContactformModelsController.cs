@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebDevAPI.Models;
+using WebDevAPI.Db;
+using WebDevAPI.Db.Models;
 
 namespace WebDevAPI.Controllers
 {

@@ -9,13 +9,9 @@ export default class extends AbstractView {
         document.querySelector("#recaptcha").hidden = true;
         document.querySelector("#contactform").hidden = true;
         document.querySelector("#submit").hidden = true;
-
-
-        
-        const button = document.getElementById("contactform");
-        console.log(button);
-           // button.addEventListener('click', () => console.log("Start game"))
-        
+        var backgroundImage = new Image()
+        backgroundImage.src = "./../../images/Dashboard_background.jpg";
+        console.log(backgroundImage);        
     }
 
    
@@ -23,8 +19,9 @@ export default class extends AbstractView {
     async getHtml() {
         return `
         <h1>Home</h1>
-        <p>
-           <button onclick="show();" id="playButton">Play</button>
+        <img src=\'./../../../images/Dashboard_background.jpg\' width=\'400px\' height=\'150px\'>
+        <p style="background-image: url($(backgroundImage);">
+           <button id="playButton">Play</button>
         </p>        
         `;
     }

@@ -5,7 +5,7 @@ using SendGrid.Helpers.Mail;
 using System.Net.Mail;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebDevAPI.Models
+namespace WebDevAPI.Db.Models
 {
     public class Contactform
     {
@@ -22,7 +22,7 @@ namespace WebDevAPI.Models
         {
             try
             {
-                var addr = new System.Net.Mail.MailAddress(email);
+                var addr = new MailAddress(email);
                 return addr.Address == email;
             }
             catch { return false; }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CoachTwinsApi.Db.Repository.Contract
+namespace WebDevAPI.Db.Repositories.Contract
 {
     public interface IBaseRepository<T, TId> where T : class
     {

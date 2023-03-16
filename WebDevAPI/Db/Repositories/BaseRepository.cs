@@ -1,7 +1,8 @@
-﻿using CoachTwinsApi.Db.Repository.Contract;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using WebDevAPI.Db;
+using WebDevAPI.Db.Repositories.Contract;
 
-namespace WebDevAPI.Repositories
+namespace WebDevAPI.Db.Repositories
 {
     public class BaseRepository<T, TId> : IBaseRepository<T, TId> where T : class
     {

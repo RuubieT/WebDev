@@ -1,4 +1,6 @@
-﻿namespace WebDevAPI.Repositories
+﻿using WebDevAPI.Db;
+
+namespace WebDevAPI.Db.Repositories
 {
     public class PersonRepository : BaseRepository<PersonRepository, Guid>
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebDevAPI.Models;
+using WebDevAPI.Db.Models;
 
-namespace WebDevAPI
+namespace WebDevAPI.Db
 {
     public class WebDevDbContext : DbContext
     {

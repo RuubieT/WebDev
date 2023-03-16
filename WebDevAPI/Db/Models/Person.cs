@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System;
 
-namespace WebDevAPI.Models
+namespace WebDevAPI.Db.Models
 {
     public class Person
     {
