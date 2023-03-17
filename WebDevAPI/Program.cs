@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db;
+using WebDevAPI.Db.Extensions;
 using WebDevAPI.Db.Seeders;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<WebDevDbContext>(options =>
@@ -13,6 +16,9 @@ builder.Services.AddDbContext<WebDevDbContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.ConfigureEf(builder.Configuration);
+builder.Services.RegisterRepositories();
 
 var app = builder.Build();
 

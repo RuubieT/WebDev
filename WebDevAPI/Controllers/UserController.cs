@@ -6,119 +6,113 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db;
+using WebDevAPI.Db.Dto_s.Contactform;
+using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
+using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
-        private readonly WebDevDbContext _context;
 
-        public UserController(WebDevDbContext context)
+        public UserController(IUserRepository userRepository, IContactFormRepository contactFormRepository) : base(userRepository, contactFormRepository)
         {
-            _context = context;
+
         }
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
-            return await _context.Users.ToListAsync();
+            var users = await UserRepository.GetAll();
+            var getUsers = new List<GetUserDto>();
+            if (users == null)
+            {
+                return NotFound();
+            } else {
+               foreach (var user in users)
+                {
+                    getUsers.Add(user.GetUserDto());
+                }
+            }
+            return Ok(getUsers) ;
+
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult<GetUserDto>> GetUser(Guid id)
         {
-          if (_context.Users == null)
+            var users = await UserRepository.GetAll();
+          if (users == null)
           {
               return NotFound();
           }
-            var user = await _context.Users.FindAsync(id);
+            var user = await UserRepository.Get(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return user.GetUserDto();
         }
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<ActionResult<GetUserDto>> PutUser(Guid id, User user)
         {
             if (id != user.Id)
             {
                 return BadRequest();
             }
+            var getUser = await UserRepository.Get(id);
 
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
+            if (getUser == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
-            return NoContent();
+            await UserRepository.Update(getUser);
+
+             return getUser.GetUserDto();
         }
 
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<GetUserDto>> PostUser(User user)
         {
-          if (_context.Users == null)
+          if (UserRepository.GetAll() == null)
           {
               return Problem("Entity set 'WebDevDbContext.Users'  is null.");
           }
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await UserRepository.Create(user);
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return user.GetUserDto();
         }
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-            var user = await _context.Users.FindAsync(id);
+            var user = await UserRepository.Get(id);
             if (user == null)
             {
                 return NotFound();
             }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            await UserRepository.Delete(user);
 
             return NoContent();
         }
 
         private bool UserExists(Guid id)
         {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (UserRepository.TryFind(e => e.Id == id)).Result.succes;
         }
     }
 }
