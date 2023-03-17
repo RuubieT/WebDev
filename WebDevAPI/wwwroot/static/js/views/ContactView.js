@@ -15,6 +15,9 @@ export default class extends AbstractView {
         super(params);
         this.setTitle("Contact");
 
+        const appDiv = document.getElementById("app");
+        console.log(appDiv.childNodes);
+
         document.getElementById("contact").style.display = 'block';
 
         var button = document.getElementById("submit");

@@ -5,18 +5,17 @@ export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("Dashboard");
+        
+        
+        const appDiv = document.getElementById("app");
+        console.log(appDiv.childNodes);
 
         document.getElementById("contact").style.display = 'none';
 
-        window.onload = function () {
-            console.log("onload"); 
-
-            var button = document.getElementById("playButton");
-            console.log(button);
-            button.onclick = async function () {
-                navigateTo("/game");
-            }
-        }
+        const playButton = document.createElement("button");
+        const node = document.createTextNode("Play");
+        playButton.appendChild(node);
+        appDiv.appendChild(playButton);
     }   
 
     async getHtml() {

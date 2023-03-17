@@ -5,6 +5,9 @@ export default class extends AbstractView {
         super(params);
         this.setTitle("Profile");
 
+        const appDiv = document.getElementById("app");
+        console.log(appDiv.childNodes);
+
         document.getElementById("contact").style.display = 'none';
     }
 
