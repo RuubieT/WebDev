@@ -7,7 +7,7 @@ window.addEventListener('load', function () {
     console.log("loaded Contact.js");
 }); 
 
-const uri = 'api/ContactformModels';
+const uri = 'api/Contactform';
 
 
 export default class extends AbstractView {

@@ -1,6 +1,6 @@
-import Dashboard from "./views/Dashboard.js";
-import Contact from "./views/Contact.js";
-import Profile from "./views/Profile.js";
+import Dashboard from "./views/DashboardView.js";
+import Contact from "./views/ContactView.js";
+import Profile from "./views/ProfileView.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
