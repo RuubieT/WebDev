@@ -1,6 +1,7 @@
 import Dashboard from "./views/DashboardView.js";
 import Contact from "./views/ContactView.js";
 import Profile from "./views/ProfileView.js";
+import Game from "./views/GameView.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -13,7 +14,7 @@ const getParams = match => {
     }));
 };
 
-const navigateTo = url => {
+export const navigateTo = url => {
     history.pushState(null, null, url);
     router();
 };
@@ -22,7 +23,8 @@ const router = async () => {
     const routes = [
         { path: "/", view: Dashboard },
         { path: "/contact", view: Contact },
-        { path: "/profile", view: Profile }
+        { path: "/profile", view: Profile },
+        { path: "/game", view: Game}
     ];
 
     // Test each route for potential match
@@ -53,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
+            console.log(e.target.href);
             navigateTo(e.target.href);
         }
     });

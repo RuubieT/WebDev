@@ -1,13 +1,22 @@
+import { navigateTo } from "../index.js";
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
-   
-
     constructor(params) {
         super(params);
         this.setTitle("Dashboard");
 
         document.getElementById("contact").style.display = 'none';
+
+        window.onload = function () {
+            console.log("onload"); 
+
+            var button = document.getElementById("playButton");
+            console.log(button);
+            button.onclick = async function () {
+                navigateTo("/game");
+            }
+        }
     }   
 
     async getHtml() {

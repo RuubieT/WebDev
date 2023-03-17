@@ -4,9 +4,9 @@ using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Db.Repositories
 {
-    public class PlayerRepository : BaseRepository<User, Guid>, IPlayerRepository
+    public class UserRepository : BaseRepository<User, Guid>, IUserRepository
     {
-        public PlayerRepository(WebDevDbContext context) : base(context)
+        public UserRepository(WebDevDbContext context) : base(context)
         {
         }
     }
