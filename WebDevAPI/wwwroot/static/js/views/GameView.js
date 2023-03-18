@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { createGameButtons, deletePlayButton } from "../helpers/buttons.js";
 
 const uri = 'api/PokerTable';
 
@@ -11,9 +12,10 @@ export default class extends AbstractView {
 
         document.getElementById("contact").style.display = 'none';
 
+        deletePlayButton();
+        createGameButtons();
+
         window.onload = function() {
-            var createButton = document.getElementById("create");
-            var joinButton = document.getElementById("join");
 
             function create() {
                 fetch(uri + "/Create")
@@ -25,27 +27,14 @@ export default class extends AbstractView {
                     .then(response => response.json())
                     .catch(error => console.error('Unable to create.', error));
             }
-
-            createButton.onclick = async function(){
-                create();
-            }
-
-            joinButton.onclick = async function(){
-                join();
-            }
         }
     }   
 
     async getHtml() {
         return `
-            <h1>Game</h1>
-
-            <p>
-               <button name="create" id="create">CREATE</button>
-                <button name="join" id="join">JOIN</button>
-            </p>        
-        </p>
-        </div>
+            <h1>Game</h1>    
+        
+        
         `;
     }
 

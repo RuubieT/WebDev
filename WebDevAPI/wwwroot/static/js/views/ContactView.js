@@ -1,5 +1,6 @@
 import { Contactform } from "../../models/Contactform.js";
 import AbstractView from "./AbstractView.js";
+import { deleteGameButtons, deletePlayButton } from "../helpers/buttons.js";
 
 window.addEventListener("input", (event) => { checkInput(event.target.id) });
 
@@ -10,15 +11,16 @@ window.addEventListener('load', function () {
 const uri = 'api/Contactform';
 
 
-export default class extends AbstractView {
+export default class extends AbstractView
+{
     constructor(params) {
         super(params);
         this.setTitle("Contact");
 
-        const appDiv = document.getElementById("app");
-        console.log(appDiv.childNodes);
-
         document.getElementById("contact").style.display = 'block';
+
+        deletePlayButton();
+        deleteGameButtons();
 
         var button = document.getElementById("submit");
         button.onclick = async function(){
