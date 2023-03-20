@@ -56,7 +56,10 @@ namespace WebDevAPI.Logic.CardLogic
 
         public void EvaluateHands()
         {
+            HandEvaluator playerHandEvaluator = new HandEvaluator(sortedHand);
 
+            Hand playerHand = playerHandEvaluator.EvaluateHand();
+            Console.WriteLine(playerHand);
         }
     }
 }
