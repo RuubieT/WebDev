@@ -20,6 +20,43 @@ namespace WebDevAPI.Logic.CardLogic
         public void Deal()
         {
             deck.SetUpDeck();
+            GetHand();
+            SortCards();
+            DisplayCards();
+            EvaluateHands();
+        }
+
+        public void GetHand()
+        {
+            for(int i =0; i< 2; i++)
+            {
+                playerHand[i] = deck.getDeck[i];
+            }
+
+        }
+
+        public void SortCards()
+        {
+            var queryPlayer = from hand in playerHand
+                              orderby hand.MyValue
+                              select hand;
+
+            var index = 0;
+            foreach(var element in queryPlayer.ToList())
+            {
+                sortedHand[index] = element;
+                index++;
+            }
+        }
+
+        public void DisplayCards()
+        {
+
+        }
+
+        public void EvaluateHands()
+        {
+
         }
     }
 }
