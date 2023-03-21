@@ -95,6 +95,7 @@ namespace WebDevAPI.Db.Seeders
                         Description = descriptionList[rand.Next(0, descriptionList.Count)],
                         Username = usernameList[rand.Next(0, usernameList.Count)],
                         Chips = rand.Next(0, 15000),
+                        PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
                     };
                     players.Add(player);
                 }
@@ -113,8 +114,39 @@ namespace WebDevAPI.Db.Seeders
                     cards.Add(card);
                 }
 
+                #region Setup nullable field
+                context.PokerTables.Add(new PokerTable
+                {
+                    PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
+                    Ante = 10,
+                    SmallBlind = 20,
+                    BigBlind = 30,
+                    MaxSeats = 8,
+                });
+                context.Users.Add(new Player
+                {
+                    Id = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
+                    FirstName = firstnames[rand.Next(0, firstnames.Count)],
+                    LastName = lastnames[rand.Next(0, lastnames.Count)],
+                    Email = emails[rand.Next(0, emails.Count)],
+                    Password = passwordList[rand.Next(0, passwordList.Count)],
+                    Description = descriptionList[rand.Next(0, descriptionList.Count)],
+                    Username = usernameList[rand.Next(0, usernameList.Count)],
+                    Chips = rand.Next(0, 15000),
+                    PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
+                });
+               
+                context.PlayerHands.Add(new PlayerHand
+                {
+                    PlayerHandId = new Guid(),
+                    PlayerId = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
+                });
+#endregion
+
+
                 context.Users.AddRange(users);
                 context.Users.AddRange(players);
+                context.Cards.AddRange(cards);
                 context.SaveChanges();
             }
         }
