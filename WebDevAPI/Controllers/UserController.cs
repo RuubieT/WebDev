@@ -18,7 +18,9 @@ namespace WebDevAPI.Controllers
     public class UserController : BaseController
     {
 
-        public UserController(IUserRepository userRepository, IContactFormRepository contactFormRepository) : base(userRepository, contactFormRepository)
+        public UserController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository)
         {
 
         }

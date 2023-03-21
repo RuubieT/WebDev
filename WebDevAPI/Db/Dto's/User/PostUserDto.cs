@@ -9,5 +9,6 @@ namespace WebDevAPI.Db.Dto_s.User
         [Required] public string LastName { get; set; }
         [Required] public string Email { get; set; }
         [Required] public string Description { get; set; }
+        [Required] public string Password { get; set; }
     }
 }

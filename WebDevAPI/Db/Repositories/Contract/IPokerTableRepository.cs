@@ -2,7 +2,7 @@
 
 namespace WebDevAPI.Db.Repositories.Contract
 {
-    public interface IPokerTableRepository : IBaseRepository<User, Guid>
+    public interface IPokerTableRepository : IBaseRepository<PokerTable, Guid>
     {
     }
 }

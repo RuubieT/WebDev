@@ -17,7 +17,9 @@ namespace WebDevAPI.Controllers
     [ApiController]
     public class ContactformController : BaseController
     {
-        public ContactformController(IUserRepository userRepository, IContactFormRepository contactFormRepository): base(userRepository, contactFormRepository)
+        public ContactformController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository)
         {
 
         }

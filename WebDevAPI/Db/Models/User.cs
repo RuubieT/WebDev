@@ -10,6 +10,7 @@ namespace WebDevAPI.Db.Models
         [Required] public string FirstName { get; set; }
         [Required] public string LastName { get; set; }
         [Required] public string Email { get; set; }
+        [Required] public string Password { get; set; }
         public string Description { get; set; }
 
         public User()
@@ -17,11 +18,12 @@ namespace WebDevAPI.Db.Models
 
         }
 
-        public User(Guid id, string firstName, string lastName, string description, string email) {
+        public User(Guid id, string firstName, string lastName, string password, string description, string email) {
             Id = id;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
+            Password = password;
             Description = description;
         }
 

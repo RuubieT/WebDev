@@ -21,8 +21,7 @@ namespace WebDevAPI.Logic.CardLogic
         {
             deck.SetUpDeck();
             GetHand();
-            SortCards();
-            DisplayCards();
+            SortCards();;
             EvaluateHands();
         }
 
@@ -47,11 +46,6 @@ namespace WebDevAPI.Logic.CardLogic
                 sortedHand[index] = element;
                 index++;
             }
-        }
-
-        public void DisplayCards()
-        {
-
         }
 
         public void EvaluateHands()

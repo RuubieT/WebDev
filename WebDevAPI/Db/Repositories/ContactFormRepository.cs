@@ -1,6 +1,4 @@
-﻿using WebDevAPI.Db;
-using WebDevAPI.Db.Dto_s.Contactform;
-using WebDevAPI.Db.Models;
+﻿using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Db.Repositories

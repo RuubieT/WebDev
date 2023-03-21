@@ -2,7 +2,7 @@
 
 namespace WebDevAPI.Db.Repositories.Contract
 {
-    public interface IPlayerRepository : IBaseRepository<Player, Guid>
+    public interface IPlayerHandRepository : IBaseRepository<PlayerHand, Guid>
     {
     }
 }

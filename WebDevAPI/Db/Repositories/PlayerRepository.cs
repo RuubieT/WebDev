@@ -1,12 +1,11 @@
-﻿using WebDevAPI.Db;
-using WebDevAPI.Db.Models;
+﻿using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Db.Repositories
 {
-    public class UserRepository : BaseRepository<User, Guid>, IUserRepository
+    public class PlayerRepository : BaseRepository<Player, Guid>, IPlayerRepository
     {
-        public UserRepository(WebDevDbContext context) : base(context)
+        public PlayerRepository(WebDevDbContext context) : base(context)
         {
         }
     }
