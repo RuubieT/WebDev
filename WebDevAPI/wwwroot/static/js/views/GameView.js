@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import { createGameButtons, deletePlayButton } from "../helpers/buttons.js";
+import { createGameButtons, deletePlayButton, deletePokerButtons } from "../helpers/buttons.js";
 
 const uri = 'api/PokerTable';
 
@@ -14,6 +14,7 @@ export default class extends AbstractView {
 
         deletePlayButton();
         createGameButtons();
+        deletePokerButtons();
 
         window.onload = function() {
 

@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import { deleteGameButtons, deletePlayButton } from "../helpers/buttons.js";
+import { deleteGameButtons, deletePlayButton, deletePokerButtons } from "../helpers/buttons.js";
 
 export default class extends AbstractView {
     constructor(params) {
@@ -10,6 +10,7 @@ export default class extends AbstractView {
 
         deletePlayButton();
         deleteGameButtons();
+        deletePokerButtons();
     }
 
     async getHtml() {

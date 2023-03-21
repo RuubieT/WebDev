@@ -2,14 +2,19 @@ import {navigateTo} from '../index.js';
 
 function createPlayButton() {
     var playButton = document.getElementById("playButton");
-    if (!playButton) {     
+    if (!playButton) {    
+        const div = document.createElement('div');
+        div.id = 'playButton';
+        
         const btn = document.createElement("button");
         btn.innerText = "Play game";
         btn.id = "playButton";
         btn.addEventListener("click", () => {
             navigateTo('/game');
         })
-        document.body.appendChild(btn);
+
+        div.appendChild(btn);
+        document.body.appendChild(div);
     }
 }
 
@@ -29,6 +34,7 @@ function createGameButtons(){
         const createbutton = document.createElement('button');
         createbutton.id = "createButton";
         createbutton.innerText = "Create";
+        createbutton.classList.add("game");
         createbutton.addEventListener("click", () => {
             navigateTo('/table');
         })
@@ -36,9 +42,11 @@ function createGameButtons(){
         const joinbutton = document.createElement('button');
         joinbutton.id = "joinButton";
         joinbutton.innerText = "Join";
+        joinbutton.classList.add("game");
         joinbutton.addEventListener("click", () => {
             alert("JOIN A GAME");
         })
+
         div.appendChild(createbutton);
         div.appendChild(joinbutton);
         document.body.appendChild(div);
@@ -86,7 +94,6 @@ function createPokerButtons(){
             alert("BET");
         })
         
-
         div.appendChild(checkButton);
         div.appendChild(foldButton);
         div.appendChild(callButton);
@@ -95,10 +102,18 @@ function createPokerButtons(){
     }
 }
 
+function deletePokerButtons(){
+    var pokerButtons = document.getElementById("pokerButtons");
+    if (pokerButtons) {
+        document.body.removeChild(pokerButtons);
+    } 
+}
+
 export {
     createPlayButton,
     deletePlayButton,
     createGameButtons,
     deleteGameButtons,
-    createPokerButtons
+    createPokerButtons,
+    deletePokerButtons
 }

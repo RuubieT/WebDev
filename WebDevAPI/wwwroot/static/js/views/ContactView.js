@@ -1,8 +1,6 @@
 import { Contactform } from "../../models/Contactform.js";
 import AbstractView from "./AbstractView.js";
-import { deleteGameButtons, deletePlayButton } from "../helpers/buttons.js";
-
-window.addEventListener("input", (event) => { checkInput(event.target.id) });
+import { deleteGameButtons, deletePlayButton, deletePokerButtons } from "../helpers/buttons.js";
 
 window.addEventListener('load', function () {
     console.log("loaded Contact.js");
@@ -21,6 +19,9 @@ export default class extends AbstractView
 
         deletePlayButton();
         deleteGameButtons();
+        deletePokerButtons();
+
+        window.addEventListener("input", (event) => { checkInput(event.target.id) });
 
         var button = document.getElementById("submit");
         button.onclick = async function(){

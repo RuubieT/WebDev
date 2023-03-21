@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import { createPlayButton, deleteGameButtons } from "../helpers/buttons.js";
+import { createPlayButton, deleteGameButtons, deletePokerButtons } from "../helpers/buttons.js";
 
 export default class extends AbstractView {
     constructor(params) {
@@ -8,6 +8,7 @@ export default class extends AbstractView {
         
         createPlayButton();
         deleteGameButtons();
+        deletePokerButtons();
 
         document.getElementById("contact").style.display = 'none';
 
@@ -17,9 +18,10 @@ export default class extends AbstractView {
     async getHtml() {
         return `
         <!--<div style="background-image: url('/static/images/Dashboard_background.jpg'); background-size: cover; height:750px">-->
+       
             <h1>Home</h1>
 
-        </div>
+       
         `;
     }
 

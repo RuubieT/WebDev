@@ -13,7 +13,7 @@ using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/User")]
     [ApiController]
     public class UserController : BaseController
     {
@@ -115,6 +115,12 @@ namespace WebDevAPI.Controllers
         private bool UserExists(Guid id)
         {
             return (UserRepository.TryFind(e => e.Id == id)).Result.succes;
+        }
+
+        [HttpPost("Create")]
+        public async Task<ActionResult<string>> CreateUser()
+        {
+            return Ok("NICE");
         }
     }
 }
