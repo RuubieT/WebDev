@@ -5,12 +5,13 @@ body {
 }
 
 div {
-    align-content: center;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .nav {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     width: 100%;
@@ -27,6 +28,10 @@ div {
     background: rgba(255, 255, 255, 0.05);
 }
 
+.nav__link.login {
+    right: 0;
+}
+
 #app {
     margin: 0;
     line-height: 1.5;
@@ -36,3 +41,4 @@ div {
 a {
     color: #009579;
 }
+
