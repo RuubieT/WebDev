@@ -20,20 +20,3 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Build .NET App
-      run: dotnet build
-    - name: Publish application
-      run: dotnet publish -c Release -o publish/
-    - name: Copy files to server
-      uses: appleboy/scp-action@main
-      with: 
-            host: ${{ env.SERVER_IP }}
-            usernmae: ${{ env.USERNAME }}
-            key: ${{ secrets.SERVER_KEY }}
-            source: publish/
-            target: ${{ env.REMOTE_DIRECTORY }}
