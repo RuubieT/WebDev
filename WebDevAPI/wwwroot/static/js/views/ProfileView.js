@@ -1,13 +1,16 @@
 import AbstractView from "./AbstractView.js";
+import { deleteGameButtons, deletePlayButton, deletePokerButtons } from "../helpers/buttons.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("Profile");
 
-        document.querySelector("#recaptcha").hidden = true;
-        document.querySelector("#contactform").hidden = true;
-        document.querySelector("#submit").hidden = true;
+        document.getElementById("contact").style.display = 'none';
+
+        deletePlayButton();
+        deleteGameButtons();
+        deletePokerButtons();
     }
 
     async getHtml() {
@@ -32,7 +35,7 @@ export default class extends AbstractView {
         <p class="profile-content_characteristics">Stilletjes</p>
 
         
-    </section>
+        </section>
 
     <section class="profile">
         <section class="profile-content">

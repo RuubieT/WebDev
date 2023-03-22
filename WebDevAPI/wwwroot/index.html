@@ -2,11 +2,14 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Single Page App</title>
+    <title>Web Dev App</title>
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="stylesheet" href="/static/css/profile.css">
     <link rel="stylesheet" href="/static/css/contact.css">
+    <!--<link rel="stylesheet" href="/static/css/deck.css">-->
+    <link rel="stylesheet" href="/static/css/login.css">
     
     <script defer src="/static/js/gdpr.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -16,16 +19,18 @@
         <a href="/" class="nav__link" data-link>Home</a>
         <a href="/contact" class="nav__link" data-link>Contact</a>
         <a href="/profile" class="nav__link" data-link>Profile</a>
+        <a href="/login" class="nav__link" data-link>Login</a>
+        <a href="/register" class="nav__link" data-link>Register</a>
     </nav>
     <div id="app"></div>
     
-    <section class="contact">
-        <div hidden id="recaptcha" class="g-recaptcha" data-sitekey="6LeRgakkAAAAAIf6C1lJ9oNJDhK_fRSSjBu6ItJx" data-callback="verifyCaptcha"></div>
+    <section class="contact" style="display:none" id="contact">
+        <div id="recaptcha" class="g-recaptcha" data-sitekey="6LeRgakkAAAAAIf6C1lJ9oNJDhK_fRSSjBu6ItJx" data-callback="verifyCaptcha"></div>
         <div id="g-recaptcha-error"></div>
     
     
-        <div hidden id="contactform" class="form-contactpagina__inputelement">
-            <input hidden type="submit" name="submit" id="submit" value="Verstuur!">
+        <div id="contactform" class="form-contactpagina__inputelement">
+            <input type="submit" name="submit" id="submit" value="Verstuur!">
         </div>
     </section>
    

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebDevAPI.Db;
 using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Db.Repositories

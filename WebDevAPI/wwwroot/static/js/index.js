@@ -1,6 +1,10 @@
-import Dashboard from "./views/Dashboard.js";
-import Contact from "./views/Contact.js";
-import Profile from "./views/Profile.js";
+import Dashboard from "./views/DashboardView.js";
+import Contact from "./views/ContactView.js";
+import Profile from "./views/ProfileView.js";
+import Game from "./views/GameView.js";
+import Table from "./views/TableView.js";
+import Login from "./views/LoginView.js";
+import Register from "./views/RegisterView.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -13,7 +17,7 @@ const getParams = match => {
     }));
 };
 
-const navigateTo = url => {
+export const navigateTo = url => {
     history.pushState(null, null, url);
     router();
 };
@@ -22,7 +26,11 @@ const router = async () => {
     const routes = [
         { path: "/", view: Dashboard },
         { path: "/contact", view: Contact },
-        { path: "/profile", view: Profile }
+        { path: "/profile", view: Profile },
+        { path: "/game", view: Game},
+        { path: "/table", view: Table},
+        { path: "/login", view: Login},
+        { path: "/register", view: Register},
     ];
 
     // Test each route for potential match

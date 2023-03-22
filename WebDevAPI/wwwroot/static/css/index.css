@@ -1,15 +1,19 @@
 body {
-    --nav-width: 200px;
-    margin: 0 0 0 var(--nav-width);
+    margin: 0;
     font-family: 'Quicksand', sans-serif;
     font-size: 18px;
 }
 
+div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .nav {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
-    overflow: auto;
     width: 100%;
     background: #222222;
 }
@@ -24,8 +28,12 @@ body {
     background: rgba(255, 255, 255, 0.05);
 }
 
+.nav__link.login {
+    right: 0;
+}
+
 #app {
-    margin: 2em;
+    margin: 0;
     line-height: 1.5;
     font-weight: 500;
 }
@@ -33,3 +41,4 @@ body {
 a {
     color: #009579;
 }
+

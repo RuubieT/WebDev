@@ -1,8 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SendGrid.Helpers.Mail;
 using System;
 using System.Linq;
 using WebDevAPI.Db;
+using WebDevAPI.Db.Models;
+using WebDevAPI.Logic.CardLogic;
+using static WebDevAPI.Db.Models.Card;
 
 namespace WebDevAPI.Db.Seeders
 
@@ -15,92 +19,134 @@ namespace WebDevAPI.Db.Seeders
                 serviceProvider.GetRequiredService<
                     DbContextOptions<WebDevDbContext>>()))
             {
-                if (context.Persons.Any())
+                if (context.Users.Any())
                 {
                     return;
                 }
-                context.Persons.AddRange(
-                    new Models.Person
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "TestPerson1",
-                        Description = "Description1",
-                        Age = 20,
-                    },
-                     new Models.Person
-                     {
-                         Id = Guid.NewGuid(),
-                         Name = "TestPerson2",
-                         Description = "Description2",
-                         Age = 21,
-                     },
-                      new Models.Person
-                      {
-                          Id = Guid.NewGuid(),
-                          Name = "TestPerson3",
-                          Description = "Description3",
-                          Age = 22,
-                      },
-                       new Models.Person
-                       {
-                           Id = Guid.NewGuid(),
-                           Name = "TestPerson4",
-                           Description = "Description4",
-                           Age = 23,
-                       },
-                        new Models.Person
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = "TestPerson5",
-                            Description = "Description5",
-                            Age = 24,
-                        });
-                context.Contactforms.AddRange(
-                    new Models.Contactform
-                    {
+                var rand = new Random();
 
-                        Id = Guid.NewGuid(),
-                        Name = "TestPerson1",
-                        Email = "email@email.nl",
-                        Subject = "ASubject",
-                        Description = "Description1",
-                    },
-                    new Models.Contactform
-                    {
+                var firstnames = new List<string>
+                {
+                    "Pieter",
+                    "Henk",
+                    "Bas",
+                };
 
-                        Id = Guid.NewGuid(),
-                        Name = "TestPerson2",
-                        Email = "emailer@email.com",
-                        Subject = "AnotherSubject",
-                        Description = "Description2",
-                    },
-                    new Models.Contactform
-                    {
+                var lastnames = new List<string>
+                {
+                    "De Jong",
+                    "Frederiksen",
+                    "Berritsen",
+                };
 
-                        Id = Guid.NewGuid(),
-                        Name = "TestPerson3",
-                        Email = "email@at.de",
-                        Subject = "Wowsubj",
-                        Description = "Description3",
-                    },
-                    new Models.Contactform
-                    {
+                var emails = new List<string>
+                {
+                    "email1@gmail.com",
+                    "email2@hotmail.nl",
+                    "email3@outlook.com",
+                };
 
-                        Id = Guid.NewGuid(),
-                        Name = "TestPerson4",
-                        Email = "email@email.last",
-                        Subject = "ASubjectwel",
-                        Description = "Description4",
-                    },
-                    new Models.Contactform
-                    {
+                var descriptionList = new List<string>
+                {
+                    "Testbeschrijving",
+                    "Even een leuke beschrijving verzinnen",
+                    "Zie hier mijn beschijving"
+                };
 
+                var passwordList = new List<string>
+                {
+                    "Password123",
+                    "SecretPassword",
+                    "NewPassword"
+                };
+
+                var usernameList = new List<string>
+                {
+                    "Winner123",
+                    "RealGamer",
+                    "___TROLL___"
+                };
+
+                var users = new List<User>();
+                for (var i = 0; i < 5; i++)
+                {
+                    var user = new User
+                    {
                         Id = Guid.NewGuid(),
-                        Name = "TestPerson5",
-                        Email = "myemailer@email.nl",
-                        Subject = "ASubjecttotalk",
-                        Description = "Description5",
-                    });
+                        FirstName = firstnames[rand.Next(0, firstnames.Count)],
+                        LastName = lastnames[rand.Next(0, lastnames.Count)],
+                        Email = emails[rand.Next(0, emails.Count)],
+                        Password = passwordList[rand.Next(0, passwordList.Count)],
+                        Description = descriptionList[rand.Next(0, descriptionList.Count)],
+                    };
+                    users.Add(user);
+                }
+
+                var players = new List<Player>();
+                for (var i = 0; i < 5; i++)
+                {
+                    var player = new Player
+                    {
+                        Id = Guid.NewGuid(),
+                        FirstName = firstnames[rand.Next(0, firstnames.Count)],
+                        LastName = lastnames[rand.Next(0, lastnames.Count)],
+                        Email = emails[rand.Next(0, emails.Count)],
+                        Password = passwordList[rand.Next(0, passwordList.Count)],
+                        Description = descriptionList[rand.Next(0, descriptionList.Count)],
+                        Username = usernameList[rand.Next(0, usernameList.Count)],
+                        Chips = rand.Next(0, 15000),
+                        PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
+                    };
+                    players.Add(player);
+                }
+
+                var deck = new DeckOfCards();
+                deck.SetUpDeck(); //deck.getDeck returns 52 
+                var cards = new List<Card>();
+                for(int i = 0; i < deck.getDeck.Length; i++) 
+                {
+                    var card = new Card
+                    {
+                        CardId = deck.getDeck[i].CardId,
+                        MySuit = deck.getDeck[i].MySuit,
+                        MyValue = deck.getDeck[i].MyValue,
+                    };
+                    cards.Add(card);
+                }
+
+                #region Setup nullable field
+                context.PokerTables.Add(new PokerTable
+                {
+                    PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
+                    Ante = 10,
+                    SmallBlind = 20,
+                    BigBlind = 30,
+                    MaxSeats = 8,
+                });
+                context.Users.Add(new Player
+                {
+                    Id = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
+                    FirstName = firstnames[rand.Next(0, firstnames.Count)],
+                    LastName = lastnames[rand.Next(0, lastnames.Count)],
+                    Email = emails[rand.Next(0, emails.Count)],
+                    Password = passwordList[rand.Next(0, passwordList.Count)],
+                    Description = descriptionList[rand.Next(0, descriptionList.Count)],
+                    Username = usernameList[rand.Next(0, usernameList.Count)],
+                    Chips = rand.Next(0, 15000),
+                    PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
+                });
+               
+                context.PlayerHands.Add(new PlayerHand
+                {
+                    PlayerHandId = new Guid(),
+                    PlayerId = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
+                });
+#endregion
+
+
+                context.Users.AddRange(users);
+                context.Users.AddRange(players);
+                context.Cards.AddRange(cards);
                 context.SaveChanges();
             }
         }
