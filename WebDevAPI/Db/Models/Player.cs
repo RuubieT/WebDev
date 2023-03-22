@@ -32,5 +32,14 @@ namespace WebDevAPI.Db.Models
                 Chips = Chips
             };
         }
+
+        public GetLeaderBoardDto GetLeaderBoardDto()
+        {
+            return new()
+            {
+                Username = Username,
+                Chips = Chips
+            };
+        }
     }
 }

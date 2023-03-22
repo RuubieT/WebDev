@@ -42,7 +42,27 @@ namespace WebDevAPI.Controllers
                 }
             }
             return Ok(getPlayers) ;
+        }
 
+        // GET: api/Player/Leaderboard
+        [HttpGet("Leaderboard")]
+        public async Task<ActionResult<IEnumerable<GetLeaderBoardDto>>> GetLeaderboard()
+        {
+            Console.WriteLine(this.HttpContext.User);
+            var Players = await PlayerRepository.GetAll();
+            var getPlayers = new List<GetLeaderBoardDto>();
+            if (Players == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                foreach (var Player in Players)
+                {
+                    getPlayers.Add(Player.GetLeaderBoardDto());
+                }
+            }
+            return Ok(getPlayers.OrderByDescending(p => p.Chips));
         }
 
         // GET: api/player/5

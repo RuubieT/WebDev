@@ -44,7 +44,7 @@ function createGameButtons(){
         joinbutton.innerText = "Join";
         joinbutton.classList.add("game");
         joinbutton.addEventListener("click", () => {
-            alert("JOIN A GAME");
+               alert("join");
         })
 
         div.appendChild(createbutton);

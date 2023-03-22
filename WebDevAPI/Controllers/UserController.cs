@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db;
 using WebDevAPI.Db.Dto_s.Contactform;
+using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
@@ -43,6 +45,30 @@ namespace WebDevAPI.Controllers
             return Ok(getUsers) ;
 
         }
+
+
+        // GET: api/User/Leaderboard
+        [AllowAnonymous]
+        [HttpGet("Leaderboard")]
+        public async Task<ActionResult<IEnumerable<GetLeaderBoardDto>>> GetLeaderboard()
+        {
+            Console.WriteLine(this.HttpContext.User);
+            var Players = await PlayerRepository.GetAll();
+            var getPlayers = new List<GetLeaderBoardDto>();
+            if (Players == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                foreach (var Player in Players)
+                {
+                    getPlayers.Add(Player.GetLeaderBoardDto());
+                }
+            }
+            return Ok(getPlayers.OrderByDescending(p => p.Chips));
+        }
+
 
         // GET: api/User/5
         [HttpGet("{id}")]
