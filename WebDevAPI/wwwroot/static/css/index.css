@@ -1,46 +1,71 @@
-body {
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Quicksand', sans-serif;
-    font-size: 18px;
 }
 
-div {
+body {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    background: url('../images/Dashboard_background.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
-.nav {
-    position: sticky;
+
+header {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
+    padding: 20px 100px;
     background: #222222;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
 }
 
-.nav__link {
-    padding: 12px 18px;
+.logo {
+    font-size: 2em;
+    color: #fff;
+    user-select: none;
+}
+
+.nav a {
+    position: relative;
+    font-size: 1.1em;
+    color: #fff;
     text-decoration: none;
-    color: #eeeeee;
-}
-
-.nav__link:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.nav__link.login {
-    right: 0;
-}
-
-#app {
-    margin: 0;
-    line-height: 1.5;
     font-weight: 500;
+    margin-left: 40px;
 }
 
-a {
-    color: #009579;
+.nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    bottom: -6px;
+    background-color: #fff;
+    border-radius: 5;
+    transform: scaleX(0);
+    transition: transform .5s;
 }
+
+.nav a:hover::after {
+    transform: scaleX(1);
+}
+
+.nav a:hover {
+    background: #fff;
+    color: #162938;
+}
+
 
 table {
     font-family: Arial, Helvetica, sans-serif;
@@ -59,10 +84,6 @@ th {
     text-align: left;
     background-color: #04AA6D;
     color: white;
-}
-
-tr {
-    
 }
 
 

@@ -6,23 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Dev App</title>
     <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+    
     <link rel="stylesheet" href="/static/css/profile.css">
     <link rel="stylesheet" href="/static/css/contact.css">
     <!--<link rel="stylesheet" href="/static/css/deck.css">-->
-    <link rel="stylesheet" href="/static/css/login.css">
+    
     
     <script defer src="/static/js/gdpr.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-    <nav class="nav">
-        <a href="/" class="nav__link" data-link>Home</a>
-        <a href="/contact" class="nav__link" data-link>Contact</a>
-        <a href="/profile" class="nav__link" data-link>Profile</a>
-        <a href="/leaderboard" class="nav__link" data-link>Leaderboard</a>
-        <a href="/login" class="nav__link" data-link>Login</a>
-        <a href="/register" class="nav__link" data-link>Register</a>
-    </nav>
+    
+    <header>
+        <h2 class="logo">Logo</h2>
+        <nav class="nav">
+            <a href="/" class="nav__link" data-link>Home</a>
+            <a href="/contact" class="nav__link" data-link>Contact</a>
+            <a href="/profile" class="nav__link" data-link>Profile</a>
+            <a href="/leaderboard" class="nav__link" data-link>Leaderboard</a>
+            <a href="/login" class="login" data-link>Login</a>
+            <a href="/register" class="nav__link" data-link>Register</a>
+        </nav>
+    </header>
+    
     <div id="app"></div>
     
     <section class="contact" style="display:none" id="contact">
@@ -32,27 +39,23 @@
 
     <script type="module" src="/static/js/index.js"></script>
 
-    <script>
-        var recaptcha_response = '';         
-        function verifyCaptcha(token) {
-            recaptcha_response = token;
-            document.getElementById('g-recaptcha-error').innerHTML = '';
-        }
-        </script>
+    <!--https://ionic.io/ionicons-->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
-        <section class="gdpr-consent hide">
-            <div class="gdpr-consent__description">
-                <p>
-                    Deze website maakt gebruik van cookies.
-                    We gebruiken cookies om content te personaliseren, voor social media en het analyseren
-                    van verkeer op de website, advertenties.
-                </p>
-            </div>
-            <div class="gdpr-consent__choice" >
-                <button class="gdpr-consent__button--accept">Ja, natuurlijk</button>
-                <button class="gdpr-consent__button--reject">Nee, liever niet</button>
-            </div>
-        </section>
+
+    <section class="gdpr-consent hide">
+        <div class="gdpr-consent__description">
+            <p>
+            Deze website maakt gebruik van cookies.
+            We gebruiken cookies om content te personaliseren, voor social media en het analyseren
+            van verkeer op de website, advertenties.
+            </p>
+        </div>
+        <div class="gdpr-consent__choice" >
+            <button class="gdpr-consent__button--accept">Ja, natuurlijk</button>
+            <button class="gdpr-consent__button--reject">Nee, liever niet</button>
+        </div>
     </section>
 
 </body>

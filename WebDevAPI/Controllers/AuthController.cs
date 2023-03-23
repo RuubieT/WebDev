@@ -65,7 +65,7 @@ namespace WebDevAPI.Controllers
 
             string token = CreateToken(result);
 
-            return Ok(token);
+            return Ok(new { token });
         }
 
         private string CreateToken(User user)
