@@ -15,6 +15,7 @@ using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Controllers
 {
+    [Authorize(Roles = "User")]
     [Route("api/User")]
     [ApiController]
     public class UserController : BaseController
@@ -45,30 +46,6 @@ namespace WebDevAPI.Controllers
             return Ok(getUsers) ;
 
         }
-
-
-        // GET: api/User/Leaderboard
-        [AllowAnonymous]
-        [HttpGet("Leaderboard")]
-        public async Task<ActionResult<IEnumerable<GetLeaderBoardDto>>> GetLeaderboard()
-        {
-            Console.WriteLine(this.HttpContext.User);
-            var Players = await PlayerRepository.GetAll();
-            var getPlayers = new List<GetLeaderBoardDto>();
-            if (Players == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                foreach (var Player in Players)
-                {
-                    getPlayers.Add(Player.GetLeaderBoardDto());
-                }
-            }
-            return Ok(getPlayers.OrderByDescending(p => p.Chips));
-        }
-
 
         // GET: api/User/5
         [HttpGet("{id}")]
@@ -110,20 +87,6 @@ namespace WebDevAPI.Controllers
              return getUser.GetUserDto();
         }
 
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<GetUserDto>> PostUser(User user)
-        {
-          if (UserRepository.GetAll() == null)
-          {
-              return Problem("Entity set 'WebDevDbContext.Users'  is null.");
-          }
-            await UserRepository.Create(user);
-
-            return user.GetUserDto();
-        }
-
         // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
@@ -141,12 +104,6 @@ namespace WebDevAPI.Controllers
         private bool UserExists(Guid id)
         {
             return (UserRepository.TryFind(e => e.Id == id)).Result.succes;
-        }
-
-        [HttpPost("Create")]
-        public async Task<ActionResult<string>> CreateUser()
-        {
-            return Ok("NICE");
         }
     }
 }

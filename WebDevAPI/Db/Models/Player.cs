@@ -18,7 +18,7 @@ namespace WebDevAPI.Db.Models
         }
 
         public Player(User user, string username, int chips) 
-            : base (user.Id, user.FirstName, user.LastName, user.Description, user.Email, user.Password)
+            : base (user.Id, user.FirstName, user.LastName, user.Email, user.PasswordHash)
         {
             Username = username;
             Chips = chips;

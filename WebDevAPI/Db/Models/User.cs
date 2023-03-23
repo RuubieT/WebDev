@@ -6,25 +6,28 @@ namespace WebDevAPI.Db.Models
 {
     public class User
     {
-        [Key] public Guid Id { get; set; }
-        [Required] public string FirstName { get; set; }
-        [Required] public string LastName { get; set; }
-        [Required] public string Email { get; set; }
-        [Required] public string Password { get; set; }
-        public string Description { get; set; }
+        [Key] 
+        public Guid Id { get; set; }
+        [Required] 
+        public string FirstName { get; set; }
+        [Required] 
+        public string LastName { get; set; }
+        [Required, EmailAddress] 
+        public string Email { get; set; }
+        [Required] 
+        public string PasswordHash { get; set; }
 
         public User()
         {
 
         }
 
-        public User(Guid id, string firstName, string lastName, string password, string description, string email) {
+        public User(Guid id, string firstName, string lastName, string password, string email) {
             Id = id;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
-            Password = password;
-            Description = description;
+            PasswordHash = password;
         }
 
         public GetUserDto GetUserDto()
@@ -35,7 +38,7 @@ namespace WebDevAPI.Db.Models
                 FirstName = FirstName,
                 LastName = LastName,
                 Email = Email,
-                Description = Description,
+                PasswordHash = PasswordHash,
             };
         }
 

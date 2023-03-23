@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ namespace WebDevAPI.Controllers
         }
 
         // GET: api/Player
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<IEnumerable<GetPlayerDto>>> GetPlayers()
         {
             var Players = await PlayerRepository.GetAll();
@@ -45,7 +46,7 @@ namespace WebDevAPI.Controllers
         }
 
         // GET: api/Player/Leaderboard
-        [HttpGet("Leaderboard")]
+        [HttpGet("Leaderboard"), AllowAnonymous]
         public async Task<ActionResult<IEnumerable<GetLeaderBoardDto>>> GetLeaderboard()
         {
             Console.WriteLine(this.HttpContext.User);
@@ -69,11 +70,11 @@ namespace WebDevAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetPlayerDto>> GetPlayer(Guid id)
         {
-            var Players = await PlayerRepository.GetAll();
-          if (Players == null)
-          {
-              return NotFound();
-          }
+           var Players = await PlayerRepository.GetAll();
+            if (Players == null)
+            {
+                return NotFound();
+            }
             var Player = await PlayerRepository.Get(id);
 
             if (Player == null)

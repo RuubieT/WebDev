@@ -8,7 +8,7 @@ export default class extends AbstractView {
         
         document.getElementById("contact").style.display = 'none';
         
-        const uri = 'api/User/Leaderboard';
+        const uri = 'api/Player/Leaderboard';
       
         fetch(uri)
         .then(response => response.json())

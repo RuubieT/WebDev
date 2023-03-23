@@ -9,7 +9,7 @@ function createSubmitFormButton() {
         
         const btn = createCustomButtons("submitFormButton", "Submit!");
         btn.addEventListener("click", async () => {
-             const inputFields = document.querySelectorAll("input");
+            const inputFields = document.querySelectorAll("input");
             const validInputs = Array.from(inputFields).filter(input => input.value !== "");
             const contactForm = new Contactform();
             validInputs.forEach(input =>{
