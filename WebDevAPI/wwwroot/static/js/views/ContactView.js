@@ -1,12 +1,5 @@
-import { Contactform } from "../../models/Contactform.js";
 import AbstractView from "./AbstractView.js";
-import { deleteGameButtons, deletePlayButton, deletePokerButtons } from "../helpers/buttons.js";
-
-window.addEventListener('load', function () {
-    console.log("loaded Contact.js");
-}); 
-
-const uri = 'api/Contactform';
+import { createSubmitFormButton } from "../helpers/buttons.js";
 
 
 export default class extends AbstractView
@@ -17,45 +10,9 @@ export default class extends AbstractView
 
         document.getElementById("contact").style.display = 'block';
 
-        deletePlayButton();
-        deleteGameButtons();
-        deletePokerButtons();
+        createSubmitFormButton();
 
         window.addEventListener("input", (event) => { checkInput(event.target.id) });
-
-        var button = document.getElementById("submit");
-        button.onclick = async function(){
-            const inputFields = document.querySelectorAll("input");
-            const validInputs = Array.from(inputFields).filter(input => input.value !== "");
-            const contactForm = new Contactform();
-            validInputs.forEach(input =>{
-                switch(input.id){
-                    case "name":
-                        contactForm.name = input.value;
-                        break;
-                    case "email":
-                        contactForm.email = input.value;
-                        break;
-                    case "subject":
-                        contactForm.subject = input.value;
-                        break;
-                    case "description":
-                        contactForm.description = input.value;
-                        break;
-                }
-            })
-
-            
-            let response = await fetch(uri, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({Name: contactForm.name, Email: contactForm.email, Subject: contactForm.subject, Description: contactForm.description})
-            });
-                
-            let data = await response.json();
-            alert(JSON.stringify(data));
-            
-        };
     }
 
     async getHtml() {
@@ -92,12 +49,6 @@ export default class extends AbstractView
         </form> 
       </section>
       
-      <script>
-        var recaptcha_response = '';
-        function submitUserForm() {
-            console.log("Submitted");
-         }
-        </script>
         `;
     }
 

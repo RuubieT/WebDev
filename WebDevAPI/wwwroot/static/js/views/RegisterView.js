@@ -1,14 +1,10 @@
 import AbstractView from "./AbstractView.js";
-import { deletePlayButton, deleteGameButtons, deletePokerButtons } from "../helpers/buttons.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("Register");
         
-        deletePlayButton();
-        deleteGameButtons();
-        deletePokerButtons();
 
         document.getElementById("contact").style.display = 'none';
         
