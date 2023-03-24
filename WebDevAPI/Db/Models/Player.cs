@@ -36,7 +36,13 @@ namespace WebDevAPI.Db.Models
         {
             return new()
             {
+                Id = Id,
+                FirstName = FirstName,
+                LastName = LastName,
+                Email = Email,
+                PasswordHash = PasswordHash,
                 Username = Username,
+                Chips = Chips
             };
         }
 
