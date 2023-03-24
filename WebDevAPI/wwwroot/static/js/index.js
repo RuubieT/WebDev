@@ -7,6 +7,7 @@ import Register from "./views/RegisterView.js";
 import Leaderboard from "./views/LeaderboardView.js";
 import { deleteAllButtons } from "./helpers/clearButtons.js";
 import Table from "./views/TableView.js";
+import { removeEventListeners } from "./helpers/verifyForm.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -64,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
+            removeEventListeners();
             deleteAllButtons();
             navigateTo(e.target.href);
         }

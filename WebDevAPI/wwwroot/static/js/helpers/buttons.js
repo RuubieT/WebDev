@@ -1,6 +1,7 @@
 import {navigateTo} from '../index.js';
 import { Contactform } from "../../models/Contactform.js";
 
+
 function createSubmitFormButton() {
     var submitFormButton = document.getElementById("contactFormButtonDiv");
     if (!submitFormButton) {    
@@ -33,7 +34,7 @@ function createSubmitFormButton() {
             let response = await fetch('api/Contactform', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({Name: contactForm.name, Email: contactForm.email, Subject: contactForm.subject, Description: contactForm.description})
+                body: JSON.stringify({name: contactForm.name, email: contactForm.email, subject: contactForm.subject, description: contactForm.description})
             });
                 
             let data = await response.json();
@@ -42,14 +43,13 @@ function createSubmitFormButton() {
         })
 
         div.appendChild(btn);
-        document.body.appendChild(div);
+        return div;
     }
 }
 
 function deleteSubmitFormButton() {
     deleteCustomButtons("contactFormButtonDiv")
 }
-
 
 function createPlayButton() {
     var playButton = document.getElementById("playButtonDiv");

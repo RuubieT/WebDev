@@ -29,7 +29,6 @@ namespace WebDevAPI.Db.Models
             return new()
             {
                 Username = Username,
-                Chips = Chips
             };
         }
 

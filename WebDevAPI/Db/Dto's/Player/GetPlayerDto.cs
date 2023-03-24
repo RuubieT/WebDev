@@ -7,6 +7,5 @@ namespace WebDevAPI.Db.Dto_s.Player
     public class GetPlayerDto: GetUserDto
     {
         public string Username { get; set; }
-        public int Chips { get; set; }
     }
 }

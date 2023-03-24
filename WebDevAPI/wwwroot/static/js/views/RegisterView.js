@@ -1,3 +1,5 @@
+import { UserRegisterDto } from "../../models/UserRegisterDto.js";
+import { checkInput, registerVerify } from "../helpers/verifyForm.js";
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
@@ -8,16 +10,7 @@ export default class extends AbstractView {
 
         document.getElementById("contact").style.display = 'none';
         
-        var registerSubmitDiv = document.getElementById("signupDiv");
-        if (registerSubmitDiv) {     
-            const btn = document.createElement("button");
-            btn.innerText = "Register";
-            btn.id = "registerSubmitButton";
-            btn.addEventListener("click", () => {
-                console.log("Register me")
-            })
-            registerSubmitDiv.appendChild(btn);
-        }
+        window.addEventListener("submit", registerVerify)
         
     }   
 
@@ -26,27 +19,27 @@ export default class extends AbstractView {
         <div class="wrapper register">
             <div class="form-box register">
                 <h2>Registration</h2>
-                <form id="LoginForm" action="#" method="post" class="form-contactpagina">
+                <form id="Register" action="javascript:void(0);">
                     
                     <div class="input-box">
-                        <input type="text" required>
+                        <input type="text" id="firstname" required>
                         <label>First name</label>
                     </div>
                     <div class="input-box">
-                    <input type="text" required>
-                    <label>Last name</label>
+                        <input type="text" id="lastname" required>
+                        <label>Last name</label>
                     </div>
                     <div class="input-box">
-                        <input type="email" required>
+                        <input type="email" id="email" required>
                         <label>Email</label>
                     </div>
                     <div class="input-box">
-                        <input type="password" required>
+                        <input type="password" id="password" required>
                         <label>Password</label>
                     </div>
                     <div class="remember-forgot">
                         <label>
-                        <input type="checkbox">
+                        <input type="checkbox" id="agreeCheck" required>
                         Agree to the terms & conditions (Captcha?)</label>
                     </div>
                         <button type="submit" class="btn" id="btn">Register</button>
