@@ -3,7 +3,7 @@ using WebDevAPI.Db.Models;
 
 namespace WebDevAPI.Db.Dto_s.Player
 {
-    public class PostPlayerDto : PostLoginUserDto
+    public class PostPlayerDto : PostRegisterUserDto
     {
         public string Username { get; set; }
     }

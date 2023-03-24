@@ -1,7 +1,7 @@
 import { Player } from "../../models/Player.js";
 import { UserLoginDto } from "../../models/UserLoginDto.js";
-import { UserRegisterDto } from "../../models/UserRegisterDto.js";
-import { navigateTo } from "../index.js";
+import { PlayerRegisterDto } from "../../models/PlayerRegisterDto.js";
+import { jwtToken, navigateTo } from "../index.js";
 
 function checkInput (){
     const inputFields = document.querySelectorAll("input");
@@ -29,15 +29,14 @@ const loginVerify = async () => {
             });
                 
             let data = await response.json();
-            var token = JSON.stringify(data);
-            console.log(token);
+            jwtToken.token = data.token;
             navigateTo("/");
 
 }
 
 const registerVerify = async () => {
     var inputs = checkInput();
-    const newUser = new UserRegisterDto();
+    const newUser = new PlayerRegisterDto();
     inputs.forEach(input =>{
         switch(input.id){
             case "firstname":
@@ -45,6 +44,9 @@ const registerVerify = async () => {
                 break;
             case "lastname":
                 newUser.lastname = input.value;
+                break;
+            case "username":
+                newUser.username = input.value;
                 break;
             case "email":
                 newUser.email = input.value;
@@ -63,7 +65,7 @@ const registerVerify = async () => {
         
     let data = await response.json();
     console.log(JSON.stringify(data));
-    navigateTo("/username");
+    navigateTo("/");
 }
 
 const registerPlayer = async () => {
@@ -72,19 +74,22 @@ const registerPlayer = async () => {
     inputs.forEach(input =>{
         switch(input.id){
             case "username":
-                newUser.username = input.value;
+                newPlayer.username = input.value;
                 break;
         }
     })
 
-    let response = await fetch('api/Auth/Player', {
+    let response = await fetch('api/Auth/Username', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer ' + jwtToken.token
+         },
         body: JSON.stringify(newPlayer)
-    });
-        
-    let data = await response.json();
-    console.log(JSON.stringify(data));
+    }).then(res => res.json())
+    .then(x => console.log(x))
+    .catch(err => alert(err));
+
     navigateTo("/");
 }
 

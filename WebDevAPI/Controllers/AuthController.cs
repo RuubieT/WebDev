@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,46 +25,51 @@ namespace WebDevAPI.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<GetPlayerDto>> Register(PostRegisterUserDto request)
+        [HttpPost("Register")]
+        public async Task<ActionResult<GetPlayerDto>> Register(PostPlayerDto request)
         {
 
             var requestedUser = await UserRepository.TryFind(e => e.Email == request.Email);
             if (requestedUser.succes) return BadRequest("User already exists");
 
-            var user = new User
+            var userNameExists = await PlayerRepository.TryFind(e => e.Username == request.Username);
+            if (userNameExists.succes) return BadRequest("Username is already taken");
+
+            var player = new Player
             {
                 Id = new Guid(),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
+                Username = request.Username,
                 Email = request.Email,
+                PokerTableId = PokerTableRepository.GetAll().Result[0].PokerTableId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
 
-            await UserRepository.Create(user);
+            await PlayerRepository.Create(player);
 
-            return Ok(user.GetUserDto());
+            return Ok(player.GetPlayerDto());
         }
 
-        [HttpPost("login")]
+        [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(PostLoginUserDto request)
         {
-            var findUser = await UserRepository.TryFind(e => e.Email == request.Email);
-            var result = findUser.result;
-            if (result == null) return NotFound();
+            var data = await UserRepository.TryFind(e => e.Email == request.Email);
+            var findUser = data.result;
+            if (findUser == null) return NotFound();
 
 
-            if (result.Email != request.Email)
+            if (findUser.Email != request.Email)
             {
                 return BadRequest("User not found.");
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, result.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, findUser.PasswordHash))
             {
                 return BadRequest("Email or password is wrong.");
             }
 
-            string token = CreateToken(result);
+            string token = CreateToken(findUser);
 
             return Ok(new { token });
         }
@@ -84,13 +90,15 @@ namespace WebDevAPI.Controllers
             
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: creds
                 );
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
+
+        //RefreshToken?
 
 
     }

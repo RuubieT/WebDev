@@ -1,5 +1,4 @@
-import { UserRegisterDto } from "../../models/UserRegisterDto.js";
-import { checkInput, registerVerify } from "../helpers/verifyForm.js";
+import { registerVerify } from "../helpers/verifyForm.js";
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
@@ -28,6 +27,10 @@ export default class extends AbstractView {
                     <div class="input-box">
                         <input type="text" id="lastname" required>
                         <label>Last name</label>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="username" required>
+                        <label>Username</label>
                     </div>
                     <div class="input-box">
                         <input type="email" id="email" required>

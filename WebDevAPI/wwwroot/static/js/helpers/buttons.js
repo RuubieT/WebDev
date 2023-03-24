@@ -1,4 +1,4 @@
-import {navigateTo} from '../index.js';
+import {jwtToken, navigateTo} from '../index.js';
 import { Contactform } from "../../models/Contactform.js";
 
 
@@ -59,12 +59,13 @@ function createPlayButton() {
         
         const btn = createCustomButtons("playButton", "Play Game"); 
         btn.dataset["link"] = "";
-        btn.addEventListener("click", () => {
-            navigateTo('/game');
+        btn.addEventListener("click", async () => {
+            navigateTo("/username");
         })
 
         div.appendChild(btn);
         document.body.appendChild(div);
+          
     }
 }
 
@@ -89,8 +90,16 @@ function createGameButtons(){
         joinbutton.classList.add("game");
         joinbutton.dataset["link"] = "";
         joinbutton.addEventListener("click", () => {
-               alert("join");
+            let data = fetch("/api/User", {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'bearer ' + jwtToken.token
+                },
+            }).then(res => res.json()).catch(err => console.log(err))
+            console.log(data)
         })
+        
 
         div.appendChild(createbutton);
         div.appendChild(joinbutton);

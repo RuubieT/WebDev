@@ -16,6 +16,10 @@
     height: 600px;
 }
 
+.username {
+    height: 400px;
+}
+
 .wrapper .form-box {
     width: 100%;
     padding: 40px;

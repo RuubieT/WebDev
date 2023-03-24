@@ -1,4 +1,5 @@
-﻿using WebDevAPI.Db.Dto_s.Player;
+﻿using System.ComponentModel.DataAnnotations;
+using WebDevAPI.Db.Dto_s.Player;
 using static WebDevAPI.Db.Models.Card;
 
 namespace WebDevAPI.Db.Models
@@ -15,6 +16,13 @@ namespace WebDevAPI.Db.Models
        
         public Player() 
         {
+
+        }
+
+        public Player(User user, string username)
+            : base(user.Id, user.FirstName, user.LastName, user.Email, user.PasswordHash)
+        {
+            Username = username;
         }
 
         public Player(User user, string username, int chips) 
