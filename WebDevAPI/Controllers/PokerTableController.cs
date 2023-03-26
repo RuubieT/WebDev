@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebDevAPI.Db.Dto_s.Player;
+using WebDevAPI.Db.Dto_s.PokerTable;
 using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
@@ -8,7 +9,7 @@ using WebDevAPI.Logic.CardLogic;
 
 namespace WebDevAPI.Controllers
 {
-    [Route("api/PokerTable")]
+    [Route("api/Pokertable")]
     [ApiController]
     public class PokerTableController : BaseController
     {
@@ -19,33 +20,35 @@ namespace WebDevAPI.Controllers
 
         }
 
-   
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetPlayerDto>>> GetPlayers()
-        {
-            var players = await PlayerRepository.GetAll();
-            var getPlayers = new List<GetPlayerDto>();
-            if (players == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                foreach (var p in players)
-                {
-                    getPlayers.Add(p.GetPlayerDto());
-                }
-            }
-            return Ok(getPlayers);
-
-        }
-
-        [HttpGet("Create")]
-        public async Task<ActionResult<string>> CreateGame()
+        [HttpPost("Create")]
+        public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> CreateGame(PostPlayerUsernameDto creator)
         {
             var deck = new DeckOfCards();
             deck.SetUpDeck();
-            return Ok(deck.getDeck);
+
+            var player = PlayerRepository.TryFind(e => e.Email == creator.Email).Result.result;
+            if (player == null) return NotFound("No matching player found");
+
+
+            ICollection<Player> players = new List<Player>
+            {
+                player
+            };
+
+            PokerTable pokerTable = new PokerTable
+            {
+                PokerTableId = new Guid(),
+                Ante = 10,
+                SmallBlind = 20,
+                BigBlind = 30,
+                MaxSeats = 8,
+                Cards = deck.getDeck,
+                Players = players
+            };
+
+            await PokerTableRepository.Create(pokerTable);
+
+            return Ok(pokerTable.GetPokerTableDto());
         }
 
         [HttpGet("Join")]

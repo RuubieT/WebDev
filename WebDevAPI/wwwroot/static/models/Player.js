@@ -1,5 +1,6 @@
 export class Player {
-    constructor(username) {
-        this.username = username
+    constructor(username, chips) {
+        this.username = username;
+        this.username = chips;
     }
 }

@@ -1,6 +1,6 @@
 import { Player } from "../../models/Player.js";
-import { UserLoginDto } from "../../models/UserLoginDto.js";
-import { PlayerRegisterDto } from "../../models/PlayerRegisterDto.js";
+import { UserLoginDto } from "../../models/Dto/UserLoginDto.js";
+import { PlayerRegisterDto } from "../../models/Dto/PlayerRegisterDto.js";
 import { jwtToken, navigateTo } from "../index.js";
 
 function checkInput (){
@@ -9,28 +9,43 @@ function checkInput (){
 }
 
 const loginVerify = async () => {
-            var inputs = checkInput();
-            const user = new UserLoginDto();
-            inputs.forEach(input =>{
-                switch(input.id){
-                    case "email":
-                        user.email = input.value;
-                        break;
-                    case "password":
-                        user.password = input.value;
-                        break;
-                }
-            })
+    var inputs = checkInput();
+    const user = new UserLoginDto();
+    inputs.forEach(input =>{
+    switch(input.id){
+        case "email":
+            user.email = input.value;
+            break;
+        case "password":
+            user.password = input.value;
+            break;
+        }
+    })
 
-            let response = await fetch('api/Auth/Login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(user)
-            });
-                
-            let data = await response.json();
-            jwtToken.token = data.token;
-            navigateTo("/");
+    let response = await fetch('api/Auth/Login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+    });
+       
+    //#TODO duplicate code
+    let data = await response.json();
+    jwtToken.token = data.token;
+
+    let userData = await fetch(`/api/Player/Find/${user.email}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'bearer ' + jwtToken.token
+        },
+    }).then((response)=>{
+        return response.json(); 
+    }).catch(err => console.log(err));
+
+    document.cookie = `email=${encodeURI(userData.email)}; SameSite=None; Secure`;
+    document.cookie = `username=${encodeURI(userData.username)}; SameSite=None; Secure`;
+
+    navigateTo("/");
 
 }
 
@@ -64,32 +79,22 @@ const registerVerify = async () => {
     });
         
     let data = await response.json();
-    console.log(JSON.stringify(data));
-    navigateTo("/");
-}
+    jwtToken.token = data.token;
 
-const registerPlayer = async () => {
-    var inputs = checkInput();
-    const newPlayer = new Player();
-    inputs.forEach(input =>{
-        switch(input.id){
-            case "username":
-                newPlayer.username = input.value;
-                break;
-        }
-    })
-
-    let response = await fetch('api/Auth/Username', {
-        method: 'POST',
-        headers: { 
+    let userData = await fetch(`/api/Player/Find/${user.email}`, {
+        method: 'GET',
+        headers: {
             'Content-Type': 'application/json',
             'Authorization': 'bearer ' + jwtToken.token
-         },
-        body: JSON.stringify(newPlayer)
-    }).then(res => res.json())
-    .then(x => console.log(x))
-    .catch(err => alert(err));
+        },
+    }).then((response)=>{
+        return response.json(); 
+    }).catch(err => console.log(err));
 
+    document.cookie = `email=${encodeURI(userData.email)}; SameSite=None; Secure`;
+    document.cookie = `username=${encodeURI(userData.username)}; SameSite=None; Secure`;
+    
+    
     navigateTo("/");
 }
 
@@ -99,10 +104,10 @@ function removeEventListeners(){
 }
 
 
+
 export {
     loginVerify,
     registerVerify,
-    registerPlayer,
     checkInput,
     removeEventListeners
 }

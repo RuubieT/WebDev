@@ -15,8 +15,9 @@ using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Controllers
 {
-    [Route("api/player")]
+    [Route("api/Player")]
     [ApiController]
+    [Authorize(Roles ="User")]
     public class PlayerController : BaseController
     {
 
@@ -43,6 +44,16 @@ namespace WebDevAPI.Controllers
                 }
             }
             return Ok(getPlayers) ;
+        }
+
+        // GET: api/player/{email}
+        [HttpGet("Find/{email}")]
+        public async Task<ActionResult<GetPlayerDto>> GetPlayer(string email)
+        {
+            var data = await PlayerRepository.TryFind(u => u.Email == email);
+            if(data.result == null) return NotFound();
+
+            return data.result.GetPlayerDto();
         }
 
         // GET: api/Player/Leaderboard

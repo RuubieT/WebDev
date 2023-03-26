@@ -5,7 +5,7 @@ export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("Dashboard");
-        
+    
         createPlayButton();
 
         document.getElementById("contact").style.display = 'none';
@@ -17,7 +17,7 @@ export default class extends AbstractView {
         return `
         <!--<div style="background-image: url('/static/images/Dashboard_background.jpg'); background-size: cover; height:750px">-->
        
-            <h1>Home</h1>
+            <h2>Home</h2>
 
        
         `;

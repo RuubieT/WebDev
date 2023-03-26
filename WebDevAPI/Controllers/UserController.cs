@@ -15,7 +15,7 @@ using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Controllers
 {
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [Route("api/User")]
     [ApiController]
     public class UserController : BaseController
@@ -44,7 +44,6 @@ namespace WebDevAPI.Controllers
                 }
             }
             return Ok(getUsers) ;
-
         }
 
 

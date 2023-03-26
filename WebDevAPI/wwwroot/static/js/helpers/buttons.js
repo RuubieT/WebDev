@@ -1,5 +1,6 @@
 import {jwtToken, navigateTo} from '../index.js';
 import { Contactform } from "../../models/Contactform.js";
+import { createGame } from './gamelogic.js';
 
 
 function createSubmitFormButton() {
@@ -60,7 +61,7 @@ function createPlayButton() {
         const btn = createCustomButtons("playButton", "Play Game"); 
         btn.dataset["link"] = "";
         btn.addEventListener("click", async () => {
-            navigateTo("/username");
+            navigateTo("/game");
         })
 
         div.appendChild(btn);
@@ -83,21 +84,17 @@ function createGameButtons(){
         createbutton.classList.add("game");
         createbutton.dataset["link"] = "";
         createbutton.addEventListener("click", () => {
-            navigateTo('/table');
+            var deck = createGame();
+
+            
+            //navigateTo('/table');
         })
         
         const joinbutton = createCustomButtons("joinButton", "Join");
         joinbutton.classList.add("game");
         joinbutton.dataset["link"] = "";
         joinbutton.addEventListener("click", () => {
-            let data = fetch("/api/User", {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'bearer ' + jwtToken.token
-                },
-            }).then(res => res.json()).catch(err => console.log(err))
-            console.log(data)
+           console.log("Join table?")
         })
         
 

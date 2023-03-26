@@ -7,7 +7,6 @@ import Register from "./views/RegisterView.js";
 import Leaderboard from "./views/LeaderboardView.js";
 import { deleteAllButtons } from "./helpers/clearButtons.js";
 import Table from "./views/TableView.js";
-import Username from "./views/UsernameView.js";
 import { removeEventListeners } from "./helpers/verifyForm.js";
 import { Auth } from "../models/Auth.js";
 
@@ -39,7 +38,6 @@ const router = async () => {
         { path: "/register", view: Register},
         { path: "/leaderboard", view: Leaderboard},
         { path: "/table", view: Table},
-        { path: "/username", view: Username}
     ];
 
     // Test each route for potential match

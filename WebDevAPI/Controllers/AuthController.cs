@@ -3,32 +3,34 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Numerics;
 using System.Security.Claims;
 using System.Text;
 using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
+using WebDevAPI.Logic;
 
 namespace WebDevAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Auth")]
     [ApiController]
     public class AuthController : BaseController
     {
-        public IConfiguration _configuration;
+        private Auth auth;
 
-        public AuthController(IConfiguration configuration, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
             playerHandRepository, pokerTableRepository)
         {
-            _configuration = configuration;
+
+            auth = new Auth(config);
         }
 
         [HttpPost("Register")]
-        public async Task<ActionResult<GetPlayerDto>> Register(PostPlayerDto request)
+        public async Task<ActionResult<string>> Register(PostPlayerDto request)
         {
-
             var requestedUser = await UserRepository.TryFind(e => e.Email == request.Email);
             if (requestedUser.succes) return BadRequest("User already exists");
 
@@ -48,58 +50,45 @@ namespace WebDevAPI.Controllers
 
             await PlayerRepository.Create(player);
 
-            return Ok(player.GetPlayerDto());
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, request.Username),
+                new Claim(ClaimTypes.Role, "User"),
+            };
+            string token = auth.CreateToken(player, claims);
+
+            return Ok(new { token });
         }
 
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(PostLoginUserDto request)
         {
-            var data = await UserRepository.TryFind(e => e.Email == request.Email);
-            var findUser = data.result;
-            if (findUser == null) return NotFound();
+            var allplayers = await PlayerRepository.GetAll();
+
+            var data = await PlayerRepository.TryFind(e => e.Email.ToLower() == request.Email.ToLower());
+            var findPlayer = data.result;
+            if (findPlayer == null) return NotFound();
 
 
-            if (findUser.Email != request.Email)
+            if (findPlayer.Email != request.Email)
             {
                 return BadRequest("User not found.");
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, findUser.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, findPlayer.PasswordHash))
             {
                 return BadRequest("Email or password is wrong.");
             }
 
-            string token = CreateToken(findUser);
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, findPlayer.Username),
+                new Claim(ClaimTypes.Role, "User"),
+            };
+            string token = auth.CreateToken(findPlayer, claims);
 
             return Ok(new { token });
         }
-
-        private string CreateToken(User user)
-        {
-            List<Claim> claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.Role, "User"),
-            };
-
-            //Is this Secure?
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value!));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-            
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(60),
-                signingCredentials: creds
-                );
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            return jwt;
-        }
-
-        //RefreshToken?
-
 
     }
 }

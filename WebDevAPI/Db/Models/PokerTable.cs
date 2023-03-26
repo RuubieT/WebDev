@@ -1,4 +1,5 @@
-﻿using WebDevAPI.Db.Dto_s.Player;
+﻿using WebDevAPI.Db.Dto_s.Card;
+using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.PokerTable;
 
 namespace WebDevAPI.Db.Models
@@ -21,7 +22,9 @@ namespace WebDevAPI.Db.Models
                 Ante = Ante,
                 SmallBlind = SmallBlind,
                 BigBlind = BigBlind,
-                MaxSeats = MaxSeats
+                MaxSeats = MaxSeats,
+                Players = ConvertAllPlayersToDto(Players),
+                Cards = ConvertAllCardsToDto(Cards)
             };
         }
 
@@ -37,6 +40,26 @@ namespace WebDevAPI.Db.Models
             }
 
             return allPlayers;
+        }
+
+        public ICollection<GetCardDto> ConvertAllCardsToDto(ICollection<Card> cards)
+        {
+            ICollection<GetCardDto> allCards = new List<GetCardDto>();
+            if (allCards.Count > 0)
+            {
+                foreach (Card c in cards)
+                {
+                    allCards.Add(c.GetCardDto());
+                }
+            }
+
+            return allCards;
+        }
+
+        public bool isFull()
+        {
+            if (MaxSeats == Players.Count) return true;
+            else return false;
         }
     }
 }
