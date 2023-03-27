@@ -1,7 +1,9 @@
-﻿using WebDevAPI.Db.Dto_s.Card;
+﻿using Microsoft.EntityFrameworkCore;
+using WebDevAPI.Db.Dto_s.Card;
 
 namespace WebDevAPI.Db.Models
 {
+    [Keyless]
     public class Card
     {
         public enum SUIT
@@ -18,19 +20,13 @@ namespace WebDevAPI.Db.Models
             NINE, TEN, JACK, QUEEN, KING, ACE
         }
 
-        public Guid CardId { get; set; }
         public SUIT MySuit { get; set; }
         public VALUE MyValue { get; set; }
-
-        //fk
-        public virtual PlayerHand? PlayerHand { get; set; }
-        public virtual PokerTable? PokerTable { get; set; }
 
         public GetCardDto GetCardDto()
         {
             return new()
             {
-                Id = CardId,
                 SUIT = MySuit,
                 VALUE = MyValue
             };

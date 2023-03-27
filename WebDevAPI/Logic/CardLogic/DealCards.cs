@@ -22,17 +22,11 @@ namespace WebDevAPI.Logic.CardLogic
 
             foreach(var p in players)
             { 
-                playerHand[0] = deck.getDeck[0];
-                deck.getDeck.ToList().RemoveAt(0);
-                playerHand[1] = deck.getDeck[0];
-                deck.getDeck.ToList().RemoveAt(0);
-
-                Console.WriteLine(deck.getDeck.Length);
-
+                playerHand[0] = deck.getDeck.Dequeue();
+                playerHand[1] = deck.getDeck.Dequeue();
+                
                 playerHands.Add(new PlayerHand
                 {
-                    PlayerHandId = new Guid(),
-                    Player = p,
                     PlayerId = p.Id,
                     Cards = playerHand,
                 });

@@ -11,6 +11,5 @@ namespace WebDevAPI.Db.Dto_s.PokerTable
         public int BigBlind { get; set; }
         public int MaxSeats { get; set; }
         public ICollection<GetPlayerDto> Players { get; set; }
-        public ICollection<GetCardDto> Cards { get; set; }
     }
 }

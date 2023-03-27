@@ -5,6 +5,7 @@ using System.Security.Claims;
 using WebDevAPI.Db.Dto_s.PokerTable;
 using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
+using WebDevAPI.Db.Repositories;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic;
 
@@ -17,18 +18,17 @@ namespace WebDevAPI.Controllers
     {
         private Auth auth;
 
-        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository)
+        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository,
+        IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, pokerTableRepository)
         {
             auth = new Auth(config);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
         {
-            var users = await PokerTableRepository.GetAll();
-            var getUsers = new List<GetPokerTableDto>();
+            var users = await PlayerRepository.GetAll();
+            var getUsers = new List<GetUserDto>();
             if (users == null)
             {
                 return NotFound();
@@ -37,18 +37,10 @@ namespace WebDevAPI.Controllers
             {
                 foreach (var user in users)
                 {
-                    getUsers.Add(user.GetPokerTableDto());
+                    getUsers.Add(user.GetUserDto());
                 }
             }
             return Ok(getUsers);
-        }
-
-        [HttpGet("playerhands")]
-        public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> GetHands()
-        {
-            var hands = await PlayerHandRepository.GetAll();
-            
-            return Ok(hands);
         }
 
         [HttpGet("token")]

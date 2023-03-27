@@ -13,9 +13,8 @@ namespace WebDevAPI.Controllers
     [ApiController]
     public class PokerTableController : BaseController
     {
-        public PokerTableController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository)
+        public PokerTableController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository,
+                IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, pokerTableRepository)
         {
 
         }
@@ -32,21 +31,6 @@ namespace WebDevAPI.Controllers
 
            var deck = new DeckOfCards();
            deck.SetUpDeck();
-           /* if (await CardRepository.GetAll() != null)
-            {
-                foreach (var card in await CardRepository.GetAll())
-                {
-                    await CardRepository.Delete(card);
-                }
-
-                
-
-                foreach (var card in deck.getDeck)
-                {
-                    await CardRepository.Create(card);
-                }
-            }
-           */
 
             ICollection<Player> players = new List<Player>
             {
@@ -60,7 +44,6 @@ namespace WebDevAPI.Controllers
                 SmallBlind = 20,
                 BigBlind = 30,
                 MaxSeats = 8,
-                Cards = deck.getDeck,
                 Players = players
             };
 
@@ -69,10 +52,6 @@ namespace WebDevAPI.Controllers
             DealCards dealCards = new DealCards();
             List<PlayerHand> playerHands = (List<PlayerHand>)dealCards.Deal(players, deck);
             
-            foreach (var hand in playerHands)
-            {
-                await PlayerHandRepository.Create(hand);
-            }
 
             return Ok(pokerTable.GetPokerTableDto());
         }

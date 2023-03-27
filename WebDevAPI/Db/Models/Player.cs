@@ -8,28 +8,17 @@ namespace WebDevAPI.Db.Models
     {
         public string Username { get; set; }
         public int Chips { get; set; }
-        
+        public PlayerHand? PlayerHand { get; set; }
+
+
         //Foreign key
         public Guid PokerTableId { get; set; }
         public virtual PokerTable? PokerTable { get; set; }
-        public virtual PlayerHand? PlayerHand { get; set; }
+
        
         public Player() 
         {
-
-        }
-
-        public Player(User user, string username)
-            : base(user.Id, user.FirstName, user.LastName, user.Email, user.PasswordHash)
-        {
-            Username = username;
-        }
-
-        public Player(User user, string username, int chips) 
-            : base (user.Id, user.FirstName, user.LastName, user.Email, user.PasswordHash)
-        {
-            Username = username;
-            Chips = chips;
+            Chips = 15000;
         }
 
         public GetPlayerDto GetPlayerDto()

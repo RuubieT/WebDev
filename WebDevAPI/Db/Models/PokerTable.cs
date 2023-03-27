@@ -12,7 +12,6 @@ namespace WebDevAPI.Db.Models
         public int BigBlind { get; set; }
         public int MaxSeats { get; set; }
         public virtual ICollection<Player>? Players { get; set; }
-        public virtual ICollection<Card>? Cards { get; set; }
 
         public GetPokerTableDto GetPokerTableDto()
         {
@@ -24,36 +23,24 @@ namespace WebDevAPI.Db.Models
                 BigBlind = BigBlind,
                 MaxSeats = MaxSeats,
                 Players = ConvertAllPlayersToDto(Players),
-                Cards = ConvertAllCardsToDto(Cards)
             };
         }
 
         public ICollection<GetPlayerDto> ConvertAllPlayersToDto(ICollection<Player> players)
         {
             ICollection<GetPlayerDto> allPlayers = new List<GetPlayerDto>();
-            if (players.Count > 0)
+            if (players != null)
             {
-                foreach (Player p in players)
+                if (players.Count > 0)
                 {
-                    allPlayers.Add(p.GetPlayerDto());
+                    foreach (Player p in players)
+                    {
+                        allPlayers.Add(p.GetPlayerDto());
+                    }
                 }
             }
-
+            
             return allPlayers;
-        }
-
-        public ICollection<GetCardDto> ConvertAllCardsToDto(ICollection<Card> cards)
-        {
-            ICollection<GetCardDto> allCards = new List<GetCardDto>();
-            if (cards.Count > 0)
-            {
-                foreach (Card c in cards)
-                {
-                    allCards.Add(c.GetCardDto());
-                }
-            }
-
-            return allCards;
         }
 
         public bool isFull()

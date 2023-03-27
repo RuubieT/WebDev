@@ -6,14 +6,16 @@ namespace WebDevAPI.Logic.CardLogic
     public class DeckOfCards
     {
         const int NUM_OF_CARDS = 52;
-        private Card[] deck;
+        private Queue<Card> deck;
+        private Card[] shuffleDeck;
 
         public DeckOfCards()
         {
-            deck = new Card[NUM_OF_CARDS];
+            deck = new Queue<Card>();
+            shuffleDeck = new Card[NUM_OF_CARDS];
         }
 
-        public Card[] getDeck { get { return deck; } }
+        public Queue<Card> getDeck { get { return deck; } }
 
         public void SetUpDeck()
         {
@@ -22,7 +24,7 @@ namespace WebDevAPI.Logic.CardLogic
             {
                 foreach (VALUE v in Enum.GetValues(typeof(VALUE)))
                 {
-                    deck[i] = new Card { MySuit = s, MyValue = v };
+                    shuffleDeck[i] = new Card { MySuit = s, MyValue = v };
                     i++;
                 }
             }
@@ -40,10 +42,15 @@ namespace WebDevAPI.Logic.CardLogic
                 for (int i = 0; i < NUM_OF_CARDS; i++)
                 {
                     int secondCardIndex = rand.Next(13);
-                    temp = deck[i];
-                    deck[i] = deck[secondCardIndex];
-                    deck[secondCardIndex] = temp;
+                    temp = shuffleDeck[i];
+                    shuffleDeck[i] = shuffleDeck[secondCardIndex];
+                    shuffleDeck[secondCardIndex] = temp;
                 }
+            }
+
+            foreach (var card in shuffleDeck)
+            {
+                deck.Enqueue(card);
             }
         }
 
