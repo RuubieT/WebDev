@@ -25,10 +25,10 @@ namespace WebDevAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> GetUsers()
         {
-            var users = await UserRepository.GetAll();
-            var getUsers = new List<GetUserDto>();
+            var users = await PokerTableRepository.GetAll();
+            var getUsers = new List<GetPokerTableDto>();
             if (users == null)
             {
                 return NotFound();
@@ -37,10 +37,18 @@ namespace WebDevAPI.Controllers
             {
                 foreach (var user in users)
                 {
-                    getUsers.Add(user.GetUserDto());
+                    getUsers.Add(user.GetPokerTableDto());
                 }
             }
             return Ok(getUsers);
+        }
+
+        [HttpGet("playerhands")]
+        public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> GetHands()
+        {
+            var hands = await PlayerHandRepository.GetAll();
+            
+            return Ok(hands);
         }
 
         [HttpGet("token")]

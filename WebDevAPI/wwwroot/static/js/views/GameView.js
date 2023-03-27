@@ -14,19 +14,7 @@ export default class extends AbstractView {
 
         createGameButtons();
 
-        window.onload = function() {
-
-            function create() {
-                fetch(uri + "/Create")
-                    .then(response => response.json())
-                    .catch(error => console.error('Unable to create.', error));
-            }
-            function join() {
-                fetch(uri + "/Join")
-                    .then(response => response.json())
-                    .catch(error => console.error('Unable to create.', error));
-            }
-        }
+        
     }   
 
     async getHtml() {

@@ -31,7 +31,7 @@ namespace WebDevAPI.Db.Models
         public ICollection<GetPlayerDto> ConvertAllPlayersToDto(ICollection<Player> players)
         {
             ICollection<GetPlayerDto> allPlayers = new List<GetPlayerDto>();
-            if (allPlayers.Count > 0)
+            if (players.Count > 0)
             {
                 foreach (Player p in players)
                 {
@@ -45,7 +45,7 @@ namespace WebDevAPI.Db.Models
         public ICollection<GetCardDto> ConvertAllCardsToDto(ICollection<Card> cards)
         {
             ICollection<GetCardDto> allCards = new List<GetCardDto>();
-            if (allCards.Count > 0)
+            if (cards.Count > 0)
             {
                 foreach (Card c in cards)
                 {

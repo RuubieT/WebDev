@@ -21,18 +21,36 @@ namespace WebDevAPI.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> CreateGame(PostPlayerUsernameDto creator)
+        public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> CreateGame(PostCreatePokerTableDto creator)
         {
-            var deck = new DeckOfCards();
-            deck.SetUpDeck();
 
-            var player = PlayerRepository.TryFind(e => e.Email == creator.Email).Result.result;
-            if (player == null) return NotFound("No matching player found");
+            var result = PlayerRepository.TryFind(e => e.Email == creator.Email).Result;
+            var check = PlayerRepository.TryFind(u => u.Username == creator.Username).Result;
 
+            if (result.result == null || check.result == null || !result.succes || !check.succes) return NotFound("No matching player found");
+
+
+           var deck = new DeckOfCards();
+           deck.SetUpDeck();
+           /* if (await CardRepository.GetAll() != null)
+            {
+                foreach (var card in await CardRepository.GetAll())
+                {
+                    await CardRepository.Delete(card);
+                }
+
+                
+
+                foreach (var card in deck.getDeck)
+                {
+                    await CardRepository.Create(card);
+                }
+            }
+           */
 
             ICollection<Player> players = new List<Player>
             {
-                player
+                result.result
             };
 
             PokerTable pokerTable = new PokerTable
@@ -47,6 +65,14 @@ namespace WebDevAPI.Controllers
             };
 
             await PokerTableRepository.Create(pokerTable);
+
+            DealCards dealCards = new DealCards();
+            List<PlayerHand> playerHands = (List<PlayerHand>)dealCards.Deal(players, deck);
+            
+            foreach (var hand in playerHands)
+            {
+                await PlayerHandRepository.Create(hand);
+            }
 
             return Ok(pokerTable.GetPokerTableDto());
         }

@@ -2,6 +2,7 @@ import { Player } from "../../models/Player.js";
 import { UserLoginDto } from "../../models/Dto/UserLoginDto.js";
 import { PlayerRegisterDto } from "../../models/Dto/PlayerRegisterDto.js";
 import { jwtToken, navigateTo } from "../index.js";
+import { setCookie } from "./cookieHelper.js";
 
 function checkInput (){
     const inputFields = document.querySelectorAll("input");
@@ -42,9 +43,9 @@ const loginVerify = async () => {
         return response.json(); 
     }).catch(err => console.log(err));
 
-    document.cookie = `email=${encodeURI(userData.email)}; SameSite=None; Secure`;
-    document.cookie = `username=${encodeURI(userData.username)}; SameSite=None; Secure`;
-
+    setCookie("userData", JSON.stringify(userData), 1);
+    
+    alert("Logged in");
     navigateTo("/");
 
 }
@@ -76,12 +77,13 @@ const registerVerify = async () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser)
-    });
+    }).then((response) => {
+        return response.json();
+    }).catch(err => console.log(err));
         
-    let data = await response.json();
-    jwtToken.token = data.token;
-
-    let userData = await fetch(`/api/Player/Find/${user.email}`, {
+    jwtToken.token = response.token;
+    
+    let userData = await fetch(`/api/Player/Find/${newUser.email}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -91,10 +93,9 @@ const registerVerify = async () => {
         return response.json(); 
     }).catch(err => console.log(err));
 
-    document.cookie = `email=${encodeURI(userData.email)}; SameSite=None; Secure`;
-    document.cookie = `username=${encodeURI(userData.username)}; SameSite=None; Secure`;
-    
-    
+    setCookie("userData", JSON.stringify(userData), 1);
+
+    alert("Registered succesfully");
     navigateTo("/");
 }
 
@@ -102,8 +103,6 @@ function removeEventListeners(){
     window.removeEventListener("submit", loginVerify);
     window.removeEventListener("submit", registerVerify);
 }
-
-
 
 export {
     loginVerify,

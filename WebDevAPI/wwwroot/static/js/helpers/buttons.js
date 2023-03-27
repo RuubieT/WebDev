@@ -86,6 +86,7 @@ function createGameButtons(){
         createbutton.addEventListener("click", () => {
             var deck = createGame();
 
+            console.log(deck);
             
             //navigateTo('/table');
         })

@@ -46,7 +46,7 @@ namespace WebDevAPI.Controllers
             return Ok(getPlayers) ;
         }
 
-        // GET: api/player/{email}
+        // GET: api/player/Find/{email}
         [HttpGet("Find/{email}")]
         public async Task<ActionResult<GetPlayerDto>> GetPlayer(string email)
         {
