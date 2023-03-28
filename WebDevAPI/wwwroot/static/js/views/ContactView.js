@@ -1,12 +1,5 @@
-import { Contactform } from "../../models/Contactform.js";
 import AbstractView from "./AbstractView.js";
-import { deleteGameButtons, deletePlayButton, deletePokerButtons } from "../helpers/buttons.js";
-
-window.addEventListener('load', function () {
-    console.log("loaded Contact.js");
-}); 
-
-const uri = 'api/Contactform';
+import { createSubmitFormButton } from "../helpers/buttons.js";
 
 
 export default class extends AbstractView
@@ -15,104 +8,64 @@ export default class extends AbstractView
         super(params);
         this.setTitle("Contact");
 
-        document.getElementById("contact").style.display = 'block';
-
-        deletePlayButton();
-        deleteGameButtons();
-        deletePokerButtons();
-
-        window.addEventListener("input", (event) => { checkInput(event.target.id) });
-
-        var button = document.getElementById("submit");
-        button.onclick = async function(){
-            const inputFields = document.querySelectorAll("input");
-            const validInputs = Array.from(inputFields).filter(input => input.value !== "");
-            const contactForm = new Contactform();
-            validInputs.forEach(input =>{
-                switch(input.id){
-                    case "name":
-                        contactForm.name = input.value;
-                        break;
-                    case "email":
-                        contactForm.email = input.value;
-                        break;
-                    case "subject":
-                        contactForm.subject = input.value;
-                        break;
-                    case "description":
-                        contactForm.description = input.value;
-                        break;
-                }
-            })
-
-            
-            let response = await fetch(uri, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({Name: contactForm.name, Email: contactForm.email, Subject: contactForm.subject, Description: contactForm.description})
-            });
-                
-            let data = await response.json();
-            alert(JSON.stringify(data));
-            
-        };
+        //window.addEventListener("input", (event) => { checkInput(event.target.id) });
+  
+    }
+    
+    assignCaptchaDiv(){
+        var catpcha = document.getElementById("contact");
+        return catpcha.innerHTML;
     }
 
     async getHtml() {
         return `
-        <section class="contact">
+        <div class="wrapper register">
+            <div class="form-box contact">
+                <h2>Contact Ruben</h2>
+                <form id="Contactform" action="" method="post">
+                    
+                    <div class="input-box">
+                        <input type="text" name="name" id="name" required>
+                        <label for="name">Name</label>
+                        <span class="error" aria-live="polite"></span>
+                    </div>
+                    <div class="input-box">
+                        <input type="email" name="email" id="email" minlength="8" required>
+                        <label for="email">Email</label>
+                        <span class="error" aria-live="polite"></span>
+                    </div> 
+                    <div class="input-box">
+                        <input type="text" name="subject" id="subject" maxlength="200">
+                        <label for="subject">Subject</label>
+                        <span class="error" aria-live="polite"></span>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" name="description" id="description" maxlength="600">
+                        <label for="description">Description</label>
+                        <span class="error" aria-live="polite"></span>
+                    </div>
+                    <div class="remember-forgot" id="captcha">
+                        ${this.assignCaptchaDiv()}
+                    </div>
+                        ${createSubmitFormButton().innerHTML}
+                </form>
+            </div>
+        </div>
       
-        <h1>Contact Ruben Tharner</h1>
-    
-        <form action="" method="post" class="form-contactpagina" onsubmit="return submitUserForm();">
-    
-          <div class="form-contactpagina__inputelement fx-col">
-            <label for="name">Naam: </label>
-            <input type="text" name="name" id="name">
-            <span class="error" aria-live="polite"></span>
-          </div>
-    
-          <div class="form-contactpagina__inputelement fx-col">
-              <label for="email">Emailadres: </label>
-              <input type="email" name="email" id="email" minlength="8">
-              <span class="error" aria-live="polite"></span>
-          </div>
-    
-          <div class="form-contactpagina__inputelement fx-col">
-            <label for="subject">Onderwerp: </label>
-            <input type="text" name="subject" id="subject" maxlength="200">
-            <span class="error" aria-live="polite"></span>
-          </div>
-    
-          <div class="form-contactpagina__inputelement fx-col">
-            <label for="description">Beschrijving: </label>
-            <input type="text" name="description" id="description" maxlength="600">
-            <span class="error" aria-live="polite"></span>
-          </div>
-        </form> 
-      </section>
-      
-      <script>
-        var recaptcha_response = '';
-        function submitUserForm() {
-            console.log("Submitted");
-         }
-        </script>
         `;
     }
 
 }
 
 function checkInput(field) {
-    
-    const html = document.getElementById(field)
-    const errorField = document.querySelector("#" + html.id + " + span.error");
-    html.addEventListener("input", (event) => {
-        if (html.validity.valid && html.value != "") {
+    const input = document.getElementById(field);
+    input.addEventListener("input", (event) => {
+        const errorField = document.querySelector("#" + input.id + " + span.error");
+        if (input.validity.valid && input.value != "") {
             errorField.textContent = "";
             errorField.className = "error";
         } else {
-            showError(html, errorField);
+            showError(input, errorField);
         }
     })
 

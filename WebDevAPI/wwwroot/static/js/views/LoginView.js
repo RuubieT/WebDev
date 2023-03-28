@@ -1,42 +1,48 @@
+import { UserLoginDto } from "../../models/Dto/UserLoginDto.js";
+import { checkInput, loginVerify } from "../helpers/verifyForm.js";
 import AbstractView from "./AbstractView.js";
-import { deletePlayButton, deleteGameButtons, deletePokerButtons } from "../helpers/buttons.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("Login");
-        
-        deletePlayButton();
-        deleteGameButtons();
-        deletePokerButtons();
-
+     
         document.getElementById("contact").style.display = 'none';
 
-        var loginSubmitDiv = document.getElementById("loginSubmit");
-        if (loginSubmitDiv) {     
-            const btn = document.createElement("button");
-            btn.innerText = "Login";
-            btn.id = "loginSubmitButton";
-            btn.addEventListener("click", () => {
-                console.log("Logging in")
-            })
-            loginSubmitDiv.appendChild(btn);
-        }
-       
+        window.addEventListener("submit", loginVerify)
     }   
 
-    hey() {
-        console.log("Hey");
-    }
-
     async getHtml() {
-        return `
-            <div class="form">
-                <form method='post' action='/api/User/Create'> 
-                <input type='text' id='textid' name='subdomain' value='' /> 
-                <input type='submit' id='button2' name='submit2' value='submit'/>
+        return`
+        <div class="wrapper">
+            <div class="form-box login">
+                <h2>Login</h2>
+                <form id="Login" action="javascript:void(0);">
+                    <div class="input-box">
+                        <span class="icon">
+                            <ion-icon name="mail"></ion-icon>
+                        </span>
+                        <input type="email" id="email" required>
+                        <label>Email</label>
+                    </div>
+                    <div class="input-box">
+                        <span class="icon">
+                            <ion-icon name="lock-closed"></ion-icon>
+                        </span>
+                        <input type="password" id="password" required>
+                        <label>Password</label>
+                    </div>
+                    <div class="remember-forgot">
+
+                        <a href="/forgotpw" data-link>Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn" id="btn">Login</button>
+                    <div class="login-register">
+                        <p>Don't have an account?<a href="/register" class="register-link" data-link>Register</a>
+                    </div>
                 </form>
             </div>
+        </div>
         `;
     }
 

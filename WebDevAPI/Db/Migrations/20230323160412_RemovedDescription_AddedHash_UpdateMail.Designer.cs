@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebDevAPI.Db;
 
@@ -11,9 +12,11 @@ using WebDevAPI.Db;
 namespace WebDevAPI.Migrations
 {
     [DbContext(typeof(WebDevDbContext))]
-    partial class WebDevDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230323160412_RemovedDescription_AddedHash_UpdateMail")]
+    partial class RemovedDescription_AddedHash_UpdateMail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,33 @@ namespace WebDevAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.Card", b =>
+                {
+                    b.Property<Guid>("CardId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MySuit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MyValue")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("PlayerHandId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PokerTableId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CardId");
+
+                    b.HasIndex("PlayerHandId");
+
+                    b.HasIndex("PokerTableId");
+
+                    b.ToTable("Cards");
+                });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.Contactform", b =>
                 {
@@ -47,6 +77,23 @@ namespace WebDevAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contactforms");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.PlayerHand", b =>
+                {
+                    b.Property<Guid>("PlayerHandId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PlayerHandId");
+
+                    b.HasIndex("PlayerId")
+                        .IsUnique();
+
+                    b.ToTable("PlayerHands");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.PokerTable", b =>
@@ -126,6 +173,34 @@ namespace WebDevAPI.Migrations
                     b.HasDiscriminator().HasValue("Player");
                 });
 
+            modelBuilder.Entity("WebDevAPI.Db.Models.Card", b =>
+                {
+                    b.HasOne("WebDevAPI.Db.Models.PlayerHand", "PlayerHand")
+                        .WithMany("Cards")
+                        .HasForeignKey("PlayerHandId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("WebDevAPI.Db.Models.PokerTable", "PokerTable")
+                        .WithMany("Cards")
+                        .HasForeignKey("PokerTableId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("PlayerHand");
+
+                    b.Navigation("PokerTable");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.PlayerHand", b =>
+                {
+                    b.HasOne("WebDevAPI.Db.Models.Player", "Player")
+                        .WithOne("PlayerHand")
+                        .HasForeignKey("WebDevAPI.Db.Models.PlayerHand", "PlayerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Player");
+                });
+
             modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>
                 {
                     b.HasOne("WebDevAPI.Db.Models.PokerTable", "PokerTable")
@@ -137,9 +212,21 @@ namespace WebDevAPI.Migrations
                     b.Navigation("PokerTable");
                 });
 
+            modelBuilder.Entity("WebDevAPI.Db.Models.PlayerHand", b =>
+                {
+                    b.Navigation("Cards");
+                });
+
             modelBuilder.Entity("WebDevAPI.Db.Models.PokerTable", b =>
                 {
+                    b.Navigation("Cards");
+
                     b.Navigation("Players");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>
+                {
+                    b.Navigation("PlayerHand");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,14 +15,14 @@ using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/User")]
     [ApiController]
     public class UserController : BaseController
     {
 
-        public UserController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository)
+        public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository,
+                IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, pokerTableRepository)
         {
 
         }
@@ -43,86 +43,8 @@ namespace WebDevAPI.Controllers
                 }
             }
             return Ok(getUsers) ;
-
         }
 
-
-        // GET: api/User/Leaderboard
-        [AllowAnonymous]
-        [HttpGet("Leaderboard")]
-        public async Task<ActionResult<IEnumerable<GetLeaderBoardDto>>> GetLeaderboard()
-        {
-            Console.WriteLine(this.HttpContext.User);
-            var Players = await PlayerRepository.GetAll();
-            var getPlayers = new List<GetLeaderBoardDto>();
-            if (Players == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                foreach (var Player in Players)
-                {
-                    getPlayers.Add(Player.GetLeaderBoardDto());
-                }
-            }
-            return Ok(getPlayers.OrderByDescending(p => p.Chips));
-        }
-
-
-        // GET: api/User/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GetUserDto>> GetUser(Guid id)
-        {
-            var users = await UserRepository.GetAll();
-          if (users == null)
-          {
-              return NotFound();
-          }
-            var user = await UserRepository.Get(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user.GetUserDto();
-        }
-
-        // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<ActionResult<GetUserDto>> PutUser(Guid id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-            var getUser = await UserRepository.Get(id);
-
-            if (getUser == null)
-            {
-                return NotFound();
-            }
-
-            await UserRepository.Update(getUser);
-
-             return getUser.GetUserDto();
-        }
-
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<GetUserDto>> PostUser(User user)
-        {
-          if (UserRepository.GetAll() == null)
-          {
-              return Problem("Entity set 'WebDevDbContext.Users'  is null.");
-          }
-            await UserRepository.Create(user);
-
-            return user.GetUserDto();
-        }
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
@@ -136,17 +58,6 @@ namespace WebDevAPI.Controllers
             await UserRepository.Delete(user);
 
             return NoContent();
-        }
-
-        private bool UserExists(Guid id)
-        {
-            return (UserRepository.TryFind(e => e.Id == id)).Result.succes;
-        }
-
-        [HttpPost("Create")]
-        public async Task<ActionResult<string>> CreateUser()
-        {
-            return Ok("NICE");
         }
     }
 }

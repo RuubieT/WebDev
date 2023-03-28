@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,14 +15,14 @@ using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Controllers
 {
-    [Route("api/player")]
+    [Route("api/Player")]
     [ApiController]
+    [Authorize(Roles ="User")]
     public class PlayerController : BaseController
     {
 
-        public PlayerController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, IUserRepository userRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository)
+        public PlayerController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository,
+                IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, pokerTableRepository)
         {
 
         }
@@ -44,8 +45,18 @@ namespace WebDevAPI.Controllers
             return Ok(getPlayers) ;
         }
 
+        // GET: api/player/Find/{email}
+        [HttpGet("Find/{email}")]
+        public async Task<ActionResult<GetPlayerDto>> GetPlayer(string email)
+        {
+            var data = await PlayerRepository.TryFind(u => u.Email == email);
+            if(data.result == null) return NotFound();
+
+            return data.result.GetPlayerDto();
+        }
+
         // GET: api/Player/Leaderboard
-        [HttpGet("Leaderboard")]
+        [HttpGet("Leaderboard"), AllowAnonymous]
         public async Task<ActionResult<IEnumerable<GetLeaderBoardDto>>> GetLeaderboard()
         {
             Console.WriteLine(this.HttpContext.User);
@@ -63,79 +74,6 @@ namespace WebDevAPI.Controllers
                 }
             }
             return Ok(getPlayers.OrderByDescending(p => p.Chips));
-        }
-
-        // GET: api/player/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GetPlayerDto>> GetPlayer(Guid id)
-        {
-            var Players = await PlayerRepository.GetAll();
-          if (Players == null)
-          {
-              return NotFound();
-          }
-            var Player = await PlayerRepository.Get(id);
-
-            if (Player == null)
-            {
-                return NotFound();
-            }
-
-            return Player.GetPlayerDto();
-        }
-
-        // PUT: api/player/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<ActionResult<GetPlayerDto>> PutPlayer(Guid id, Player Player)
-        {
-            if (id != Player.Id)
-            {
-                return BadRequest();
-            }
-            var getPlayer = await PlayerRepository.Get(id);
-
-            if (getPlayer == null)
-            {
-                return NotFound();
-            }
-
-            await PlayerRepository.Update(getPlayer);
-
-             return getPlayer.GetPlayerDto();
-        }
-
-        // POST: api/Player
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<GetPlayerDto>> PostPlayer(Player Player)
-        {
-          if (PlayerRepository.GetAll() == null)
-          {
-              return Problem("Entity set 'WebDevDbContext.Players'  is null.");
-          }
-            await PlayerRepository.Create(Player);
-
-            return Player.GetPlayerDto();
-        }
-
-        // DELETE: api/Player/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlayer(Guid id)
-        {
-            var Player = await PlayerRepository.Get(id);
-            if (Player == null)
-            {
-                return NotFound();
-            }
-            await PlayerRepository.Delete(Player);
-
-            return NoContent();
-        }
-
-        private bool PlayerExists(Guid id)
-        {
-            return (PlayerRepository.TryFind(e => e.Id == id)).Result.succes;
         }
     }
 }

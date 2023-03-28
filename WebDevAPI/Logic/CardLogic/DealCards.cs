@@ -1,4 +1,5 @@
-﻿using WebDevAPI.Db.Models;
+﻿using NuGet.Packaging;
+using WebDevAPI.Db.Models;
 
 namespace WebDevAPI.Logic.CardLogic
 {
@@ -8,8 +9,6 @@ namespace WebDevAPI.Logic.CardLogic
         private Card[] sortedHand;
         private Card[] bordCards;
 
-        private DeckOfCards deck = new();
-
         public DealCards()
         {
             playerHand= new Card[2];
@@ -17,15 +16,30 @@ namespace WebDevAPI.Logic.CardLogic
             bordCards = new Card[5];
         }
 
-        public void Deal()
+        public ICollection<PlayerHand> Deal(ICollection<Player> players, DeckOfCards deck)
         {
-            deck.SetUpDeck();
-            GetHand();
-            SortCards();;
-            EvaluateHands();
+            var playerHands = new List<PlayerHand>();
+
+            foreach(var p in players)
+            { 
+                playerHand[0] = deck.getDeck.Dequeue();
+                playerHand[1] = deck.getDeck.Dequeue();
+                
+                playerHands.Add(new PlayerHand
+                {
+                    PlayerId = p.Id,
+                    Cards = playerHand,
+                });
+  
+                
+            }
+            return playerHands;
+            //GetHand();
+            //SortCards();
+            //EvaluateHands();
         }
 
-        public void GetHand()
+     /*   public void GetHand()
         {
             for(int i =0; i< 2; i++)
             {
@@ -33,7 +47,7 @@ namespace WebDevAPI.Logic.CardLogic
             }
 
         }
-
+     */
         public void SortCards()
         {
             var queryPlayer = from hand in playerHand

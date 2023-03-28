@@ -46,13 +46,6 @@ namespace WebDevAPI.Db.Seeders
                     "email3@outlook.com",
                 };
 
-                var descriptionList = new List<string>
-                {
-                    "Testbeschrijving",
-                    "Even een leuke beschrijving verzinnen",
-                    "Zie hier mijn beschijving"
-                };
-
                 var passwordList = new List<string>
                 {
                     "Password123",
@@ -76,8 +69,7 @@ namespace WebDevAPI.Db.Seeders
                         FirstName = firstnames[rand.Next(0, firstnames.Count)],
                         LastName = lastnames[rand.Next(0, lastnames.Count)],
                         Email = emails[rand.Next(0, emails.Count)],
-                        Password = passwordList[rand.Next(0, passwordList.Count)],
-                        Description = descriptionList[rand.Next(0, descriptionList.Count)],
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordList[rand.Next(0, passwordList.Count)]),
                     };
                     users.Add(user);
                 }
@@ -91,8 +83,7 @@ namespace WebDevAPI.Db.Seeders
                         FirstName = firstnames[rand.Next(0, firstnames.Count)],
                         LastName = lastnames[rand.Next(0, lastnames.Count)],
                         Email = emails[rand.Next(0, emails.Count)],
-                        Password = passwordList[rand.Next(0, passwordList.Count)],
-                        Description = descriptionList[rand.Next(0, descriptionList.Count)],
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordList[rand.Next(0, passwordList.Count)]),
                         Username = usernameList[rand.Next(0, usernameList.Count)],
                         Chips = rand.Next(0, 15000),
                         PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
@@ -100,19 +91,7 @@ namespace WebDevAPI.Db.Seeders
                     players.Add(player);
                 }
 
-                var deck = new DeckOfCards();
-                deck.SetUpDeck(); //deck.getDeck returns 52 
-                var cards = new List<Card>();
-                for(int i = 0; i < deck.getDeck.Length; i++) 
-                {
-                    var card = new Card
-                    {
-                        CardId = deck.getDeck[i].CardId,
-                        MySuit = deck.getDeck[i].MySuit,
-                        MyValue = deck.getDeck[i].MyValue,
-                    };
-                    cards.Add(card);
-                }
+        
 
                 #region Setup nullable field
                 context.PokerTables.Add(new PokerTable
@@ -129,24 +108,17 @@ namespace WebDevAPI.Db.Seeders
                     FirstName = firstnames[rand.Next(0, firstnames.Count)],
                     LastName = lastnames[rand.Next(0, lastnames.Count)],
                     Email = emails[rand.Next(0, emails.Count)],
-                    Password = passwordList[rand.Next(0, passwordList.Count)],
-                    Description = descriptionList[rand.Next(0, descriptionList.Count)],
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordList[rand.Next(0, passwordList.Count)]),
                     Username = usernameList[rand.Next(0, usernameList.Count)],
                     Chips = rand.Next(0, 15000),
                     PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
                 });
-               
-                context.PlayerHands.Add(new PlayerHand
-                {
-                    PlayerHandId = new Guid(),
-                    PlayerId = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
-                });
+              
 #endregion
 
 
                 context.Users.AddRange(users);
                 context.Users.AddRange(players);
-                context.Cards.AddRange(cards);
                 context.SaveChanges();
             }
         }

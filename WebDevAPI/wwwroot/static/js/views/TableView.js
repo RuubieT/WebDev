@@ -6,8 +6,6 @@ export default class extends AbstractView {
         super(params);
         this.setTitle("Table");
         
-        deletePlayButton();
-        deleteGameButtons();
         createPokerButtons();
 
         document.getElementById("contact").style.display = 'none';
@@ -18,12 +16,8 @@ export default class extends AbstractView {
     async getHtml() {
         return `
         <h1>Table</h1>
-        <!--<div style="background-image: url('/static/images/Dashboard_background.jpg'); background-size: cover; height:750px">
-            
+    
 
-                 
-        
-        </div>-->
         `;
     }
 
