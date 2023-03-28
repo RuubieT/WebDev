@@ -24,8 +24,8 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> CreateGame(PostCreatePokerTableDto creator)
         {
             var result = PlayerRepository.TryFind(u => u.Username == creator.Username).Result;
-
             if (result.result == null || !result.succes) return NotFound("No matching player found");
+            if (result.result.PokerTableId != null) return BadRequest("Already in a game");
 
             ICollection<Player> players = new List<Player>
             {
@@ -56,8 +56,8 @@ namespace WebDevAPI.Controllers
         [HttpGet("Start/{pokertableId}")]
         public async Task<ActionResult<GetPokerTableDto>> StartGame(Guid pokertableId)
         {
-            var deck = new DeckOfCards();
-            deck.SetUpDeck();
+            var cards = await CardRepository.GetAll();
+            var deck = new Queue<Card>((IEnumerable<Card>)cards);
 
             var pokertable = await PokerTableRepository.Get(pokertableId);
             if (pokertable == null) return NotFound("No pokertable found!");
@@ -69,15 +69,7 @@ namespace WebDevAPI.Controllers
             List<PlayerHand> playerHands = (List<PlayerHand>)dealCards.Deal(players, deck);
             foreach (var hand in playerHands)
             {
-                foreach (var player in players)
-                {
-                    if (hand.PlayerId == player.Id)
-                    {
-                        player.PlayerHand = hand;
-                        player.PokerTable = pokertable;
-                        await PlayerRepository.Update(player);
-                    }
-                }
+                await PlayerHandRepository.Create(hand);
             }
             return Ok(pokertable.GetPokerTableDto());
         }

@@ -23,10 +23,6 @@ namespace WebDevAPI.Db.Models
         public SUIT MySuit { get; set; }
         public VALUE MyValue { get; set; }
 
-
-        public Guid? PlayerHandId { get; set; }
-        public virtual PlayerHand PlayerHand { get; set; }
-
         public GetCardDto GetCardDto()
         {
             return new()

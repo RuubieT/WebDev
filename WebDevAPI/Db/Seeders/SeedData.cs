@@ -123,10 +123,9 @@ namespace WebDevAPI.Db.Seeders
                 var deck = new DeckOfCards();
                 deck.SetUpDeck(); //deck.getDeck returns 52 
                 var cards = new List<Card>();
-                for (int i = 0; i < deck.getDeck.Count; i++)
+                for (int i = 0; i < 52; i++)
                 {
                     var card = deck.getDeck.Dequeue();
-                    card.PlayerHand = context.PlayerHands.First();
                     cards.Add(card);
                 }
 

@@ -44,7 +44,6 @@ namespace WebDevAPI.Controllers
                 LastName = request.LastName,
                 Username = request.Username,
                 Email = request.Email,
-                PokerTableId = PokerTableRepository.GetAll().Result[0].PokerTableId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
 

@@ -21,11 +21,6 @@ namespace WebDevAPI.Db
                 .HasOne(b => b.PlayerHand)
                 .WithOne(i => i.Player)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Card>()
-                .HasOne(b => b.PlayerHand)
-                .WithMany(i => i.Cards)
-                .OnDelete(DeleteBehavior.NoAction);
         }
         public DbSet<Contactform> Contactforms { get; set; }
         public DbSet<User> Users { get; set; }

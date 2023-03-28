@@ -16,22 +16,23 @@ namespace WebDevAPI.Logic.CardLogic
             bordCards = new Card[5];
         }
 
-        public ICollection<PlayerHand> Deal(ICollection<Player> players, DeckOfCards deck)
+        public ICollection<PlayerHand> Deal(ICollection<Player> players, Queue<Card> deck)
         {
             var playerHands = new List<PlayerHand>();
 
             foreach(var p in players)
-            { 
-                playerHand[0] = deck.getDeck.Dequeue();
-                playerHand[1] = deck.getDeck.Dequeue();
-                
+            {
+                var firstCard = deck.Dequeue();
+                var secondCard = deck.Dequeue();
+
                 playerHands.Add(new PlayerHand
                 {
                     PlayerId = p.Id,
-                    Cards = playerHand,
-                });
-  
-                
+                    FirstCard = firstCard,
+                    FirstCardId = firstCard.CardId,
+                    SecondCard = secondCard,
+                    SecondCardId = secondCard.CardId
+                });  
             }
             return playerHands;
             //GetHand();

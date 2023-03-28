@@ -85,7 +85,6 @@ function createGameButtons(){
         createbutton.dataset["link"] = "";
         createbutton.addEventListener("click", async () => {
             await createGame();
-            await startGame();
             
             //navigateTo('/table');
         })
@@ -93,8 +92,8 @@ function createGameButtons(){
         const joinbutton = createCustomButtons("joinButton", "Join");
         joinbutton.classList.add("game");
         joinbutton.dataset["link"] = "";
-        joinbutton.addEventListener("click", () => {
-           console.log("Join table?")
+        joinbutton.addEventListener("click", async () => {
+            await startGame();
         })
         
 

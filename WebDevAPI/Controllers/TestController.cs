@@ -28,8 +28,9 @@ namespace WebDevAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            var users = await PlayerRepository.TryFindAll(e => e.PokerTableId == new Guid("d2a9fc93-e678-469f-f77b-08db2f741f61"));
-            return Ok(users);
+            var cards = await PlayerHandRepository.GetAll();
+
+            return Ok(cards);
 
         }
 
@@ -38,6 +39,13 @@ namespace WebDevAPI.Controllers
         {
             var users = await PlayerRepository.GetAll();
             return Ok(users);
+        }
+
+        [HttpGet("cards")]
+        public async Task<ActionResult> GetCards()
+        {
+            var cards = await CardRepository.GetAll();
+            return Ok(cards);
         }
 
         [HttpGet("pokertables")]
