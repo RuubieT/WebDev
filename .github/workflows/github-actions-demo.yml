@@ -1,39 +1,25 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+on: 
+  push:
+    branches:
+      - development
 env:
   SERVER_IP: <server-ip>
   USERNAME: <username>
   REMOTE_DIRECTORY: <remote_directory>
 jobs:
-  Explore-GitHub-Actions:
+  web-deploy:
+    name: 🚀 Deploy Website Every Commit
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
+    - name: 🚚 Get Latest Code
       uses: actions/checkout@v3
-    - name: Build .NET App
-      run: dotnet build
-    - name: Publish application
-      run: dotnet publish -c Release -o publish/
-    - name: Copy files to server
-      uses: appleboy/scp-action@main
-      with: 
-            host: ${{ env.SERVER_IP }}
-            usernmae: ${{ env.USERNAME }}
-            key: ${{ secrets.SERVER_KEY }}
-            source: publish/
-            target: ${{ env.REMOTE_DIRECTORY }}
+    
+    - name: 📂 Sync Files
+      uses: SamKirkland/web-deploy@v1
+      with:
+        target-server: example.com
+        remote-user: username
+        private-ssh-key: ${{ secrets.SSH_KEY }}
+        destination-path: ~/destinationFolder/
