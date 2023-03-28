@@ -18,5 +18,8 @@ namespace WebDevAPI.Db.Repositories.Contract
 
         public Task<(bool succes, T? result)> TryFind(Func<T, bool> predicate);
 
+        public Task<IList<T>> TryFindAll(Func<T, bool> predicate);
+
+
     }
 }

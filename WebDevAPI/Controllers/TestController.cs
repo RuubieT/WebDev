@@ -18,29 +18,41 @@ namespace WebDevAPI.Controllers
     {
         private Auth auth;
 
-        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository,
-        IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, pokerTableRepository)
+        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+                  IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+                  playerHandRepository, pokerTableRepository)
         {
             auth = new Auth(config);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
+        public async Task<ActionResult> test()
+        {
+            var users = await PlayerRepository.TryFindAll(e => e.PokerTableId == new Guid("d2a9fc93-e678-469f-f77b-08db2f741f61"));
+            return Ok(users);
+
+        }
+
+        [HttpGet("user")]
+        public async Task<ActionResult> GetUsers()
         {
             var users = await PlayerRepository.GetAll();
-            var getUsers = new List<GetUserDto>();
-            if (users == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                foreach (var user in users)
-                {
-                    getUsers.Add(user.GetUserDto());
-                }
-            }
-            return Ok(getUsers);
+            return Ok(users);
+        }
+
+        [HttpGet("pokertables")]
+        public async Task<ActionResult> GetPokertables()
+        {
+            var pokertables = await PokerTableRepository.GetAll();
+            return Ok(pokertables);
+        }
+
+        [HttpDelete("pokertable/{id}")]
+        public async Task<ActionResult> DeletePokertable (Guid id)
+        {
+            var table = await PokerTableRepository.Get(id);
+            await PokerTableRepository.Delete(table);
+            return Ok("Deleted pokertable wtih id: " + id);
         }
 
         [HttpGet("token")]

@@ -53,5 +53,10 @@ namespace WebDevAPI.Db.Repositories
             var result = succes ? query.First() : null;
             return (succes, result);
         }
+
+        public async Task<IList<T>> TryFindAll(Func<T, bool> predicate)
+        {
+            return _dbSet.Where(predicate).ToList();
+        }
     }
 }

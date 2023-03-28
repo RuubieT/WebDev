@@ -90,9 +90,7 @@ namespace WebDevAPI.Db.Seeders
                     };
                     players.Add(player);
                 }
-
-        
-
+                
                 #region Setup nullable field
                 context.PokerTables.Add(new PokerTable
                 {
@@ -113,10 +111,26 @@ namespace WebDevAPI.Db.Seeders
                     Chips = rand.Next(0, 15000),
                     PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
                 });
-              
-#endregion
 
+                context.PlayerHands.Add(new PlayerHand
+                {
+                    PlayerHandId = new Guid("DB8289A8-3382-429B-B915-31989D6F7FC8"),
+                    PlayerId = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
+                });
+                context.SaveChanges();
+                #endregion
 
+                var deck = new DeckOfCards();
+                deck.SetUpDeck(); //deck.getDeck returns 52 
+                var cards = new List<Card>();
+                for (int i = 0; i < deck.getDeck.Count; i++)
+                {
+                    var card = deck.getDeck.Dequeue();
+                    card.PlayerHand = context.PlayerHands.First();
+                    cards.Add(card);
+                }
+
+                context.Cards.AddRange(cards);
                 context.Users.AddRange(users);
                 context.Users.AddRange(players);
                 context.SaveChanges();

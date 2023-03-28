@@ -1,30 +1,34 @@
 import { Game } from "../../models/Game.js";
 import { jwtToken } from "../index.js";
-import { getCookie } from "./cookieHelper.js";
+import { CreatePokerTableDto } from "../../models/Dto/PokerTable/CreatePokerTableDto.js";
+import { StartPokerGameDto } from "../../models/Dto/PokerTable/StartPokerGameDto.js";
+import { getCookie, setCookie } from "./cookieHelper.js";
+import { getData, postData } from "./apiCallTemplates.js";
 
 export let game = new Game();
+export let startPokerTable = new StartPokerGameDto();
 
 async function createGame(){
 
-    const data = JSON.parse(getCookie("userData"));
-    const createdata = {
-        username: data.username,
-        email: data.email
+    const username = getCookie("username");
+    const createData = new CreatePokerTableDto(username);
+
+    game = await postData('api/Pokertable/Create', createData);
+
+    if (game) {
+        setCookie("pokerTableId", game.id, 1);
     }
+}
 
-    game = await fetch('/api/Pokertable/Create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(createdata)
-    }).then((response)=>{
-        return response.json(); 
-    }).catch(err => console.log(err));
+async function startGame() {
+    const table = getCookie("pokerTableId");
 
-    console.log(game);
+    let startedGame = await getData(`/api/Pokertable/Start/${table}`);
+    console.log(startedGame);
 
-       
 }
 
 export {
     createGame,
+    startGame
 }

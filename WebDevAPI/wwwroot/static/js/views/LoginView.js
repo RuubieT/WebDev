@@ -1,4 +1,4 @@
-import { UserLoginDto } from "../../models/Dto/UserLoginDto.js";
+import { UserLoginDto } from "../../models/Dto/Auth/UserLoginDto.js";
 import { checkInput, loginVerify } from "../helpers/verifyForm.js";
 import AbstractView from "./AbstractView.js";
 
