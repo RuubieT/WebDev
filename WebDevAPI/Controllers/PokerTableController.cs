@@ -56,7 +56,7 @@ namespace WebDevAPI.Controllers
             return Ok("Join a game");
         }
 
-        [HttpGet("GetPlayers/{pokertableId}")]
+        [HttpGet("Players/{pokertableId}")]
         public async Task<ActionResult<ICollection<Player>>> GetPlayers(Guid pokertableId)
         {
             var pokertable = await PokerTableRepository.Get(pokertableId);
