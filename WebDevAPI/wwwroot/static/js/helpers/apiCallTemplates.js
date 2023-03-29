@@ -5,7 +5,7 @@
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data), 
-    });
+    }).catch(e => console.log(e));;
     return response.json(); 
 }
 
@@ -17,7 +17,7 @@ async function postAuthorizedData(url = "", data, token) {
             'Authorization': 'bearer ' + token
         },
         body: JSON.stringify(data),
-    });
+    }).catch(e => console.log(e));;
     return response.json();
 }
 
@@ -27,7 +27,7 @@ async function getData(url = "") {
         headers: {
             'Content-Type': 'application/json',
         },
-    });
+    }).catch(e => console.log(e));;
     return response.json();
 }
 
@@ -38,7 +38,7 @@ async function getAuthorizedData(url = "", token) {
             'Content-Type': 'application/json',
             'Authorization': 'bearer ' + token
         },
-    });
+    }).catch(e => console.log(e));;
     return response.json();
 }
 
@@ -49,7 +49,7 @@ async function putData(url = "", data) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-    });
+    }).catch(e => console.log(e));;
     return response.json();
 }
 
@@ -61,7 +61,7 @@ async function putAuthorizedData(url = "", data, token) {
             'Authorization': 'bearer ' + token
         },
         body: JSON.stringify(data),
-    });
+    }).catch(e => console.log(e));;
     return response.json();
 }
 

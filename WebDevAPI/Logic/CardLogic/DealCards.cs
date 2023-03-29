@@ -40,6 +40,17 @@ namespace WebDevAPI.Logic.CardLogic
             //EvaluateHands();
         }
 
+        public ICollection<Card> TableCards(Queue<Card> deck)
+        {
+            List<Card> tablecards = new List<Card>();
+            for (int i = 0; i < 5; i++)
+            {
+                tablecards.Add(deck.Dequeue());
+            }
+
+            return tablecards;
+        }
+
      /*   public void GetHand()
         {
             for(int i =0; i< 2; i++)

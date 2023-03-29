@@ -8,6 +8,7 @@ using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic;
+using WebDevAPI.Logic.CardLogic;
 
 namespace WebDevAPI.Controllers
 {
@@ -39,6 +40,18 @@ namespace WebDevAPI.Controllers
         {
             var users = await PlayerRepository.GetAll();
             return Ok(users);
+        }
+
+
+        [HttpGet("tablecards")]
+        public async Task<ActionResult> GetTableCards()
+        {
+            var cards = await CardRepository.GetAll();
+            var deck = new Queue<Card>((IEnumerable<Card>)cards);
+            DealCards d = new DealCards();
+            var tablecards = d.TableCards(deck);
+
+            return Ok(tablecards);
         }
 
         [HttpGet("cards")]

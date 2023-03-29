@@ -1,6 +1,6 @@
 import {jwtToken, navigateTo} from '../index.js';
 import { Contactform } from "../../models/Contactform.js";
-import { createGame, startGame } from './gamelogic.js';
+import { createGame, getHand, startGame } from './gamelogic.js';
 
 
 function createSubmitFormButton() {
@@ -85,7 +85,7 @@ function createGameButtons(){
         createbutton.dataset["link"] = "";
         createbutton.addEventListener("click", async () => {
             await createGame();
-            
+            await startGame();
             //navigateTo('/table');
         })
         
@@ -93,7 +93,7 @@ function createGameButtons(){
         joinbutton.classList.add("game");
         joinbutton.dataset["link"] = "";
         joinbutton.addEventListener("click", async () => {
-            await startGame();
+            navigateTo('/table');
         })
         
 

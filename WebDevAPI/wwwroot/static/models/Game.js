@@ -9,10 +9,10 @@ export class Game {
     }
 }
 
-class Card {
+export class Card {
     constructor(suit, value){
         this.suit = suit;
-        this.value = value;
+        this.value = value-2;
     }
 
     get color(){

@@ -18,15 +18,31 @@
 }
 
 .card {
+    height: 70px;
+    width: 50px;
+    border-radius: 5px;
+    display: inline-block;
     position: relative;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    border-radius: .5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 4rem;
+    background-color: white;
+    font-family: "Houschka Rounded";
+}
+
+.card.h1 {
+    font-size: 10px;
+    text-align: center;
+    position: absolute;
+    margin: 0;
+}
+
+.card.h1:first-child {
+    top: 5px;
+    left: 5px;
+}
+
+.card.h1:last-child {
+    bottom: 5px;
+    right: 5px;
+    transform: rotatez(180deg)
 }
 
 .card.red{

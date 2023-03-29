@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebDevAPI.Db.Dto_s.PlayerHand;
 
 namespace WebDevAPI.Db.Models
 {
@@ -17,6 +18,14 @@ namespace WebDevAPI.Db.Models
 
         public Guid PlayerId { get; set; }
         public virtual Player Player { get; set; }
-        
+
+        public GetPlayerHandDto GetPlayerHandDto()
+        {
+            return new()
+            {
+                FirstCard = FirstCard.GetCardDto(),
+                SecondCard = SecondCard.GetCardDto(),
+            };
+        }
     }
 }
