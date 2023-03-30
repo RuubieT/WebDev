@@ -1,27 +1,21 @@
-import AbstractView from "./AbstractView.js";
-import { createPlayButton } from "../helpers/buttons.js";
+import AbstractView from './AbstractView.js';
+import { createPlayButton } from '../helpers/buttons.js';
 
 export default class extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.setTitle("Dashboard");
-    
-        createPlayButton();
+  constructor(params) {
+    super(params);
+    this.setTitle('Dashboard');
 
-        document.getElementById("contact").style.display = 'none';
+    createPlayButton();
+    document.getElementById('contact').style.display = 'none';
+  }
 
-        
-    }   
+  async getHtml() {
+    return `
 
-    async getHtml() {
-        return `
-        <!--<div style="background-image: url('/static/images/Dashboard_background.jpg'); background-size: cover; height:750px">-->
-       
             <h2>Home</h2>
 
        
         `;
-    }
-
+  }
 }
-
