@@ -37,12 +37,29 @@ async function getPlayers() {
 
   let players = await getPokertablePlayers(table);
   if (players) {
-    console.log(players);
+    var playersDiv = document.getElementById('players');
+    if (playersDiv.hasChildNodes) {
+      playersDiv.innerHTML = '';
+    }
+    for (const p in players) {
+      const div = document.createElement('div');
+      div.id = 'player ' + players[p].username;
+      div.innerText = players[p].username;
+      div.classList.add('player', 'player-' + p);
+
+      let playerHand = await getHand(players[p].username);
+      const carddiv = document.createElement('div');
+      carddiv.id = 'cards ' + players[p].username;
+      carddiv.appendChild(playerHand.firstCard.getCardHTML());
+      carddiv.appendChild(playerHand.secondCard.getCardHTML());
+
+      div.appendChild(carddiv);
+      playersDiv.appendChild(div);
+    }
   }
 }
 
-async function getHand() {
-  const username = getCookie('username');
+async function getHand(username) {
   let hand = await getPlayerhand(username);
   if (hand) {
     var firstCard = new Card(
@@ -55,16 +72,6 @@ async function getHand() {
     );
     var playerhand = new PlayerHand(firstCard, secondCard);
 
-    var cardsDiv = document.getElementById('cards');
-    var handDiv = document.getElementById('cards ' + username);
-    if (!handDiv) {
-      const div = document.createElement('div');
-      div.id = 'cards ' + username;
-      div.appendChild(firstCard.getCardHTML());
-      div.appendChild(secondCard.getCardHTML());
-      cardsDiv.appendChild(div);
-    }
-
     return playerhand;
   }
 }
@@ -73,18 +80,15 @@ async function getTableCards() {
   let cards = await getData(`api/test/tablecards`);
   if (cards) {
     var tableCardsDiv = document.getElementById('tableCardsDiv');
-    var tablecards = document.getElementById('tablecards');
-    if (!tablecards) {
-      const div = document.createElement('div');
-      div.id = 'tablecards';
-      for (const i in cards) {
-        var tablecard = new Card(
-          SUITS[cards[i].mySuit],
-          CARD_VALUE_MAP[VALUES[cards[i].myValue]],
-        );
-        div.appendChild(tablecard.getCardHTML());
-      }
-      tableCardsDiv.appendChild(div);
+    if (tableCardsDiv.hasChildNodes) {
+      tableCardsDiv.innerHTML = '';
+    }
+    for (const i in cards) {
+      var tablecard = new Card(
+        SUITS[cards[i].mySuit],
+        CARD_VALUE_MAP[VALUES[cards[i].myValue]],
+      );
+      tableCardsDiv.appendChild(tablecard.getCardHTML());
     }
   }
 }

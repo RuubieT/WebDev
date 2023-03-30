@@ -126,6 +126,7 @@ namespace WebDevAPI.Db.Seeders
                 for (int i = 0; i < 52; i++)
                 {
                     var card = deck.getDeck.Dequeue();
+                    card.InHand = false;
                     cards.Add(card);
                 }
 

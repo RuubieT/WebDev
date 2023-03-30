@@ -46,7 +46,7 @@ namespace WebDevAPI.Controllers
         [HttpGet("tablecards")]
         public async Task<ActionResult> GetTableCards()
         {
-            var cards = await CardRepository.GetAll();
+            var cards = await CardRepository.TryFindAll(c => c.InHand == false);
             var deck = new Queue<Card>((IEnumerable<Card>)cards);
             DealCards d = new DealCards();
             var tablecards = d.TableCards(deck);

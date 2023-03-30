@@ -22,6 +22,7 @@ namespace WebDevAPI.Db.Models
         public Guid CardId { get; set; }
         public SUIT MySuit { get; set; }
         public VALUE MyValue { get; set; }
+        public bool InHand { get; set; }
 
         public GetCardDto GetCardDto()
         {

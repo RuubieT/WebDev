@@ -60,7 +60,6 @@ namespace WebDevAPI.Controllers
         [HttpGet("Leaderboard"), AllowAnonymous]
         public async Task<ActionResult<IEnumerable<GetLeaderBoardDto>>> GetLeaderboard()
         {
-            Console.WriteLine(this.HttpContext.User);
             var Players = await PlayerRepository.GetAll();
             var getPlayers = new List<GetLeaderBoardDto>();
             if (Players == null)

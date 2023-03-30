@@ -80,7 +80,6 @@ function createGameButtons() {
     createbutton.dataset['link'] = '';
     createbutton.addEventListener('click', async () => {
       await createGame();
-      await startGame();
       //navigateTo('/table');
     });
 
@@ -113,8 +112,8 @@ function createPokerButtons() {
     });
 
     const foldButton = createCustomButtons('foldButton', 'Fold');
-    foldButton.addEventListener('click', () => {
-      alert('FOLD');
+    foldButton.addEventListener('click', async () => {
+      await startGame();
     });
 
     const callButton = createCustomButtons('callButton', 'Call');

@@ -90,6 +90,12 @@ namespace WebDevAPI.Controllers
             foreach (var hand in playerHands)
             {
                 await PlayerHandRepository.Create(hand);
+                var card1 = hand.FirstCard;
+                card1.InHand = true;
+                await CardRepository.Update(card1);
+                var card2 = hand.SecondCard;
+                card2.InHand = true;
+                await CardRepository.Update(card2);
             }
             return Ok(pokertable.GetPokerTableDto());
         }
