@@ -44,8 +44,11 @@ async function getPlayers() {
     for (const p in players) {
       const div = document.createElement('div');
       div.id = 'player ' + players[p].username;
-      div.innerText = players[p].username;
       div.classList.add('player', 'player-' + p);
+
+      const playername = document.createElement('div');
+      playername.innerText = players[p].username;
+      playername.classList.add('name');
 
       let playerHand = await getHand(players[p].username);
       const carddiv = document.createElement('div');
@@ -62,6 +65,7 @@ async function getPlayers() {
       chipsDiv.appendChild(chipsCount);
       div.appendChild(chipsDiv);
       div.appendChild(carddiv);
+      div.appendChild(playername);
       playersDiv.appendChild(div);
     }
   }

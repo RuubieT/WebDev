@@ -10,6 +10,8 @@ import Table from './views/TableView.js';
 import { removeEventListeners } from './helpers/verifyForm.js';
 import { Auth } from '../models/Auth.js';
 import { SignalRService } from './helpers/services/signalR.js';
+import { FindUser } from './helpers/services/player.js';
+import { getCookie } from './helpers/cookieHelper.js';
 
 const pathToRegex = (path) =>
   new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '$');
@@ -65,6 +67,17 @@ const router = async () => {
       route: routes[0],
       result: [location.pathname],
     };
+  }
+
+  if (jwtToken.token) {
+    var div = document.getElementById('login');
+    div.classList.add('disabled-link');
+
+    const username = getCookie('username');
+
+    div.innerText = 'Welcome back ' + username;
+
+    document.getElementById('register').hidden = true;
   }
 
   const view = new match.route.view(getParams(match));
