@@ -148,3 +148,21 @@
   left: 25%;
   transform: translatex(-50%) translatey(50%) rotatez(180deg);
 }
+
+.chips {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  top: 100px;
+  right: 0;
+  z-index: 10;
+}
+
+.chips .chips-value {
+  position: absolute;
+  font-family: 'Houschka Rounded';
+  right: -30px;
+  font-weight: bold;
+  font-size: 12px;
+  color: #96e296;
+}

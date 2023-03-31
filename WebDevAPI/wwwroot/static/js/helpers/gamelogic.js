@@ -53,6 +53,14 @@ async function getPlayers() {
       carddiv.appendChild(playerHand.firstCard.getCardHTML());
       carddiv.appendChild(playerHand.secondCard.getCardHTML());
 
+      const chipsDiv = document.createElement('div');
+      chipsDiv.classList.add('chips');
+      const chipsCount = document.createElement('div');
+      chipsCount.classList.add('chips-value');
+      chipsCount.innerText = players[p].chips;
+
+      chipsDiv.appendChild(chipsCount);
+      div.appendChild(chipsDiv);
       div.appendChild(carddiv);
       playersDiv.appendChild(div);
     }
@@ -64,11 +72,11 @@ async function getHand(username) {
   if (hand) {
     var firstCard = new Card(
       SUITS[hand.firstCard.suit],
-      CARD_VALUE_MAP[VALUES[hand.firstCard.value]],
+      VALUES[hand.firstCard.value],
     );
     var secondCard = new Card(
       SUITS[hand.secondCard.suit],
-      CARD_VALUE_MAP[VALUES[hand.secondCard.value]],
+      VALUES[hand.secondCard.value],
     );
     var playerhand = new PlayerHand(firstCard, secondCard);
 

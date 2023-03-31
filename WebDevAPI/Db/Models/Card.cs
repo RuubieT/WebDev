@@ -15,7 +15,7 @@ namespace WebDevAPI.Db.Models
 
         public enum VALUE
         {
-            TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT,
+            TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT,
             NINE, TEN, JACK, QUEEN, KING, ACE
         }
 

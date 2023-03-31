@@ -1,7 +1,5 @@
 export const SUITS = ['♥', '♠', '♦', '♣'];
 export const VALUES = [
-  '0',
-  '0',
   '2',
   '3',
   '4',
