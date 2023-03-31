@@ -31,6 +31,10 @@
     </header>
 
     <div id="app"></div>
+    <div style="text-align: center">
+      <input type="text" id="txtTemperature" />
+      <button id="btnChange" onclick="ChangeWeather();">Change Weather</button>
+    </div>
 
     <section class="contact" style="display: none" id="contact">
       <div
@@ -43,6 +47,7 @@
     </section>
 
     <script type="module" src="/static/js/index.js"></script>
+    <script src="/static/js/pokerSignalR.js"></script>
 
     <!--https://ionic.io/ionicons-->
     <script
