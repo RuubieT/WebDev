@@ -49,7 +49,9 @@ namespace WebDevAPI.Controllers
             var cards = await CardRepository.TryFindAll(c => c.InHand == false);
             var deck = new Queue<Card>((IEnumerable<Card>)cards);
             DealCards d = new DealCards();
-            var tablecards = d.TableCards(deck);
+            DeckOfCards deck2 = new DeckOfCards();
+            deck2.SetUpDeck();
+            var tablecards = d.TableCards(deck2.getDeck);
 
             return Ok(tablecards);
         }

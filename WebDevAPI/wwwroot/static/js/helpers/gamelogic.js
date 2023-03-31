@@ -86,27 +86,11 @@ async function getTableCards() {
     for (const i in cards) {
       var tablecard = new Card(
         SUITS[cards[i].mySuit],
-        CARD_VALUE_MAP[VALUES[cards[i].myValue]],
+        VALUES[cards[i].myValue],
       );
       tableCardsDiv.appendChild(tablecard.getCardHTML());
     }
   }
 }
-
-const CARD_VALUE_MAP = {
-  2: 2,
-  3: 3,
-  4: 4,
-  5: 5,
-  6: 6,
-  7: 7,
-  8: 8,
-  9: 9,
-  10: 10,
-  J: 11,
-  Q: 12,
-  K: 13,
-  A: 14,
-};
 
 export { createGame, startGame, getPlayers, getHand, getTableCards };
