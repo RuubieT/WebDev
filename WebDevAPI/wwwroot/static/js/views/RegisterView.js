@@ -1,20 +1,18 @@
-import { registerVerify } from "../helpers/verifyForm.js";
-import AbstractView from "./AbstractView.js";
+import { registerVerify } from '../helpers/verifyForm.js';
+import AbstractView from './AbstractView.js';
 
 export default class extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.setTitle("Register");
-        
+  constructor(params) {
+    super(params);
+    this.setTitle('Register');
 
-        document.getElementById("contact").style.display = 'none';
-        
-        window.addEventListener("submit", registerVerify)
-        
-    }   
+    document.getElementById('contact').style.display = 'none';
 
-    async getHtml() {
-        return `
+    window.addEventListener('submit', registerVerify);
+  }
+
+  async getHtml() {
+    return `
         <div class="wrapper register">
             <div class="form-box register">
                 <h2>Registration</h2>
@@ -53,7 +51,5 @@ export default class extends AbstractView {
             </div>
         </div>
         `;
-    }
-
+  }
 }
-

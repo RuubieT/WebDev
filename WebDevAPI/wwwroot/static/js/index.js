@@ -10,7 +10,6 @@ import Table from './views/TableView.js';
 import { removeEventListeners } from './helpers/verifyForm.js';
 import { Auth } from '../models/Auth.js';
 import { SignalRService } from './helpers/services/signalR.js';
-import { FindUser } from './helpers/services/player.js';
 import { getCookie } from './helpers/cookieHelper.js';
 
 const pathToRegex = (path) =>
@@ -35,6 +34,8 @@ const getParams = (match) => {
 
 export const navigateTo = (url) => {
   history.pushState(null, null, url);
+  removeEventListeners();
+  deleteAllButtons();
   router();
 };
 
@@ -90,8 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.addEventListener('click', (e) => {
     if (e.target.matches('[data-link]')) {
       e.preventDefault();
-      removeEventListeners();
-      deleteAllButtons();
       navigateTo(e.target.href);
     }
   });

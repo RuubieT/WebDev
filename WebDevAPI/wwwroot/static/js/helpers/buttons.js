@@ -55,7 +55,6 @@ function createPlayButton() {
     div.id = 'playButtonDiv';
 
     const btn = createCustomButtons('playButton', 'Play Game');
-    btn.dataset['link'] = '';
     btn.addEventListener('click', async () => {
       s._connection.send('SendMessage', 'game');
       s._connection.on('ReceiveMessage', (value) => {
@@ -82,7 +81,7 @@ function createGameButtons() {
 
     const createbutton = createCustomButtons('createButton', 'Create');
     createbutton.classList.add('game');
-    createbutton.dataset['link'] = '';
+
     createbutton.addEventListener('click', async () => {
       await createGame();
       //navigateTo('/table');
@@ -90,7 +89,7 @@ function createGameButtons() {
 
     const joinbutton = createCustomButtons('joinButton', 'Join');
     joinbutton.classList.add('game');
-    joinbutton.dataset['link'] = '';
+
     joinbutton.addEventListener('click', async () => {
       navigateTo('/table');
     });

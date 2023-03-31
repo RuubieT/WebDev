@@ -1,19 +1,19 @@
-import { UserLoginDto } from "../../models/Dto/Auth/UserLoginDto.js";
-import { checkInput, loginVerify } from "../helpers/verifyForm.js";
-import AbstractView from "./AbstractView.js";
+import { UserLoginDto } from '../../models/Dto/Auth/UserLoginDto.js';
+import { checkInput, loginVerify } from '../helpers/verifyForm.js';
+import AbstractView from './AbstractView.js';
 
 export default class extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.setTitle("Login");
-     
-        document.getElementById("contact").style.display = 'none';
+  constructor(params) {
+    super(params);
+    this.setTitle('Login');
 
-        window.addEventListener("submit", loginVerify)
-    }   
+    document.getElementById('contact').style.display = 'none';
 
-    async getHtml() {
-        return`
+    window.addEventListener('submit', loginVerify);
+  }
+
+  async getHtml() {
+    return `
         <div class="wrapper">
             <div class="form-box login">
                 <h2>Login</h2>
@@ -44,7 +44,5 @@ export default class extends AbstractView {
             </div>
         </div>
         `;
-    }
-
+  }
 }
-

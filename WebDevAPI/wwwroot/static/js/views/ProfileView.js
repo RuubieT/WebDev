@@ -1,16 +1,15 @@
-import AbstractView from "./AbstractView.js";
+import AbstractView from './AbstractView.js';
 
 export default class extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.setTitle("Profile");
+  constructor(params) {
+    super(params);
+    this.setTitle('Profile');
 
-        document.getElementById("contact").style.display = 'none';
+    document.getElementById('contact').style.display = 'none';
+  }
 
-    }
-
-    async getHtml() {
-        return `
+  async getHtml() {
+    return `
         <section class="personalia">
 
         <img class="person-logo" src="/static/images/Ruben.jpg">
@@ -69,6 +68,5 @@ export default class extends AbstractView {
             </div>
         </section>
         `;
-    }
+  }
 }
-
