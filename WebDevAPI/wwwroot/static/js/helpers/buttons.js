@@ -1,4 +1,4 @@
-import { jwtToken, navigateTo } from '../index.js';
+import { jwtToken, navigateTo, s } from '../index.js';
 import { Contactform } from '../../models/Contactform.js';
 import { createGame, getHand, startGame } from './gamelogic.js';
 import { createContactform } from './services/contactform.js';
@@ -57,6 +57,11 @@ function createPlayButton() {
     const btn = createCustomButtons('playButton', 'Play Game');
     btn.dataset['link'] = '';
     btn.addEventListener('click', async () => {
+      s._connection.send('SendMessage', 'game');
+      s._connection.on('ReceiveMessage', (value) => {
+        console.log(value);
+      });
+
       navigateTo('/game');
     });
 

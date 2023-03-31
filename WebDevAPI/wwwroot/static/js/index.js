@@ -9,11 +9,14 @@ import { deleteAllButtons } from './helpers/clearButtons.js';
 import Table from './views/TableView.js';
 import { removeEventListeners } from './helpers/verifyForm.js';
 import { Auth } from '../models/Auth.js';
+import { SignalRService } from './helpers/services/signalR.js';
 
 const pathToRegex = (path) =>
   new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '$');
 
 export var jwtToken = new Auth();
+
+export const s = new SignalRService();
 
 const getParams = (match) => {
   const values = match.result.slice(1);
@@ -65,7 +68,6 @@ const router = async () => {
   }
 
   const view = new match.route.view(getParams(match));
-
   document.querySelector('#app').innerHTML = await view.getHtml();
 };
 

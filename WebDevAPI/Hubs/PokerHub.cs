@@ -4,10 +4,9 @@ namespace WebDevAPI.Hubs
 {
     public class PokerHub: Hub
     {
-        [HubMethodName("start_connection")]
-        public void StartConnection(string message)
+        public async Task SendMessage(string message)
         {
-            Clients.All.SendAsync("sendMessage", message);
+            await Clients.All.SendAsync("ReceiveMessage", message);
         }
     }
 }
