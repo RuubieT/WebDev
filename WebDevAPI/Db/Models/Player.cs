@@ -8,14 +8,15 @@ namespace WebDevAPI.Db.Models
     {
         public string Username { get; set; }
         public int Chips { get; set; }
-        public PlayerHand? PlayerHand { get; set; }
+        
 
 
         //Foreign key
-        public Guid PokerTableId { get; set; }
-        public virtual PokerTable? PokerTable { get; set; }
+        public Guid? PokerTableId { get; set; }
+        public virtual PokerTable PokerTable { get; set; }
+        public virtual PlayerHand PlayerHand { get; set; }
 
-       
+
         public Player() 
         {
             Chips = 15000;
@@ -31,7 +32,9 @@ namespace WebDevAPI.Db.Models
                 Email = Email,
                 PasswordHash = PasswordHash,
                 Username = Username,
-                Chips = Chips
+                Chips = Chips,
+                PokerTableId = PokerTableId,
+
             };
         }
 

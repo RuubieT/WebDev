@@ -7,7 +7,7 @@ using System.Text;
 using WebDevAPI.Db;
 using WebDevAPI.Db.Extensions;
 using WebDevAPI.Db.Seeders;
-
+using WebDevAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<WebDevDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddSignalR();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -71,5 +73,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<PokerHub>("/pokerHub");
 
 app.Run();

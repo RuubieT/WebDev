@@ -1,56 +1,74 @@
 .deck {
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    justify-content: center;
-    align-items: center;
-    font-size: 3rem;
-    border-radius: .5rem;
-    color: white;
-    user-select: none;
+  height: 100%;
+  width: 100%;
+  border: 1px solid black;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  border-radius: 0.5rem;
+  color: white;
+  user-select: none;
 }
 
 .text {
-    grid-column: span 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .card {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    border-radius: .5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 4rem;
+  height: 70px;
+  width: 50px;
+  border-radius: 5px;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: white;
+  font-family: 'Houschka Rounded';
 }
 
-.card.red{
-    color: red;
+.card.h1 {
+  font-size: 10px;
+  text-align: center;
+  position: absolute;
+  margin: 0;
 }
 
-.card.black{
-    color: black;
+.card.h1:first-child {
+  top: 5px;
+  left: 5px;
+}
+
+.card.h1:last-child {
+  bottom: 5px;
+  right: 5px;
+  transform: rotatez(180deg);
+}
+
+.card.red {
+  color: red;
+}
+
+.card.black {
+  color: black;
 }
 
 .card::before,
-.card::after{
-    position: absolute;
-    content: attr(data-value);
-    font-size: 1rem;
+.card::after {
+  position: absolute;
+  content: attr(data-value);
+  font-size: 1rem;
 }
 
-.card::before{
-    top: .5rem;
-    left: .5rem;
+.card::before {
+  top: 0.5rem;
+  left: 0.5rem;
 }
 
-.card::after{
-    bottom: .5rem;
-    right: .5rem;
-    transform: rotate(180dg);
+.card::after {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  transform: rotate(180dg);
 }

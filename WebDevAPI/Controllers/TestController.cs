@@ -8,6 +8,7 @@ using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic;
+using WebDevAPI.Logic.CardLogic;
 
 namespace WebDevAPI.Controllers
 {
@@ -18,29 +19,63 @@ namespace WebDevAPI.Controllers
     {
         private Auth auth;
 
-        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository,
-        IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, pokerTableRepository)
+        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+                  IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+                  playerHandRepository, pokerTableRepository)
         {
             auth = new Auth(config);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
+        public async Task<ActionResult> test()
+        {
+            var cards = await PlayerHandRepository.GetAll();
+
+            return Ok(cards);
+
+        }
+
+        [HttpGet("user")]
+        public async Task<ActionResult> GetUsers()
         {
             var users = await PlayerRepository.GetAll();
-            var getUsers = new List<GetUserDto>();
-            if (users == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                foreach (var user in users)
-                {
-                    getUsers.Add(user.GetUserDto());
-                }
-            }
-            return Ok(getUsers);
+            return Ok(users);
+        }
+
+
+        [HttpGet("tablecards")]
+        public async Task<ActionResult> GetTableCards()
+        {
+            var cards = await CardRepository.TryFindAll(c => c.InHand == false);
+            var deck = new Queue<Card>((IEnumerable<Card>)cards);
+            DealCards d = new DealCards();
+            DeckOfCards deck2 = new DeckOfCards();
+            deck2.SetUpDeck();
+            var tablecards = d.TableCards(deck2.getDeck);
+
+            return Ok(tablecards);
+        }
+
+        [HttpGet("cards")]
+        public async Task<ActionResult> GetCards()
+        {
+            var cards = await CardRepository.GetAll();
+            return Ok(cards);
+        }
+
+        [HttpGet("pokertables")]
+        public async Task<ActionResult> GetPokertables()
+        {
+            var pokertables = await PokerTableRepository.GetAll();
+            return Ok(pokertables);
+        }
+
+        [HttpDelete("pokertable/{id}")]
+        public async Task<ActionResult> DeletePokertable (Guid id)
+        {
+            var table = await PokerTableRepository.Get(id);
+            await PokerTableRepository.Delete(table);
+            return Ok("Deleted pokertable wtih id: " + id);
         }
 
         [HttpGet("token")]

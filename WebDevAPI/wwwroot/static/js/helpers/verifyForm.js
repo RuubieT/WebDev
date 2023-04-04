@@ -1,112 +1,88 @@
-import { Player } from "../../models/Player.js";
-import { UserLoginDto } from "../../models/Dto/UserLoginDto.js";
-import { PlayerRegisterDto } from "../../models/Dto/PlayerRegisterDto.js";
-import { jwtToken, navigateTo } from "../index.js";
-import { setCookie } from "./cookieHelper.js";
+import { Player } from '../../models/Player.js';
+import { UserLoginDto } from '../../models/Dto/Auth/UserLoginDto.js';
+import { PlayerRegisterDto } from '../../models/Dto/Auth/PlayerRegisterDto.js';
+import { jwtToken, navigateTo } from '../index.js';
+import { setCookie } from './cookieHelper.js';
+import { Login, Register } from './services/auth.js';
+import { FindUser } from './services/player.js';
 
-function checkInput (){
-    const inputFields = document.querySelectorAll("input");
-    return Array.from(inputFields).filter(input => input.value !== "");
+function checkInput() {
+  const inputFields = document.querySelectorAll('input');
+  return Array.from(inputFields).filter((input) => input.value !== '');
 }
 
 const loginVerify = async () => {
-    var inputs = checkInput();
-    const user = new UserLoginDto();
-    inputs.forEach(input =>{
-    switch(input.id){
-        case "email":
-            user.email = input.value;
-            break;
-        case "password":
-            user.password = input.value;
-            break;
-        }
-    })
+  var inputs = checkInput();
+  const user = new UserLoginDto();
+  inputs.forEach((input) => {
+    switch (input.id) {
+      case 'email':
+        user.email = input.value;
+        break;
+      case 'password':
+        user.password = input.value;
+        break;
+    }
+  });
 
-    let response = await fetch('api/Auth/Login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user)
-    });
-       
-    //#TODO duplicate code
-    let data = await response.json();
-    jwtToken.token = data.token;
+  let tokenJson = await Login(user).then((data) => {
+    return data;
+  });
 
-    let userData = await fetch(`/api/Player/Find/${user.email}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'bearer ' + jwtToken.token
-        },
-    }).then((response)=>{
-        return response.json(); 
-    }).catch(err => console.log(err));
+  if (tokenJson) {
+    jwtToken.token = tokenJson.token;
+    let userData = await FindUser(user.email, jwtToken.token);
 
-    setCookie("userData", JSON.stringify(userData), 1);
-    
-    alert("Logged in");
-    navigateTo("/");
-
-}
+    if (userData) {
+      setCookie('username', userData.username, 1);
+      alert('Logged in');
+      navigateTo('/');
+    }
+  }
+};
 
 const registerVerify = async () => {
-    var inputs = checkInput();
-    const newUser = new PlayerRegisterDto();
-    inputs.forEach(input =>{
-        switch(input.id){
-            case "firstname":
-                newUser.firstname = input.value;
-                break;
-            case "lastname":
-                newUser.lastname = input.value;
-                break;
-            case "username":
-                newUser.username = input.value;
-                break;
-            case "email":
-                newUser.email = input.value;
-                break;
-            case "password":
-                newUser.password = input.value;
-                break;
-        }
-    })
+  var inputs = checkInput();
+  const newUser = new PlayerRegisterDto();
+  inputs.forEach((input) => {
+    switch (input.id) {
+      case 'firstname':
+        newUser.firstname = input.value;
+        break;
+      case 'lastname':
+        newUser.lastname = input.value;
+        break;
+      case 'username':
+        newUser.username = input.value;
+        break;
+      case 'email':
+        newUser.email = input.value;
+        break;
+      case 'password':
+        newUser.password = input.value;
+        break;
+    }
+  });
 
-    let response = await fetch('api/Auth/Register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newUser)
-    }).then((response) => {
-        return response.json();
-    }).catch(err => console.log(err));
-        
-    jwtToken.token = response.token;
-    
-    let userData = await fetch(`/api/Player/Find/${newUser.email}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'bearer ' + jwtToken.token
-        },
-    }).then((response)=>{
-        return response.json(); 
-    }).catch(err => console.log(err));
+  let tokenJson = await Register(newUser).then((data) => {
+    return data;
+  });
 
-    setCookie("userData", JSON.stringify(userData), 1);
+  if (tokenJson) {
+    jwtToken.token = tokenJson.token;
+    let userData = await FindUser(newUser.email, jwtToken.token);
 
-    alert("Registered succesfully");
-    navigateTo("/");
+    if (userData) {
+      setCookie('username', userData.username, 1);
+      alert('Registered succesfully');
+      navigateTo('/');
+    } else alert('User not found');
+  }
+};
+
+function removeEventListeners() {
+  window.removeEventListener('submit', loginVerify);
+  window.removeEventListener('submit', registerVerify);
 }
 
-function removeEventListeners(){
-    window.removeEventListener("submit", loginVerify);
-    window.removeEventListener("submit", registerVerify);
-}
-
-export {
-    loginVerify,
-    registerVerify,
-    checkInput,
-    removeEventListeners
-}
+export { loginVerify, registerVerify, checkInput, removeEventListeners };

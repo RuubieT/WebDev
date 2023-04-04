@@ -1,78 +1,99 @@
-import Dashboard from "./views/DashboardView.js";
-import Contact from "./views/ContactView.js";
-import Profile from "./views/ProfileView.js";
-import Game from "./views/GameView.js";
-import Login from "./views/LoginView.js";
-import Register from "./views/RegisterView.js";
-import Leaderboard from "./views/LeaderboardView.js";
-import { deleteAllButtons } from "./helpers/clearButtons.js";
-import Table from "./views/TableView.js";
-import { removeEventListeners } from "./helpers/verifyForm.js";
-import { Auth } from "../models/Auth.js";
+import Dashboard from './views/DashboardView.js';
+import Contact from './views/ContactView.js';
+import Profile from './views/ProfileView.js';
+import Game from './views/GameView.js';
+import Login from './views/LoginView.js';
+import Register from './views/RegisterView.js';
+import Leaderboard from './views/LeaderboardView.js';
+import { deleteAllButtons } from './helpers/clearButtons.js';
+import Table from './views/TableView.js';
+import { removeEventListeners } from './helpers/verifyForm.js';
+import { Auth } from '../models/Auth.js';
+import { SignalRService } from './helpers/services/signalR.js';
+import { getCookie } from './helpers/cookieHelper.js';
 
-const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+const pathToRegex = (path) =>
+  new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '$');
 
 export var jwtToken = new Auth();
 
-const getParams = match => {
-    const values = match.result.slice(1);
-    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+export const s = new SignalRService();
 
-    return Object.fromEntries(keys.map((key, i) => {
-        return [key, values[i]];
-    }));
+const getParams = (match) => {
+  const values = match.result.slice(1);
+  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
+    (result) => result[1],
+  );
+
+  return Object.fromEntries(
+    keys.map((key, i) => {
+      return [key, values[i]];
+    }),
+  );
 };
 
-export const navigateTo = url => {
-    history.pushState(null, null, url);
-    router();
+export const navigateTo = (url) => {
+  history.pushState(null, null, url);
+  removeEventListeners();
+  deleteAllButtons();
+  router();
 };
 
 const router = async () => {
-    const routes = [
-        { path: "/", view: Dashboard },
-        { path: "/contact", view: Contact },
-        { path: "/profile", view: Profile },
-        { path: "/game", view: Game},
-        { path: "/login", view: Login},
-        { path: "/register", view: Register},
-        { path: "/leaderboard", view: Leaderboard},
-        { path: "/table", view: Table},
-    ];
+  const routes = [
+    { path: '/', view: Dashboard },
+    { path: '/contact', view: Contact },
+    { path: '/profile', view: Profile },
+    { path: '/game', view: Game },
+    { path: '/login', view: Login },
+    { path: '/register', view: Register },
+    { path: '/leaderboard', view: Leaderboard },
+    { path: '/table', view: Table },
+  ];
 
-    // Test each route for potential match
-    const potentialMatches = routes.map(route => {
-        return {
-            route: route,
-            result: location.pathname.match(pathToRegex(route.path))
-        };
-    });
+  // Test each route for potential match
+  const potentialMatches = routes.map((route) => {
+    return {
+      route: route,
+      result: location.pathname.match(pathToRegex(route.path)),
+    };
+  });
 
-    let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+  let match = potentialMatches.find(
+    (potentialMatch) => potentialMatch.result !== null,
+  );
 
-    if (!match) {
-        match = {
-            route: routes[0],
-            result: [location.pathname]
-        };
-    }
+  if (!match) {
+    match = {
+      route: routes[0],
+      result: [location.pathname],
+    };
+  }
 
-    const view = new match.route.view(getParams(match));
+  if (jwtToken.token) {
+    var div = document.getElementById('login');
+    div.classList.add('disabled-link');
 
-    document.querySelector("#app").innerHTML = await view.getHtml();
+    const username = getCookie('username');
+
+    div.innerText = 'Welcome back ' + username;
+
+    document.getElementById('register').hidden = true;
+  }
+
+  const view = new match.route.view(getParams(match));
+  document.querySelector('#app').innerHTML = await view.getHtml();
 };
 
-window.addEventListener("popstate", router);
+window.addEventListener('popstate', router);
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.body.addEventListener("click", e => {
-        if (e.target.matches("[data-link]")) {
-            e.preventDefault();
-            removeEventListeners();
-            deleteAllButtons();
-            navigateTo(e.target.href);
-        }
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.addEventListener('click', (e) => {
+    if (e.target.matches('[data-link]')) {
+      e.preventDefault();
+      navigateTo(e.target.href);
+    }
+  });
 
-    router();
+  router();
 });

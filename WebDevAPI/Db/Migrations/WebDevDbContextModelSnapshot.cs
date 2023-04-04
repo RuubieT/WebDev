@@ -22,6 +22,26 @@ namespace WebDevAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("WebDevAPI.Db.Models.Card", b =>
+                {
+                    b.Property<Guid>("CardId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("InHand")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MySuit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MyValue")
+                        .HasColumnType("int");
+
+                    b.HasKey("CardId");
+
+                    b.ToTable("Cards");
+                });
+
             modelBuilder.Entity("WebDevAPI.Db.Models.Contactform", b =>
                 {
                     b.Property<Guid>("Id")
@@ -47,6 +67,33 @@ namespace WebDevAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contactforms");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.PlayerHand", b =>
+                {
+                    b.Property<Guid>("PlayerHandId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("FirstCardId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SecondCardId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PlayerHandId");
+
+                    b.HasIndex("FirstCardId");
+
+                    b.HasIndex("PlayerId")
+                        .IsUnique();
+
+                    b.HasIndex("SecondCardId");
+
+                    b.ToTable("PlayerHands");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.PokerTable", b =>
@@ -114,7 +161,8 @@ namespace WebDevAPI.Migrations
                     b.Property<int>("Chips")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("PokerTableId")
+                    b.Property<Guid?>("PokerTableId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Username")
@@ -124,6 +172,29 @@ namespace WebDevAPI.Migrations
                     b.HasIndex("PokerTableId");
 
                     b.HasDiscriminator().HasValue("Player");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.PlayerHand", b =>
+                {
+                    b.HasOne("WebDevAPI.Db.Models.Card", "FirstCard")
+                        .WithMany()
+                        .HasForeignKey("FirstCardId");
+
+                    b.HasOne("WebDevAPI.Db.Models.Player", "Player")
+                        .WithOne("PlayerHand")
+                        .HasForeignKey("WebDevAPI.Db.Models.PlayerHand", "PlayerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("WebDevAPI.Db.Models.Card", "SecondCard")
+                        .WithMany()
+                        .HasForeignKey("SecondCardId");
+
+                    b.Navigation("FirstCard");
+
+                    b.Navigation("Player");
+
+                    b.Navigation("SecondCard");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>
@@ -140,6 +211,12 @@ namespace WebDevAPI.Migrations
             modelBuilder.Entity("WebDevAPI.Db.Models.PokerTable", b =>
                 {
                     b.Navigation("Players");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>
+                {
+                    b.Navigation("PlayerHand")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

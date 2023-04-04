@@ -1,0 +1,168 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.div {
+  display: block;
+}
+
+.table {
+  width: 1000px;
+  height: 400px;
+  background-color: #4aad4a;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  border-radius: 150px;
+  position: relative;
+  border: 15px solid #a95555;
+}
+
+.table::before {
+  content: '';
+  border: 7px solid rgba(0, 0, 0, 0.1);
+  display: block;
+  width: 1015px;
+  height: 415px;
+  border-radius: 150px;
+  position: absolute;
+  top: -15px;
+  left: -15px;
+}
+
+.table::after {
+  content: '';
+  border: 7px solid rgba(0, 0, 0, 0.1);
+  display: block;
+  width: 985px;
+  height: 385px;
+  border-radius: 130px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.card-place {
+  border: 5px solid #63c763;
+  height: 100px;
+  width: 340px;
+  position: absolute;
+  border-radius: 10px;
+  padding: 10px;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  box-sizing: border-box;
+}
+
+.card:not(:last-child) {
+  margin-right: 15px;
+}
+
+.players {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+.players .player {
+  position: absolute;
+}
+
+.player .name {
+  font-family: 'Houschka Rounded';
+  text-align: center;
+  width: 100px;
+  color: #96e296;
+  padding: 5px 0;
+  margin-left: 10px;
+  box-sizing: border-box;
+  border: 2px solid #96e296;
+  border-radius: 5px;
+  margin-top: 15px;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  overflow: hidden;
+  position: relative;
+}
+
+.player.playing::before {
+  content: '...';
+  color: white;
+  font-size: 20px;
+  position: absolute;
+  background-color: #76daff;
+  display: inline-block;
+  line-height: 0px;
+  height: 10px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+.player.player-0 {
+  top: 0px;
+  left: 50%;
+  transform: translatex(-50%) translatey(-50%);
+}
+
+.player.player-1 {
+  bottom: 0px;
+  left: 50%;
+  transform: translatex(-50%) translatey(50%) rotatez(180deg);
+}
+
+.player.player-2 {
+  top: 50%;
+  left: 0px;
+  transform: translatex(-50%) translatey(-50%) rotatez(-90deg);
+}
+
+.player.player-3 {
+  top: 50%;
+  right: 0px;
+  transform: translatex(50%) translatey(-50%) rotatez(90deg);
+}
+
+.player.player-4 {
+  top: 0px;
+  left: 25%;
+  transform: translatex(-50%) translatey(-50%);
+}
+
+.player.player-5 {
+  bottom: 0px;
+  left: 75%;
+  transform: translatex(-50%) translatey(50%) rotatez(180deg);
+}
+
+.player.player-6 {
+  top: 0px;
+  left: 75%;
+  transform: translatex(-50%) translatey(-50%);
+}
+
+.player.player-7 {
+  bottom: 0px;
+  left: 25%;
+  transform: translatex(-50%) translatey(50%) rotatez(180deg);
+}
+
+.chips {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  top: 100px;
+  right: 0;
+  z-index: 10;
+}
+
+.chips .chips-value {
+  position: absolute;
+  font-family: 'Houschka Rounded';
+  right: -30px;
+  font-weight: bold;
+  font-size: 12px;
+  color: #96e296;
+}

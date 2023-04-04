@@ -1,24 +1,21 @@
-import AbstractView from "./AbstractView.js";
-import { createSubmitFormButton } from "../helpers/buttons.js";
+import AbstractView from './AbstractView.js';
+import { createSubmitFormButton } from '../helpers/buttons.js';
 
+export default class extends AbstractView {
+  constructor(params) {
+    super(params);
+    this.setTitle('Contact');
 
-export default class extends AbstractView
-{
-    constructor(params) {
-        super(params);
-        this.setTitle("Contact");
+    //window.addEventListener("input", (event) => { checkInput(event.target.id) });
+  }
 
-        //window.addEventListener("input", (event) => { checkInput(event.target.id) });
-  
-    }
-    
-    assignCaptchaDiv(){
-        var catpcha = document.getElementById("contact");
-        return catpcha.innerHTML;
-    }
+  assignCaptchaDiv() {
+    var catpcha = document.getElementById('contact');
+    return catpcha.innerHTML;
+  }
 
-    async getHtml() {
-        return `
+  async getHtml() {
+    return `
         <div class="wrapper register">
             <div class="form-box contact">
                 <h2>Contact Ruben</h2>
@@ -53,47 +50,45 @@ export default class extends AbstractView
         </div>
       
         `;
-    }
-
+  }
 }
 
 function checkInput(field) {
-    const input = document.getElementById(field);
-    input.addEventListener("input", (event) => {
-        const errorField = document.querySelector("#" + input.id + " + span.error");
-        if (input.validity.valid && input.value != "") {
-            errorField.textContent = "";
-            errorField.className = "error";
-        } else {
-            showError(input, errorField);
-        }
-    })
-
+  const input = document.getElementById(field);
+  input.addEventListener('input', (event) => {
+    const errorField = document.querySelector('#' + input.id + ' + span.error');
+    if (input.validity.valid && input.value != '') {
+      errorField.textContent = '';
+      errorField.className = 'error';
+    } else {
+      showError(input, errorField);
+    }
+  });
 }
 
 function showError(field, errorField) {
-    //For each input field a check and a error to display
-    if (!field.value) {
-        switch (field.id) {
-            case 'name':
-                errorField.textContent = "Fill in a name";
-                errorField.className = "error active";
-                break;
-            case 'email':
-                errorField.textContent = "Fill in an email";
-                errorField.className = "error active";
-                break;
-            case 'subject':
-                errorField.textContent = "Fill in a subject";
-                errorField.className = "error active";
-                break;
-            case 'description':
-                errorField.textContent = "Fill in description";
-                errorField.className = "error active";
-                break;
-        }
-    } else if (field.id == 'email' && field.validity.typeMismatch) {
-        errorField.textContent = "Entered value needs to be an e-mail address.";
-        errorField.className = "error active";
+  //For each input field a check and a error to display
+  if (!field.value) {
+    switch (field.id) {
+      case 'name':
+        errorField.textContent = 'Fill in a name';
+        errorField.className = 'error active';
+        break;
+      case 'email':
+        errorField.textContent = 'Fill in an email';
+        errorField.className = 'error active';
+        break;
+      case 'subject':
+        errorField.textContent = 'Fill in a subject';
+        errorField.className = 'error active';
+        break;
+      case 'description':
+        errorField.textContent = 'Fill in description';
+        errorField.className = 'error active';
+        break;
     }
+  } else if (field.id == 'email' && field.validity.typeMismatch) {
+    errorField.textContent = 'Entered value needs to be an e-mail address.';
+    errorField.className = 'error active';
+  }
 }

@@ -20,8 +20,9 @@ namespace WebDevAPI.Controllers
     {
         private Auth auth;
 
-        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository,
-                IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, pokerTableRepository)
+        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository)
         {
 
             auth = new Auth(config);
@@ -43,7 +44,6 @@ namespace WebDevAPI.Controllers
                 LastName = request.LastName,
                 Username = request.Username,
                 Email = request.Email,
-                PokerTableId = PokerTableRepository.GetAll().Result[0].PokerTableId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
 

@@ -1,175 +1,183 @@
-import {jwtToken, navigateTo} from '../index.js';
-import { Contactform } from "../../models/Contactform.js";
-import { createGame } from './gamelogic.js';
-
+import { jwtToken, navigateTo, s } from '../index.js';
+import { Contactform } from '../../models/Contactform.js';
+import { createGame, getHand, joinGame, startGame } from './gamelogic.js';
+import { createContactform } from './services/contactform.js';
+import { joinPokertable } from './services/pokertable.js';
 
 function createSubmitFormButton() {
-    var submitFormButton = document.getElementById("contactFormButtonDiv");
-    if (!submitFormButton) {    
-        const div = document.createElement('div');
-        div.id = 'contactFormButtonDiv';
-        
-        const btn = createCustomButtons("submitFormButton", "Submit!");
-        btn.addEventListener("click", async () => {
-            const inputFields = document.querySelectorAll("input");
-            const validInputs = Array.from(inputFields).filter(input => input.value !== "");
-            const contactForm = new Contactform();
-            validInputs.forEach(input =>{
-                switch(input.id){
-                    case "name":
-                        contactForm.name = input.value;
-                        break;
-                    case "email":
-                        contactForm.email = input.value;
-                        break;
-                    case "subject":
-                        contactForm.subject = input.value;
-                        break;
-                    case "description":
-                        contactForm.description = input.value;
-                        break;
-                }
-            })
+  var submitFormButton = document.getElementById('contactFormButtonDiv');
+  if (!submitFormButton) {
+    const div = document.createElement('div');
+    div.id = 'contactFormButtonDiv';
 
-            
-            let response = await fetch('api/Contactform', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({name: contactForm.name, email: contactForm.email, subject: contactForm.subject, description: contactForm.description})
-            });
-                
-            let data = await response.json();
-            alert(JSON.stringify(data));
-            
-        })
+    const btn = createCustomButtons('submitFormButton', 'Submit!');
+    btn.addEventListener('click', async () => {
+      const inputFields = document.querySelectorAll('input');
+      const validInputs = Array.from(inputFields).filter(
+        (input) => input.value !== '',
+      );
+      const contactForm = new Contactform();
+      validInputs.forEach((input) => {
+        switch (input.id) {
+          case 'name':
+            contactForm.name = input.value;
+            break;
+          case 'email':
+            contactForm.email = input.value;
+            break;
+          case 'subject':
+            contactForm.subject = input.value;
+            break;
+          case 'description':
+            contactForm.description = input.value;
+            break;
+        }
+      });
 
-        div.appendChild(btn);
-        return div;
-    }
+      let response = await createContactform(contactForm);
+
+      let data = await response.json();
+      alert(JSON.stringify(data));
+    });
+
+    div.appendChild(btn);
+    return div;
+  }
 }
 
 function deleteSubmitFormButton() {
-    deleteCustomButtons("contactFormButtonDiv")
+  deleteCustomButtons('contactFormButtonDiv');
 }
 
 function createPlayButton() {
-    var playButton = document.getElementById("playButtonDiv");
-    if (!playButton) {    
-        const div = document.createElement('div');
-        div.id = 'playButtonDiv';
-        
-        const btn = createCustomButtons("playButton", "Play Game"); 
-        btn.dataset["link"] = "";
-        btn.addEventListener("click", async () => {
-            navigateTo("/game");
-        })
+  var playButton = document.getElementById('playButtonDiv');
+  if (!playButton) {
+    const div = document.createElement('div');
+    div.id = 'playButtonDiv';
 
-        div.appendChild(btn);
-        document.body.appendChild(div);
-          
-    }
+    const btn = createCustomButtons('playButton', 'Play Game');
+    btn.addEventListener('click', async () => {
+      s._connection.send('SendMessage', 'game');
+      s._connection.on('ReceiveMessage', (value) => {
+        console.log(value);
+      });
+
+      navigateTo('/game');
+    });
+
+    div.appendChild(btn);
+    document.body.appendChild(div);
+  }
 }
 
 function deletePlayButton() {
-    deleteCustomButtons("playButtonDiv");
+  deleteCustomButtons('playButtonDiv');
 }
 
-function createGameButtons(){
-    var playButtons = document.getElementById("gameButtons");
-    if (!playButtons){
-        const div = document.createElement('div');
-        div.id = 'gameButtons';
+function createGameButtons() {
+  var playButtons = document.getElementById('gameButtons');
+  if (!playButtons) {
+    const div = document.createElement('div');
+    div.id = 'gameButtons';
 
-        const createbutton = createCustomButtons("createButton", "Create");
-        createbutton.classList.add("game");
-        createbutton.dataset["link"] = "";
-        createbutton.addEventListener("click", () => {
-            var deck = createGame();
+    const createbutton = createCustomButtons('createButton', 'Create');
+    createbutton.classList.add('game');
 
-            console.log(deck);
-            
-            //navigateTo('/table');
-        })
-        
-        const joinbutton = createCustomButtons("joinButton", "Join");
-        joinbutton.classList.add("game");
-        joinbutton.dataset["link"] = "";
-        joinbutton.addEventListener("click", () => {
-           console.log("Join table?")
-        })
-        
+    createbutton.addEventListener('click', async () => {
+      await createGame();
+      //navigateTo('/table');
+    });
 
-        div.appendChild(createbutton);
-        div.appendChild(joinbutton);
-        document.body.appendChild(div);
-    }
+    const joinbutton = createCustomButtons('joinButton', 'Join');
+    joinbutton.classList.add('game');
+
+    joinbutton.addEventListener('click', async () => {
+      await joinGame();
+    });
+
+    const startbutton = createCustomButtons('startButton', 'Start');
+    startbutton.classList.add('game');
+
+    startbutton.addEventListener('click', async () => {
+      navigateTo('/table');
+    });
+
+    var x = document.createElement('input');
+    x.setAttribute('type', 'text');
+    x.id = 'idpokertable';
+
+    div.appendChild(createbutton);
+    div.appendChild(x);
+    div.appendChild(joinbutton);
+    div.appendChild(startbutton);
+    document.body.appendChild(div);
+  }
 }
 
-function deleteGameButtons(){
-    deleteCustomButtons("gameButtons");
+function deleteGameButtons() {
+  deleteCustomButtons('gameButtons');
 }
 
-function createPokerButtons(){
-    var pokerButtons = document.getElementById("pokerButtons");
-    if (!pokerButtons){
-        const div = document.createElement('div');
-        div.id = 'pokerButtons';
+function createPokerButtons() {
+  var pokerButtons = document.getElementById('pokerButtons');
+  if (!pokerButtons) {
+    const div = document.createElement('div');
+    div.id = 'pokerButtons';
 
-        const checkButton = createCustomButtons("checkButton", "Check");
-        checkButton.addEventListener("click", () => {
-            alert("CHECK");
-        })
+    const checkButton = createCustomButtons('checkButton', 'Check');
+    checkButton.addEventListener('click', () => {
+      alert('CHECK');
+    });
 
-        const foldButton = createCustomButtons("foldButton", "Fold");
-        foldButton.addEventListener("click", () => {
-            alert("FOLD");
-        })
+    const foldButton = createCustomButtons('foldButton', 'Fold');
+    foldButton.addEventListener('click', async () => {
+      await startGame();
+    });
 
-        const callButton = createCustomButtons("callButton", "Call");
-        callButton.addEventListener("click", () => {
-            alert("CALL");
-        })
+    const callButton = createCustomButtons('callButton', 'Call');
+    callButton.addEventListener('click', () => {
+      alert('CALL');
+    });
 
-        const betButton = createCustomButtons("betButton", "Bet");
-        betButton.addEventListener("click", () => {
-            alert("BET");
-        })
-        
-        
-        div.appendChild(checkButton);
-        div.appendChild(foldButton);
-        div.appendChild(callButton);
-        div.appendChild(betButton);
-        document.body.appendChild(div);
-    }
+    const betButton = createCustomButtons('betButton', 'Bet');
+    betButton.addEventListener('click', () => {
+      alert('BET');
+    });
+
+    div.appendChild(checkButton);
+    div.appendChild(foldButton);
+    div.appendChild(callButton);
+    div.appendChild(betButton);
+    document.body.appendChild(div);
+  }
 }
 
-function deletePokerButtons(){
-    deleteCustomButtons("pokerButtons");
+function deletePokerButtons() {
+  deleteCustomButtons('pokerButtons');
 }
 
-function createCustomButtons(name, text){
-    const button = document.createElement('button');
-    button.id = name;
-    button.innerText = text;
+function createCustomButtons(name, text) {
+  const button = document.createElement('button');
+  button.id = name;
+  button.innerText = text;
 
-    return button;
+  return button;
 }
 
-function deleteCustomButtons(name){
-    var buttons = document.getElementById(name);
-    if(buttons){
-        document.body.removeChild(buttons);
-    }
+function deleteCustomButtons(name) {
+  var buttons = document.getElementById(name);
+  if (buttons) {
+    document.body.removeChild(buttons);
+  }
 }
 
 export {
-    createSubmitFormButton,
-    deleteSubmitFormButton,
-    createPlayButton,
-    deletePlayButton,
-    createGameButtons,
-    deleteGameButtons,
-    createPokerButtons,
-    deletePokerButtons
-}
+  createSubmitFormButton,
+  deleteSubmitFormButton,
+  createPlayButton,
+  deletePlayButton,
+  createGameButtons,
+  deleteGameButtons,
+  createPokerButtons,
+  deletePokerButtons,
+};
