@@ -6,7 +6,6 @@ import {
 } from '../helpers/buttons.js';
 import {
   getHand,
-  getPlayers,
   getTableCards,
   assignPokertable,
 } from '../helpers/gamelogic.js';

@@ -11,11 +11,15 @@ import { removeEventListeners } from './helpers/verifyForm.js';
 import { Auth } from '../models/Auth.js';
 import { SignalRService } from './helpers/services/signalR.js';
 import { getCookie } from './helpers/cookieHelper.js';
+import { GetUser } from './helpers/services/auth.js';
+import { User } from '../models/User.js';
 
 const pathToRegex = (path) =>
   new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '$');
 
 export var jwtToken = new Auth();
+export var currentUser = new User();
+console.log(currentUser);
 
 export const s = new SignalRService();
 
@@ -78,7 +82,14 @@ const router = async () => {
 
     div.innerText = 'Welcome back ' + username;
 
-    document.getElementById('register').hidden = true;
+    var div2 = document.getElementById('register');
+    var button = document.createElement('button');
+    button.innerText = 'Logout';
+    button.addEventListener('click', async () => {
+      console.log('Logout');
+    });
+    div2.innerText = '';
+    div2.appendChild(button);
   }
 
   const view = new match.route.view(getParams(match));

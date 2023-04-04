@@ -1,9 +1,9 @@
 import { Player } from '../../models/Player.js';
 import { UserLoginDto } from '../../models/Dto/Auth/UserLoginDto.js';
 import { PlayerRegisterDto } from '../../models/Dto/Auth/PlayerRegisterDto.js';
-import { jwtToken, navigateTo } from '../index.js';
+import { currentUser, jwtToken, navigateTo } from '../index.js';
 import { setCookie } from './cookieHelper.js';
-import { Login, Register } from './services/auth.js';
+import { GetUser, Login, Register } from './services/auth.js';
 import { FindUser } from './services/player.js';
 
 function checkInput() {
@@ -25,20 +25,14 @@ const loginVerify = async () => {
     }
   });
 
-  let tokenJson = await Login(user).then((data) => {
-    return data;
-  });
+  await Login(user);
+  CurrentUser = await GetUser();
 
-  if (tokenJson) {
-    jwtToken.token = tokenJson.token;
-    let userData = await FindUser(user.email, jwtToken.token);
-
-    if (userData) {
-      setCookie('username', userData.username, 1);
-      alert('Logged in');
-      navigateTo('/');
-    }
-  }
+  if (CurrentUser) {
+    setCookie('username', CurrentUser.username, 1);
+    alert('Logged in');
+    navigateTo('/');
+  } else alert('User not found');
 };
 
 const registerVerify = async () => {
@@ -64,20 +58,16 @@ const registerVerify = async () => {
     }
   });
 
-  let tokenJson = await Register(newUser).then((data) => {
-    return data;
-  });
+  await Register(newUser);
+  let data = await GetUser();
 
-  if (tokenJson) {
-    jwtToken.token = tokenJson.token;
-    let userData = await FindUser(newUser.email, jwtToken.token);
+  if (data) {
+    currentUser.email = data.email;
 
-    if (userData) {
-      setCookie('username', userData.username, 1);
-      alert('Registered succesfully');
-      navigateTo('/');
-    } else alert('User not found');
-  }
+    setCookie('username', data.username, 1);
+    alert('Registered succesfully');
+    navigateTo('/');
+  } else alert('User not found');
 };
 
 function removeEventListeners() {

@@ -92,7 +92,7 @@ namespace WebDevAPI.Controllers
                 new Claim(ClaimTypes.Role, "Admin"),
                 new Claim(ClaimTypes.Role, "User"),
             };
-            return auth.CreateToken(players.First(), claims);
+            return auth.CreateToken(players.First().Id, claims);
         }
 
         [HttpPost("pokertable")]

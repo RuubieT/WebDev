@@ -1,4 +1,4 @@
-import { jwtToken, navigateTo, s } from '../index.js';
+import { navigateTo, s } from '../index.js';
 import { Contactform } from '../../models/Contactform.js';
 import { createGame, getHand, joinGame, startGame } from './gamelogic.js';
 import { createContactform } from './services/contactform.js';

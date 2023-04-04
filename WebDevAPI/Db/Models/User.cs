@@ -38,7 +38,6 @@ namespace WebDevAPI.Db.Models
                 FirstName = FirstName,
                 LastName = LastName,
                 Email = Email,
-                PasswordHash = PasswordHash,
             };
         }
 
