@@ -8,5 +8,6 @@ namespace WebDevAPI.Db.Dto_s.Player
     {
         public string Username { get; set; }
         public int Chips { get; set; }
+        public Guid? PokerTableId { get; set; }
     }
 }

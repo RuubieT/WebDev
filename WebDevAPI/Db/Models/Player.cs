@@ -32,7 +32,9 @@ namespace WebDevAPI.Db.Models
                 Email = Email,
                 PasswordHash = PasswordHash,
                 Username = Username,
-                Chips = Chips
+                Chips = Chips,
+                PokerTableId = PokerTableId,
+
             };
         }
 

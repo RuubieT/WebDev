@@ -5,17 +5,21 @@ import { getData, postData } from './services/apiCallTemplates.js';
 import { Card, SUITS, VALUES } from '../../models/Game.js';
 import { PlayerHand } from '../../models/PlayerHand.js';
 import {
-  createPokerTable,
+  createPokertable,
   startPokertable,
   getPokertablePlayers,
   getPlayerhand,
+  findPokertable,
+  joinPokertable,
 } from './services/pokertable.js';
+import { PokerTable } from '../../models/PokerTable.js';
+import { JoinPokertable } from '../../models/Dto/PokerTable/JoinPokertable.js';
 
 async function createGame() {
   const username = getCookie('username');
   const createData = new CreatePokerTableDto(username);
 
-  let createdGame = await createPokerTable(createData);
+  let createdGame = await createPokertable(createData);
 
   if (createdGame) {
     setCookie('pokerTableId', createdGame.id, 1);
@@ -32,62 +36,76 @@ async function startGame() {
   }
 }
 
-async function getPlayers() {
-  const table = getCookie('pokerTableId');
+//main function //startpokertable is solo <-- delete playerhands
+async function assignPokertable() {
+  var table = getCookie('pokerTableId');
+  if (!table) {
+    table = await createGame();
+  }
 
-  let players = await getPokertablePlayers(table);
-  if (players) {
+  let data = await findPokertable(table);
+  if (data) {
+    let pokertable = new PokerTable();
+    pokertable.players = await getPokertablePlayers(table);
+    pokertable.ante = data.ante;
+    pokertable.smallBlind = data.smallBlind;
+    pokertable.bigBlind = data.bigBlind;
+    pokertable.maxSeats = data.maxSeats;
+    pokertable.cards = await getData(`api/test/tablecards`);
+
+    await startPokertable(table);
+
     var playersDiv = document.getElementById('players');
     if (playersDiv.hasChildNodes) {
       playersDiv.innerHTML = '';
     }
-    for (const p in players) {
+    let count = 0;
+    var firstcard = new Card();
+    var secondcard = new Card();
+    pokertable.players.forEach(async (i) => {
+      let hand = await getPlayerhand(i.username);
+      if (hand) {
+        firstcard = new Card(
+          SUITS[hand.firstCard.suit],
+          VALUES[hand.firstCard.value],
+        );
+        secondcard = new Card(
+          SUITS[hand.secondCard.suit],
+          VALUES[hand.secondCard.value],
+        );
+      }
       const div = document.createElement('div');
-      div.id = 'player ' + players[p].username;
-      div.classList.add('player', 'player-' + p);
+      div.id = 'player ' + i.username;
+      div.classList.add('player', 'player-' + count);
 
       const playername = document.createElement('div');
-      playername.innerText = players[p].username;
+      playername.innerText = i.username;
       playername.classList.add('name');
 
-      let playerHand = await getHand(players[p].username);
       const carddiv = document.createElement('div');
-      carddiv.id = 'cards ' + players[p].username;
-      carddiv.appendChild(playerHand.firstCard.getCardHTML());
-      carddiv.appendChild(playerHand.secondCard.getCardHTML());
+      carddiv.id = 'cards ' + i.username;
+      carddiv.appendChild(firstcard.getCardHTML());
+      carddiv.appendChild(secondcard.getCardHTML());
 
       const chipsDiv = document.createElement('div');
       chipsDiv.classList.add('chips');
       const chipsCount = document.createElement('div');
       chipsCount.classList.add('chips-value');
-      chipsCount.innerText = players[p].chips;
+      chipsCount.innerText = i.chips;
 
       chipsDiv.appendChild(chipsCount);
       div.appendChild(chipsDiv);
       div.appendChild(carddiv);
       div.appendChild(playername);
       playersDiv.appendChild(div);
-    }
+      count++;
+    });
   }
 }
 
-async function getHand(username) {
-  let hand = await getPlayerhand(username);
-  if (hand) {
-    var firstCard = new Card(
-      SUITS[hand.firstCard.suit],
-      VALUES[hand.firstCard.value],
-    );
-    var secondCard = new Card(
-      SUITS[hand.secondCard.suit],
-      VALUES[hand.secondCard.value],
-    );
-    var playerhand = new PlayerHand(firstCard, secondCard);
+async function getHand(username) {}
 
-    return playerhand;
-  }
-}
-
+//TODO
 async function getTableCards() {
   let cards = await getData(`api/test/tablecards`);
   if (cards) {
@@ -105,4 +123,26 @@ async function getTableCards() {
   }
 }
 
-export { createGame, startGame, getPlayers, getHand, getTableCards };
+async function joinGame() {
+  var input = document.getElementById('idpokertable').value;
+  if (input) {
+    var joindata = new JoinPokertable();
+    joindata.pokertableId = input;
+    joindata.username = getCookie('username');
+    let data = await joinPokertable(joindata, jwtToken.token);
+    if (data) {
+      setCookie('pokerTableId', data.pokerTableId, 1);
+      alert('Game ' + data.pokerTableId + 'joined');
+    }
+  }
+}
+
+export {
+  createGame,
+  startGame,
+  joinGame,
+  getPlayers,
+  getHand,
+  getTableCards,
+  assignPokertable,
+};

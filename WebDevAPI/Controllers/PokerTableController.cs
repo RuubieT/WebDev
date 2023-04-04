@@ -50,10 +50,29 @@ namespace WebDevAPI.Controllers
             return Ok(pokerTable.GetPokerTableDto());
         }
 
-        [HttpGet("Join")]
-        public async Task<ActionResult<string>> JoinGame()
+        [HttpPut("Join")]
+        public async Task<ActionResult<IEnumerable<GetPlayerDto>>> JoinGame(PutJoinPokerTableDto data)
         {
-            return Ok("Join a game");
+            var result = PlayerRepository.TryFind(u => u.Username == data.Username).Result.result;
+            if (result == null) return NotFound("No matching player found");
+            if (result.PokerTableId != null) return BadRequest("Already in a game");
+
+            var pokertable = await PokerTableRepository.Get(data.PokerTableId);
+            if (pokertable == null) return NotFound();
+            result.PokerTableId = data.PokerTableId;
+
+            await PlayerRepository.Update(result);
+
+            return Ok(result.GetPlayerDto());
+        }
+
+        [HttpGet("{pokertableId}")]
+        public async Task<ActionResult<GetPokerTableDto>> GetPokertable(Guid pokertableId)
+        {
+            var pokertable = await PokerTableRepository.Get(pokertableId);
+            if (pokertable == null) return NotFound("No pokertable found!");
+
+            return Ok(pokertable.GetPokerTableDto());
         }
 
         [HttpGet("Players/{pokertableId}")]
@@ -119,6 +138,5 @@ namespace WebDevAPI.Controllers
             }.GetPlayerHandDto());
 
         }
-
     }
 }

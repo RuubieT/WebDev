@@ -1,7 +1,8 @@
 import { jwtToken, navigateTo, s } from '../index.js';
 import { Contactform } from '../../models/Contactform.js';
-import { createGame, getHand, startGame } from './gamelogic.js';
+import { createGame, getHand, joinGame, startGame } from './gamelogic.js';
 import { createContactform } from './services/contactform.js';
+import { joinPokertable } from './services/pokertable.js';
 
 function createSubmitFormButton() {
   var submitFormButton = document.getElementById('contactFormButtonDiv');
@@ -91,11 +92,24 @@ function createGameButtons() {
     joinbutton.classList.add('game');
 
     joinbutton.addEventListener('click', async () => {
+      await joinGame();
+    });
+
+    const startbutton = createCustomButtons('startButton', 'Start');
+    startbutton.classList.add('game');
+
+    startbutton.addEventListener('click', async () => {
       navigateTo('/table');
     });
 
+    var x = document.createElement('input');
+    x.setAttribute('type', 'text');
+    x.id = 'idpokertable';
+
     div.appendChild(createbutton);
+    div.appendChild(x);
     div.appendChild(joinbutton);
+    div.appendChild(startbutton);
     document.body.appendChild(div);
   }
 }

@@ -4,6 +4,6 @@ export const GetLeaderboard = async () => {
   return await getData('api/Player/Leaderboard');
 };
 
-export const FindUser = async (data, token) => {
-  return await getAuthorizedData(`/api/Player/Find/${data}`, token);
+export const FindUser = async (email, token) => {
+  return await getAuthorizedData(`/api/Player/Find/${email}`, token);
 };
