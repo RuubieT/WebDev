@@ -81,15 +81,11 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-app.UseAuthorization();
 
-app.UseAuthentication();
-//app.UseIdentityServer();
+app.UseHttpsRedirection();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
-app.UseHttpsRedirection();
 
 app.UseCors(options => options
     .WithOrigins(new[] {"http://localhost:7135" } )
@@ -97,7 +93,10 @@ app.UseCors(options => options
     .AllowAnyMethod()
     .AllowCredentials());
 
+app.UseAuthentication();
+app.UseAuthorization();
 
+//app.UseIdentityServer();
 
 app.MapControllers();
 

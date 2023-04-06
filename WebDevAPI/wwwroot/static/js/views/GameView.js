@@ -1,6 +1,5 @@
 import AbstractView from './AbstractView.js';
 import { createGameButtons } from '../helpers/buttons.js';
-import { test, test2 } from '../helpers/services/player.js';
 
 const uri = 'api/PokerTable';
 
