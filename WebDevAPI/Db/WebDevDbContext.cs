@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using WebDevAPI.Db.Models;
 
 namespace WebDevAPI.Db
 {
-    public class WebDevDbContext : DbContext
+    public class WebDevDbContext : IdentityDbContext<IdentityUser>
     {
         public WebDevDbContext(DbContextOptions<WebDevDbContext> options)
         : base(options)
@@ -13,6 +15,7 @@ namespace WebDevAPI.Db
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Player>()
                 .HasOne(b=> b.PokerTable)
                 .WithMany(i=> i.Players)
@@ -29,7 +32,5 @@ namespace WebDevAPI.Db
         public DbSet<Card> Cards { get; set; }
         public DbSet<PokerTable> PokerTables { get; set; }
         public DbSet<PlayerHand> PlayerHands { get; set; }
-        public DbSet<UserRoles> UserRoles { get; set; }
-        public DbSet<Roles> Roles { get; set; }
     }
 }

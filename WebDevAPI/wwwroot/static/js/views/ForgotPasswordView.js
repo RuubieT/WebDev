@@ -7,8 +7,6 @@ export default class extends AbstractView {
     this.setTitle('Forgot Password');
 
     window.addEventListener('submit', forgotPassword);
-
-    var all = document.getElementsByTagName('*');
   }
 
   async getHtml() {

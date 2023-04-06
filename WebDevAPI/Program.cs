@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,14 +53,14 @@ builder.Services.AddAuthentication(x =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 builder.Configuration.GetSection("AppSettings:Token").Value!))
     };
-});
+}).AddIdentityServerJwt(); 
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("Admin", policy => policy.RequireClaim("Admin"));
-    options.AddPolicy("Moderators", policy => policy.RequireClaim("Admin", "Moderator"));
-    options.AddPolicy("User", policy => policy.RequireClaim("Admin", "Moderator", "User"));
-});
+builder.Services.AddDefaultIdentity<IdentityUser>()
+    .AddEntityFrameworkStores<WebDevDbContext>();
+
+//builder.Services.AddIdentityServer()
+    //.AddApiAuthorization<IdentityUser, WebDevDbContext>();
+    
 
 builder.Services.ConfigureEf(builder.Configuration);
 builder.Services.RegisterRepositories();
@@ -80,6 +81,11 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+app.UseAuthorization();
+
+app.UseAuthentication();
+//app.UseIdentityServer();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -91,7 +97,7 @@ app.UseCors(options => options
     .AllowAnyMethod()
     .AllowCredentials());
 
-app.UseAuthorization();
+
 
 app.MapControllers();
 

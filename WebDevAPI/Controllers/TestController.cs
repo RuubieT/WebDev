@@ -43,7 +43,7 @@ namespace WebDevAPI.Controllers
 
 
         [HttpGet("tablecards")]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetTableCards()
         {
             var cards = await CardRepository.TryFindAll(c => c.InHand == false);
@@ -58,9 +58,10 @@ namespace WebDevAPI.Controllers
 
         
         [HttpGet("cards")]
-        [Authorize(Policy = "User")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult> GetCards()
         {
+            var user = HttpContext.User;
             var cards = await CardRepository.GetAll();
             return Ok(cards);
         }

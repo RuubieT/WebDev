@@ -1,7 +1,7 @@
 import { Player } from '../../models/Player.js';
 import { UserLoginDto } from '../../models/Dto/Auth/UserLoginDto.js';
 import { PlayerRegisterDto } from '../../models/Dto/Auth/PlayerRegisterDto.js';
-import { navigateTo } from '../index.js';
+import { jwtToken, navigateTo } from '../index.js';
 import { getCookie, setCookie } from './cookieHelper.js';
 import {
   ChangePw,
@@ -32,10 +32,13 @@ const loginVerify = async () => {
     }
   });
 
-  await Login(user);
+  let tokenJson = await Login(user);
   CurrentUser = await GetUser();
 
   if (CurrentUser) {
+    if (tokenJson) {
+      jwtToken.token = tokenJson.token;
+    }
     setCookie('username', CurrentUser.username, 1);
     alert('Logged in');
     navigateTo('/');
@@ -71,10 +74,13 @@ const registerVerify = async () => {
     }
   });
 
-  await Register(newUser);
+  let tokenJson = await Register(newUser);
   CurrentUser = await GetUser();
 
   if (CurrentUser) {
+    if (tokenJson) {
+      jwtToken.token = tokenJson.token;
+    }
     setCookie('username', CurrentUser.username, 1);
     alert('Registered succesfully');
     navigateTo('/');

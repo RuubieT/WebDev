@@ -24,8 +24,6 @@ namespace WebDevAPI.Db.Extensions
             serviceCollection.AddTransient<IPokerTableRepository, PokerTableRepository>();
             serviceCollection.AddTransient<ICardRepository, CardRepository>();
             serviceCollection.AddTransient<IPlayerHandRepository, PlayerHandRepository>();
-            serviceCollection.AddTransient<IRoleRepository, RoleRepository>();
-            serviceCollection.AddTransient<IUserRoleRepository, UserRoleRepository>();
         }
     }
 }

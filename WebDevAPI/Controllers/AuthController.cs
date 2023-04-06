@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,13 +20,21 @@ namespace WebDevAPI.Controllers
     public class AuthController : BaseController
     {
         private Auth auth;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserStore<IdentityUser> _userStore;
 
         public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
+            IUserStore<IdentityUser> userStore,
+            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
             playerHandRepository, pokerTableRepository, logger)
         {
-
             auth = new Auth(config);
+            _userManager = userManager;
+            _userStore = userStore;
+            _signInManager = signInManager;
+
         }
 
         [HttpPost("Register")]
@@ -37,9 +46,25 @@ namespace WebDevAPI.Controllers
             var userNameExists = await PlayerRepository.TryFind(e => e.Username == request.Username);
             if (userNameExists.succes) return BadRequest("Username is already taken");
 
+            var user = new IdentityUser
+            {
+                UserName = request.Username,
+                Email = request.Email,
+            };
+
+            var result = await _userManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword(request.Password));
+
+            if (result.Succeeded)
+            {
+                Logger.LogInformation(request.FirstName + " created a new account with password.");
+                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
+                Logger.LogInformation(request.FirstName + " was given the role of a user");
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
+
             var player = new Player
             {
-                Id = new Guid(),
+                Id = Guid.Parse(await _userManager.GetUserIdAsync(user)),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Username = request.Username,
@@ -52,7 +77,7 @@ namespace WebDevAPI.Controllers
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, request.Username),
-                new Claim("Admin", "User"),
+                new Claim(ClaimTypes.Role, "User"),
             };
             string token = auth.CreateToken(player.Id, claims);
 
@@ -63,7 +88,7 @@ namespace WebDevAPI.Controllers
 
             Logger.LogInformation("Registered user: " +  request.Username);
 
-            return Ok(new { message = "Success" });
+            return Ok(new { token });
         }
 
         [HttpPost("Login")]
@@ -73,16 +98,27 @@ namespace WebDevAPI.Controllers
             var findPlayer = data.result;
             if (findPlayer == null) return NotFound();
 
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null) return NotFound();
 
-            if (findPlayer.Email != request.Email || !BCrypt.Net.BCrypt.Verify(request.Password, findPlayer.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, findPlayer.PasswordHash))
             {
                 return BadRequest(new {message = "Invalid Credentials"});
+            }
+            
+            
+
+            var result = await _signInManager.CanSignInAsync(user);
+            if (result)
+            {
+                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
+                Logger.LogInformation("User logged in.");
             }
 
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, findPlayer.Username),
-                new Claim("User", "User"),
+                new Claim(ClaimTypes.Role, "User"),
             };
             string token = auth.CreateToken(findPlayer.Id, claims);
 
@@ -93,7 +129,7 @@ namespace WebDevAPI.Controllers
 
             Logger.LogInformation("User: " + findPlayer.Username + " logged in");
 
-            return Ok(new { message = "Success" });
+            return Ok(new { token });
         }
 
         [HttpGet("User")]
@@ -119,6 +155,5 @@ namespace WebDevAPI.Controllers
             Response.Cookies.Delete("jwt");
             return Ok(new { message = "Success" });
         }
-
     }
 }
