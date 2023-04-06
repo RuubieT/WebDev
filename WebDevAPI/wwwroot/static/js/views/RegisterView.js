@@ -1,4 +1,4 @@
-import { registerVerify } from '../helpers/verifyForm.js';
+import { assignCaptchaDiv, registerVerify } from '../helpers/verifyForm.js';
 import AbstractView from './AbstractView.js';
 
 export default class extends AbstractView {
@@ -6,9 +6,10 @@ export default class extends AbstractView {
     super(params);
     this.setTitle('Register');
 
-    document.getElementById('contact').style.display = 'none';
-
     window.addEventListener('submit', registerVerify);
+    window.addEventListener('input', (event) => {
+      this.checkInput(event.target.id);
+    });
   }
 
   async getHtml() {
@@ -35,15 +36,19 @@ export default class extends AbstractView {
                         <label>Email</label>
                     </div>
                     <div class="input-box">
-                        <input type="password" id="password" required>
+                        <input type="password" id="password" minlength="8 required">
+                        <span id="strength">Type Password</span>
                         <label>Password</label>
                     </div>
-                    <div class="remember-forgot">
-                        <label>
-                        <input type="checkbox" id="agreeCheck" required>
-                        Agree to the terms & conditions (Captcha?)</label>
+                    <div>
+                    Check the captcha
+                     ${assignCaptchaDiv()}
                     </div>
-                        <button type="submit" class="btn" id="btn">Register</button>
+                
+                       
+                       
+                   
+                        <button type="submit" class="btn" id="btn" disabled>Register</button>
                     <div class="login-register">
                         <p>Already have an account?<a href="/login" class="register-link" data-link>   Log in</a></p>
                     </div>
@@ -51,5 +56,64 @@ export default class extends AbstractView {
             </div>
         </div>
         `;
+  }
+
+  checkInput(field) {
+    const input = document.getElementById(field).value;
+    if (field == 'password') {
+      var strength = document.getElementById('strength');
+
+      const criteria = {
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        specialChar: false,
+      };
+
+      // Check if the password meets each criteria
+      if (input.length >= 8) {
+        criteria.length = true;
+      }
+
+      if (/[A-Z]/.test(input)) {
+        criteria.uppercase = true;
+      }
+
+      if (/[a-z]/.test(input)) {
+        criteria.lowercase = true;
+      }
+
+      if (/\d/.test(input)) {
+        criteria.number = true;
+      }
+
+      if (/[$@!%*?&]/.test(input)) {
+        criteria.specialChar = true;
+      }
+
+      // Calculate the number of criteria met
+      const numCriteriaMet = Object.values(criteria).filter(Boolean).length;
+
+      // Return the strength of the password based on the number of criteria met
+      switch (numCriteriaMet) {
+        case 1:
+          strength.innerHTML = '<span style="color:red">Weak!</span>';
+          return;
+        case 2:
+          strength.innerHTML = '<span style="color:red">Weak!</span>';
+        case 3:
+          strength.innerHTML = '<span style="color:orange">Medium!</span>';
+          return;
+        case 4:
+          strength.innerHTML = '<span style="color:orange">Medium!</span>';
+          return;
+        case 5:
+          strength.innerHTML = '<span style="color:green">Strong!</span>';
+          return;
+        default:
+          return '';
+      }
+    }
   }
 }

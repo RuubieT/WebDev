@@ -21,8 +21,8 @@ namespace WebDevAPI.Controllers
         private Auth auth;
 
         public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger)
         {
 
             auth = new Auth(config);
@@ -52,7 +52,7 @@ namespace WebDevAPI.Controllers
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, request.Username),
-                new Claim(ClaimTypes.Role, "User"),
+                new Claim("Admin", "User"),
             };
             string token = auth.CreateToken(player.Id, claims);
 
@@ -60,6 +60,8 @@ namespace WebDevAPI.Controllers
             {
                 HttpOnly = true
             });
+
+            Logger.LogInformation("Registered user: " +  request.Username);
 
             return Ok(new { message = "Success" });
         }
@@ -80,7 +82,7 @@ namespace WebDevAPI.Controllers
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, findPlayer.Username),
-                new Claim(ClaimTypes.Role, "User"),
+                new Claim("User", "User"),
             };
             string token = auth.CreateToken(findPlayer.Id, claims);
 
@@ -88,6 +90,8 @@ namespace WebDevAPI.Controllers
             {
                 HttpOnly = true
             });
+
+            Logger.LogInformation("User: " + findPlayer.Username + " logged in");
 
             return Ok(new { message = "Success" });
         }

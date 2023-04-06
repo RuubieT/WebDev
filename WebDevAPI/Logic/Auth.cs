@@ -1,4 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using SendGrid.Helpers.Mail;
+using SendGrid;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -27,26 +29,11 @@ namespace WebDevAPI.Logic
             var token = new JwtSecurityToken(
                 issuer: id.ToString(),
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.Now.AddMinutes(320),
                 signingCredentials: creds
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public JwtSecurityToken Verify(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(token);
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuerSigningKey = true,
-                ValidateIssuer = false,
-                ValidateAudience = false
-            }, out SecurityToken validatedToken);
-
-            return (JwtSecurityToken)validatedToken;
         }
 
         public JwtSecurityToken ValidateToken(string token)
@@ -75,6 +62,20 @@ namespace WebDevAPI.Logic
 
             var stringClaimValue = securityToken.Claims.First(claim => claim.Type == claimType).Value;
             return stringClaimValue;
+        }
+
+        //Input should be emails, message etc
+        public async Task SendMailAsync(string message)
+        {
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("s1144640@student.windesheim.nl", "Example User");
+            var subject = "Sending with SendGrid is Fun";
+            var to = new EmailAddress("s1144640@student.windesheim.nl", "Example User");
+            var plainTextContent = message;
+            var htmlContent = message;
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
         }
 
         //RefreshToken?

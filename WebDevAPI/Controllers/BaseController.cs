@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebDevAPI.Db.Repositories.Contract;
 
@@ -12,8 +13,11 @@ namespace WebDevAPI.Controllers
         protected readonly ICardRepository CardRepository;
         protected readonly IPlayerHandRepository PlayerHandRepository;
         protected readonly IPokerTableRepository PokerTableRepository;
+        protected readonly ILogger<BaseController> Logger;
 
-        public BaseController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository, IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository)
+        public BaseController(IContactFormRepository contactFormRepository, IUserRepository userRepository, 
+            IPlayerRepository playerRepository, ICardRepository cardRepository, 
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger)
         {
             ContactFormRepository = contactFormRepository;
             UserRepository = userRepository;
@@ -21,6 +25,7 @@ namespace WebDevAPI.Controllers
             PokerTableRepository = pokerTableRepository;
             CardRepository = cardRepository;
             PlayerHandRepository = playerHandRepository;
+            Logger = logger;
         }
 
     }

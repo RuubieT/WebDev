@@ -17,13 +17,13 @@ namespace WebDevAPI.Controllers
 {
     [Route("api/Player")]
     [ApiController]
-    [Authorize(Roles ="User")]
+    //[Authorize(Roles ="User")]
     public class PlayerController : BaseController
     {
 
         public PlayerController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, IUserRepository userRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger)
         {
 
         }

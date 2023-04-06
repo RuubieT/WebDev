@@ -12,7 +12,6 @@ using WebDevAPI.Logic.CardLogic;
 
 namespace WebDevAPI.Controllers
 {
-    [AllowAnonymous]
     [Route("api/test")]
     [ApiController]
     public class TestController : BaseController
@@ -20,8 +19,8 @@ namespace WebDevAPI.Controllers
         private Auth auth;
 
         public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-                  IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-                  playerHandRepository, pokerTableRepository)
+                  IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+                  playerHandRepository, pokerTableRepository, logger)
         {
             auth = new Auth(config);
         }
@@ -30,7 +29,7 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult> test()
         {
             var cards = await PlayerHandRepository.GetAll();
-
+            auth.SendMailAsync("JOOOl").Wait();
             return Ok(cards);
 
         }
@@ -44,6 +43,7 @@ namespace WebDevAPI.Controllers
 
 
         [HttpGet("tablecards")]
+        [Authorize(Policy = "Admin")]
         public async Task<ActionResult> GetTableCards()
         {
             var cards = await CardRepository.TryFindAll(c => c.InHand == false);
@@ -56,7 +56,9 @@ namespace WebDevAPI.Controllers
             return Ok(tablecards);
         }
 
+        
         [HttpGet("cards")]
+        [Authorize(Policy = "User")]
         public async Task<ActionResult> GetCards()
         {
             var cards = await CardRepository.GetAll();

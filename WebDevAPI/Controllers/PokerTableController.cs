@@ -17,8 +17,8 @@ namespace WebDevAPI.Controllers
         DealCards DealCards;
 
         public PokerTableController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-             playerHandRepository, pokerTableRepository)
+             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+             playerHandRepository, pokerTableRepository, logger)
         {
             DealCards = new DealCards();
         }

@@ -21,6 +21,7 @@ namespace WebDevAPI.Db
                 .HasOne(b => b.PlayerHand)
                 .WithOne(i => i.Player)
                 .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<UserRoles>().HasNoKey();
         }
         public DbSet<Contactform> Contactforms { get; set; }
         public DbSet<User> Users { get; set; }
@@ -28,5 +29,7 @@ namespace WebDevAPI.Db
         public DbSet<Card> Cards { get; set; }
         public DbSet<PokerTable> PokerTables { get; set; }
         public DbSet<PlayerHand> PlayerHands { get; set; }
+        public DbSet<UserRoles> UserRoles { get; set; }
+        public DbSet<Roles> Roles { get; set; }
     }
 }

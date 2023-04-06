@@ -5,21 +5,20 @@ import Game from './views/GameView.js';
 import Login from './views/LoginView.js';
 import Register from './views/RegisterView.js';
 import Leaderboard from './views/LeaderboardView.js';
-import { deleteAllButtons } from './helpers/clearButtons.js';
+import { deleteAllButtons, removeRegAndLog } from './helpers/clearButtons.js';
 import Table from './views/TableView.js';
 import { removeEventListeners } from './helpers/verifyForm.js';
 import { Auth } from '../models/Auth.js';
 import { SignalRService } from './helpers/services/signalR.js';
-import { getCookie } from './helpers/cookieHelper.js';
-import { GetUser } from './helpers/services/auth.js';
-import { User } from '../models/User.js';
+import ForgotPassword from './views/ForgotPasswordView.js';
+import ChangePassword from './views/ChangePasswordView.js';
+
+//const apiUrl = localhost
 
 const pathToRegex = (path) =>
   new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '$');
 
 export var jwtToken = new Auth();
-export var currentUser = new User();
-console.log(currentUser);
 
 export const s = new SignalRService();
 
@@ -44,6 +43,7 @@ export const navigateTo = (url) => {
 };
 
 const router = async () => {
+  //removeRegAndLog();
   const routes = [
     { path: '/', view: Dashboard },
     { path: '/contact', view: Contact },
@@ -53,6 +53,8 @@ const router = async () => {
     { path: '/register', view: Register },
     { path: '/leaderboard', view: Leaderboard },
     { path: '/table', view: Table },
+    { path: '/forgotpw', view: ForgotPassword },
+    { path: '/changepw', view: ChangePassword },
   ];
 
   // Test each route for potential match
@@ -72,24 +74,6 @@ const router = async () => {
       route: routes[0],
       result: [location.pathname],
     };
-  }
-
-  if (jwtToken.token) {
-    var div = document.getElementById('login');
-    div.classList.add('disabled-link');
-
-    const username = getCookie('username');
-
-    div.innerText = 'Welcome back ' + username;
-
-    var div2 = document.getElementById('register');
-    var button = document.createElement('button');
-    button.innerText = 'Logout';
-    button.addEventListener('click', async () => {
-      console.log('Logout');
-    });
-    div2.innerText = '';
-    div2.appendChild(button);
   }
 
   const view = new match.route.view(getParams(match));

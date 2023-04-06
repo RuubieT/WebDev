@@ -7,7 +7,6 @@ export default class extends AbstractView {
     this.setTitle('Dashboard');
 
     createPlayButton();
-    document.getElementById('contact').style.display = 'none';
   }
 
   async getHtml() {

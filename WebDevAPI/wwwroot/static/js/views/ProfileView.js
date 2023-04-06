@@ -4,8 +4,6 @@ export default class extends AbstractView {
   constructor(params) {
     super(params);
     this.setTitle('Profile');
-
-    document.getElementById('contact').style.display = 'none';
   }
 
   async getHtml() {

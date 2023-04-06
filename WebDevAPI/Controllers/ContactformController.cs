@@ -18,8 +18,8 @@ namespace WebDevAPI.Controllers
     public class ContactformController : BaseController
     {
         public ContactformController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-             playerHandRepository, pokerTableRepository)
+             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+             playerHandRepository, pokerTableRepository, logger)
         {
 
         }
@@ -72,7 +72,7 @@ namespace WebDevAPI.Controllers
 
             await ContactFormRepository.Create(contactform);
 
-            contactform.SendMailAsync(contactformModel.Email).Wait();
+            //contactform.SendMailAsync(contactformModel.Email).Wait();
 
             return Ok(contactform.GetContactformDto());
         }

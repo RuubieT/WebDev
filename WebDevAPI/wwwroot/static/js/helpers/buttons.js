@@ -39,7 +39,7 @@ function createSubmitFormButton() {
       let data = await response.json();
       alert(JSON.stringify(data));
     });
-
+    btn.disabled = true;
     div.appendChild(btn);
     return div;
   }
@@ -170,6 +170,8 @@ function deleteCustomButtons(name) {
     document.body.removeChild(buttons);
   }
 }
+
+async function EditUsersInRole(roleId) {}
 
 export {
   createSubmitFormButton,
