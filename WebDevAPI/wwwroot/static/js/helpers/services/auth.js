@@ -23,3 +23,7 @@ export const ForgotPw = async (email) => {
 export const ChangePw = async (data) => {
   return await putData('api/User/ChangePassword', data);
 };
+
+export const ValidateCode = async (data) => {
+  return await postData('api/Auth/GAuth', data);
+};

@@ -9,6 +9,7 @@ import {
   GetUser,
   Login,
   Register,
+  ValidateCode,
 } from './services/auth.js';
 
 let CurrentUser;
@@ -32,17 +33,62 @@ const loginVerify = async () => {
     }
   });
 
-  let tokenJson = await Login(user);
-  CurrentUser = await GetUser();
+  var result = false;
+  var modal = document.getElementById('myModal');
+  var span = document.getElementsByClassName('close')[0];
+  modal.style.display = 'block';
 
-  if (CurrentUser) {
-    if (tokenJson) {
-      jwtToken.token = tokenJson.token;
-    }
-    setCookie('username', CurrentUser.username, 1);
-    alert('Logged in');
+  span.onclick = function () {
+    modal.style.display = 'none';
     navigateTo('/');
-  } else alert('User not found');
+  };
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+      navigateTo('/');
+    }
+  };
+
+  var modalcontent = document.getElementById('modalcontent');
+  if (modalcontent.hasChildNodes) {
+    modalcontent.innerHTML = '';
+  }
+  var form = document.createElement('form');
+  form.action = 'javascript:void(0);';
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.id = 'code';
+  var button = document.createElement('button');
+  button.id = 'submitCode';
+  button.innerText = 'Submit';
+  button.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const value = document.getElementById('code').value;
+    const data = {
+      Email: user.email,
+      Code: value,
+    };
+    result = await ValidateCode(data);
+    console.log(result);
+    if (result.message == 'Success') {
+      let tokenJson = await Login(user);
+      CurrentUser = await GetUser();
+
+      if (CurrentUser) {
+        if (tokenJson) {
+          jwtToken.token = tokenJson.token;
+        }
+        setCookie('username', CurrentUser.username, 1);
+        alert('Logged in');
+        navigateTo('/');
+      } else alert('User not found');
+    }
+  });
+
+  form.appendChild(input);
+  form.appendChild(button);
+  modalcontent.appendChild(form);
 };
 
 const registerVerify = async () => {
@@ -74,16 +120,36 @@ const registerVerify = async () => {
     }
   });
 
-  let tokenJson = await Register(newUser);
+  let registerData = await Register(newUser);
   CurrentUser = await GetUser();
 
   if (CurrentUser) {
-    if (tokenJson) {
-      jwtToken.token = tokenJson.token;
+    if (registerData) {
+      jwtToken.token = registerData.token;
     }
     setCookie('username', CurrentUser.username, 1);
     alert('Registered succesfully');
-    navigateTo('/');
+
+    var modal = document.getElementById('myModal');
+    var span = document.getElementsByClassName('close')[0];
+    modal.style.display = 'block';
+
+    span.onclick = function () {
+      modal.style.display = 'none';
+      navigateTo('/');
+    };
+
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = 'none';
+        navigateTo('/');
+      }
+    };
+
+    var modalcontent = document.getElementById('modalcontent');
+    modalcontent.innerHTML = `
+  <img src=${registerData.qrCodeImageUrl} >
+    <p>${registerData.manualEntrySetupCode}</p>`;
   } else alert('User not found');
 };
 

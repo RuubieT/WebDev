@@ -1,8 +1,10 @@
-import { navigateTo, s } from '../index.js';
+import { jwtToken, navigateTo, s } from '../index.js';
 import { Contactform } from '../../models/Contactform.js';
 import { createGame, getHand, joinGame, startGame } from './gamelogic.js';
 import { createContactform } from './services/contactform.js';
 import { joinPokertable } from './services/pokertable.js';
+import { test, test2 } from './services/player.js';
+import { loginVerify } from './verifyForm.js';
 
 function createSubmitFormButton() {
   var submitFormButton = document.getElementById('contactFormButtonDiv');
@@ -84,7 +86,8 @@ function createGameButtons() {
     createbutton.classList.add('game');
 
     createbutton.addEventListener('click', async () => {
-      await createGame();
+      //await createGame();
+      loginVerify();
       //navigateTo('/table');
     });
 

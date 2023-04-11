@@ -9,6 +9,8 @@ using WebDevAPI.Db.Repositories;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic;
 using WebDevAPI.Logic.CardLogic;
+using Google.Authenticator;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace WebDevAPI.Controllers
 {
@@ -28,9 +30,10 @@ namespace WebDevAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            var cards = await PlayerHandRepository.GetAll();
-            auth.SendMailAsync("JOOOl").Wait();
-            return Ok(cards);
+            var cards = await PlayerHandRepository.GetAll();      
+
+
+            return Ok( cards);
 
         }
 

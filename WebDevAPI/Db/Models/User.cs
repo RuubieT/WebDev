@@ -17,6 +17,8 @@ namespace WebDevAPI.Db.Models
         [Required] 
         public string PasswordHash { get; set; }
 
+        public string Key { get; set; }
+
         public User()
         {
 

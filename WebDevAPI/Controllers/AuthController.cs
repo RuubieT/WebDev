@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Google.Authenticator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,10 @@ using System.Text;
 using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
+using WebDevAPI.Db.Repositories;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace WebDevAPI.Controllers
 {
@@ -62,6 +65,15 @@ namespace WebDevAPI.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
 
+            string key = auth.GenerateRandomString(10);
+
+            TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
+            SetupCode setupInfo = tfa.GenerateSetupCode("S1144640 Web app", request.Email, key, false, 3);
+
+            string qrCodeImageUrl = setupInfo.QrCodeSetupImageUrl;
+            string manualEntrySetupCode = setupInfo.ManualEntryKey;
+
+
             var player = new Player
             {
                 Id = Guid.Parse(await _userManager.GetUserIdAsync(user)),
@@ -69,7 +81,8 @@ namespace WebDevAPI.Controllers
                 LastName = request.LastName,
                 Username = request.Username,
                 Email = request.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                Key = key,
             };
 
             await PlayerRepository.Create(player);
@@ -88,7 +101,7 @@ namespace WebDevAPI.Controllers
 
             Logger.LogInformation("Registered user: " +  request.Username);
 
-            return Ok(new { token });
+            return Ok(new { token, qrCodeImageUrl, manualEntrySetupCode });
         }
 
         [HttpPost("Login")]
@@ -153,6 +166,18 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult> Logout()
         {
             Response.Cookies.Delete("jwt");
+            return Ok(new { message = "Success" });
+        }
+
+        [HttpPost("GAuth")]
+        public async Task<ActionResult> ValidateCode(PostGAuthCodeDto data)
+        {
+            var user = PlayerRepository.TryFind(u => u.Email == data.Email).Result.result;
+            if (user == null) return NotFound();
+
+            TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
+            bool result = tfa.ValidateTwoFactorPIN(user.Key, data.Code);
+            if (!result) return BadRequest("Invalid code");
             return Ok(new { message = "Success" });
         }
     }

@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebDevAPI.Db.Models;
+using System.Security.Cryptography;
 
 namespace WebDevAPI.Logic
 {
@@ -76,6 +77,25 @@ namespace WebDevAPI.Logic
             var htmlContent = message;
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
+        }
+
+        public string GenerateRandomString(int length, string allowableChars = null)
+        {
+            if ( string.IsNullOrEmpty(allowableChars) )
+            {
+                allowableChars = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            }
+            var rnd = new byte[length];
+            using (var rng = new RNGCryptoServiceProvider())
+                rng.GetBytes(rnd);
+
+            var allowable = allowableChars.ToCharArray();
+            var l = allowable.Length;
+            var chars = new char[length]; ;
+            for (int i = 0;i < length; i++)
+                chars[i] = allowable[rnd[i] % l];
+
+            return new string(chars);
         }
 
         //RefreshToken?
