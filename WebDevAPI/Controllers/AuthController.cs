@@ -37,8 +37,7 @@ namespace WebDevAPI.Controllers
             _userManager = userManager;
             _userStore = userStore;
             _signInManager = signInManager;
-
-        }
+            }
 
         [HttpPost("Register")]
         public async Task<ActionResult<string>> Register(PostPlayerDto request)
@@ -61,6 +60,7 @@ namespace WebDevAPI.Controllers
             {
                 Logger.LogInformation(request.FirstName + " created a new account with password.");
                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
+                await _userManager.AddToRoleAsync(user, "User");
                 Logger.LogInformation(request.FirstName + " was given the role of a user");
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
@@ -118,13 +118,10 @@ namespace WebDevAPI.Controllers
             {
                 return BadRequest(new {message = "Invalid Credentials"});
             }
-            
-            
 
             var result = await _signInManager.CanSignInAsync(user);
             if (result)
             {
-                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
                 Logger.LogInformation("User logged in.");
             }
 

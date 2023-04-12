@@ -56,6 +56,7 @@ builder.Services.AddAuthentication(x =>
 }).AddIdentityServerJwt(); 
 
 builder.Services.AddDefaultIdentity<IdentityUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<WebDevDbContext>();
 
 //builder.Services.AddIdentityServer()
@@ -77,7 +78,7 @@ if (app.Environment.IsDevelopment())
     {
         var services = scope.ServiceProvider;
 
-        SeedData.Initialize(services);
+        await SeedData.InitializeAsync(services);
     }
 }
 

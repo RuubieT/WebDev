@@ -14,7 +14,7 @@ namespace WebDevAPI.Migrations
                 name: "Key",
                 table: "Users",
                 type: "nvarchar(max)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "");
         }
 
