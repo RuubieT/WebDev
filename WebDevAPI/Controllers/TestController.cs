@@ -22,58 +22,24 @@ namespace WebDevAPI.Controllers
     public class TestController : BaseController
     {
         private Auth auth;
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
 
         public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-                  IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-                  playerHandRepository, pokerTableRepository, logger)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
             auth = new Auth(config);
             _roleManager = roleManager;
-            _userManager = userManager;
+ 
         }
 
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            var user = new IdentityUser
-            {
-                UserName = "LemmeKNow",
-                Email = "TEst",
-            };
-
-            var result = await _userManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword("Working"));
-
-            if (result.Succeeded)
-            {
-                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-                await _userManager.AddToRoleAsync(user, "User");
-            }
-
-
-            var player = new Player
-            {
-                Id = Guid.Parse(await _userManager.GetUserIdAsync(user)),
-                FirstName = "BOB",
-                LastName = "BOB", 
-                Username = user.UserName,
-                Email = user.Email,
-                Chips = 1500,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Working"),
-            };
-
-            await PlayerRepository.Create(player);
-            Console.WriteLine("CREATED");
-            
-            var getplayer = PlayerRepository.Get(player.Id);
-            if(getplayer == null)
-            {
-                Console.WriteLine("HERE");
-            }
-
-            return Ok(new { getplayer });
+            var players = await PlayerRepository.TryFindAll(p => p.Username != "Pieter" || p.Username == "Henk" || p.Username == "Bas");
+            return Ok(players);
 
         }
 
@@ -110,12 +76,12 @@ namespace WebDevAPI.Controllers
                 UserName = "Moderator",
                 Email = "Moderator@Moderator"
             };
-            var suc = await _userManager.CreateAsync(Admin, BCrypt.Net.BCrypt.HashPassword("Admin"));
-            var ceed = await _userManager.CreateAsync(Moderator, BCrypt.Net.BCrypt.HashPassword("Moderator"));
+            var suc = await UserManager.CreateAsync(Admin, BCrypt.Net.BCrypt.HashPassword("Admin"));
+            var ceed = await UserManager.CreateAsync(Moderator, BCrypt.Net.BCrypt.HashPassword("Moderator"));
                 if( suc.Succeeded && ceed.Succeeded)
             {
-                await _userManager.AddToRoleAsync(Admin, "Admin");
-                await _userManager.AddToRoleAsync(Moderator, "Moderator");
+                await UserManager.AddToRoleAsync(Admin, "Admin");
+                await UserManager.AddToRoleAsync(Moderator, "Moderator");
             }
             return Ok();
 
@@ -124,7 +90,7 @@ namespace WebDevAPI.Controllers
         [HttpGet("user")]
         public async Task<ActionResult> GetUsers()
         {
-            var users = await PlayerRepository.GetAll();
+            var users = await UserManager.GetUsersInRoleAsync("User");
             return Ok(users);
         }
 

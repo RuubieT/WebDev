@@ -25,28 +25,23 @@ namespace WebDevAPI.Controllers
     {
         private Auth auth;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
 
         public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger)
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
             auth = new Auth(config);
-            _userManager = userManager;
-            _userStore = userStore;
             _signInManager = signInManager;
             }
 
         [HttpPost("Register")]
         public async Task<ActionResult<string>> Register(PostPlayerDto request)
         {
-            var requestedUser = await _userManager.FindByEmailAsync(request.Email);
+            var requestedUser = await UserManager.FindByEmailAsync(request.Email);
             if (requestedUser != null) return BadRequest("User already exists");
 
-            var userNameExists = await _userManager.FindByNameAsync(request.Username);
+            var userNameExists = await UserManager.FindByNameAsync(request.Username);
             if (userNameExists != null) return BadRequest("Username is already taken");
 
             var user = new IdentityUser
@@ -55,13 +50,13 @@ namespace WebDevAPI.Controllers
                 Email = request.Email,
             };
 
-            var result = await _userManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword(request.Password));
+            var result = await UserManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword(request.Password));
 
             if (result.Succeeded)
             {
                 Logger.LogInformation(request.FirstName + " created a new account with password.");
-                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-                await _userManager.AddToRoleAsync(user, "User");
+                await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
+                await UserManager.AddToRoleAsync(user, "User");
                 Logger.LogInformation(request.FirstName + " was given the role of a user");
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
@@ -77,7 +72,7 @@ namespace WebDevAPI.Controllers
 
             var player = new Player
             {
-                Id = Guid.Parse(await _userManager.GetUserIdAsync(user)),
+                Id = Guid.Parse(await UserManager.GetUserIdAsync(user)),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Username = request.Username,
@@ -108,7 +103,7 @@ namespace WebDevAPI.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(PostLoginUserDto request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await UserManager.FindByEmailAsync(request.Email);
             if (user == null) return NotFound();
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
@@ -148,7 +143,7 @@ namespace WebDevAPI.Controllers
 
             string userId = jwt.Issuer;
 
-            var player = await _userManager.FindByIdAsync(userId);
+            var player = await UserManager.FindByIdAsync(userId);
 
             if (player == null) return BadRequest("User not found");
 
@@ -166,7 +161,7 @@ namespace WebDevAPI.Controllers
         [HttpPost("GAuth")]
         public async Task<ActionResult> ValidateCode(PostGAuthCodeDto data)
         {
-            var user = await _userManager.FindByEmailAsync(data.Email);
+            var user = await UserManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();

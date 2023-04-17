@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db;
@@ -21,9 +22,9 @@ namespace WebDevAPI.Controllers
     public class PlayerController : BaseController
     {
 
-        public PlayerController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, IUserRepository userRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger)
+        public PlayerController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
 
         }

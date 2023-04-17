@@ -14,10 +14,12 @@ namespace WebDevAPI.Controllers
         protected readonly IPlayerHandRepository PlayerHandRepository;
         protected readonly IPokerTableRepository PokerTableRepository;
         protected readonly ILogger<BaseController> Logger;
+        protected readonly UserManager<IdentityUser> UserManager;
+
 
         public BaseController(IContactFormRepository contactFormRepository, IUserRepository userRepository, 
             IPlayerRepository playerRepository, ICardRepository cardRepository, 
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager)
         {
             ContactFormRepository = contactFormRepository;
             UserRepository = userRepository;
@@ -26,6 +28,7 @@ namespace WebDevAPI.Controllers
             CardRepository = cardRepository;
             PlayerHandRepository = playerHandRepository;
             Logger = logger;
+            UserManager = userManager;
         }
 
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db;
@@ -18,8 +19,8 @@ namespace WebDevAPI.Controllers
     public class ContactformController : BaseController
     {
         public ContactformController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-             playerHandRepository, pokerTableRepository, logger)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
 
         }

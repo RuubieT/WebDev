@@ -30,8 +30,9 @@ namespace WebDevAPI.Controllers
         private readonly UserManager<IdentityUser> _userManager;
 
         public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-                IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, UserManager<IdentityUser> userManager, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-                playerHandRepository, pokerTableRepository, logger)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) 
+            : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
             auth = new Auth(config);
         }
