@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System;
 using WebDevAPI.Db.Dto_s.User;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WebDevAPI.Db.Models
 {
@@ -17,7 +18,8 @@ namespace WebDevAPI.Db.Models
         [Required] 
         public string PasswordHash { get; set; }
 
-        public string Key { get; set; }
+        [AllowNull]
+        public string AuthCode { get; set; }
 
         public User()
         {

@@ -24,7 +24,6 @@ namespace WebDevAPI.Db
                 .HasOne(b => b.PlayerHand)
                 .WithOne(i => i.Player)
                 .OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<UserRoles>().HasNoKey();
         }
         public DbSet<Contactform> Contactforms { get; set; }
         public DbSet<User> Users { get; set; }

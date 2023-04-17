@@ -78,7 +78,7 @@ if (app.Environment.IsDevelopment())
     {
         var services = scope.ServiceProvider;
 
-        await SeedData.InitializeAsync(services);
+        SeedData.Initialize(services);
     }
 }
 

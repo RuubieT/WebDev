@@ -14,7 +14,7 @@ namespace WebDevAPI.Db.Seeders
 {
     public static class SeedData
     {
-        public static async Task InitializeAsync(IServiceProvider serviceProvider)
+        public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new WebDevDbContext(
                 serviceProvider.GetRequiredService<
@@ -26,20 +26,7 @@ namespace WebDevAPI.Db.Seeders
                 }
                 var rand = new Random();
 
-                var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var UserManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-                string[] roleNames = { "Admin", "Moderator", "User" };
-                IdentityResult roleResult;
-
-                foreach (var roleName in roleNames)
-                {
-                    var roleExist = await RoleManager.RoleExistsAsync(roleName);
-                    if (!roleExist)
-                    {
-                        //create the roles and seed them to the database: Question 1
-                        roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
-                    }
-                }
+                
 
                 var firstnames = new List<string>
                 {
@@ -76,8 +63,22 @@ namespace WebDevAPI.Db.Seeders
                     "___TROLL___"
                 };
 
+                var users = new List<User>();
+                for (var i = 0; i < 10; i++)
+                {
+                    var user = new User
+                    {
+                        Id = Guid.NewGuid(),
+                        FirstName = firstnames[rand.Next(0, firstnames.Count)],
+                        LastName = lastnames[rand.Next(0, lastnames.Count)],
+                        Email = emails[rand.Next(0, emails.Count)],
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordList[rand.Next(0, passwordList.Count)]),
+                    };
+                    users.Add(user);
+                }
+
                 var players = new List<Player>();
-                for (var i = 0; i < 5; i++)
+                for (var i = 0; i < 10; i++)
                 {
                     var player = new Player
                     {
@@ -90,16 +91,6 @@ namespace WebDevAPI.Db.Seeders
                         Chips = rand.Next(0, 15000),
                         PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
                     };
-                    var user = new IdentityUser
-                    {
-                        UserName = player.Username,
-                        Email = player.Email,
-                    };
-                    var succeeded = await UserManager.CreateAsync(user, player.PasswordHash);
-                    if (succeeded.Succeeded)
-                    {
-                        await UserManager.AddToRoleAsync(user, roleNames[rand.Next(0, roleNames.Length)]);
-                    }
                     players.Add(player);
                 }
                 
@@ -143,7 +134,7 @@ namespace WebDevAPI.Db.Seeders
                 }
 
                 context.Cards.AddRange(cards);
-;
+                context.Users.AddRange(users);
                 context.Users.AddRange(players);
                 context.SaveChanges();
             }

@@ -1,4 +1,5 @@
-﻿using Google.Authenticator;
+﻿using Azure.Core;
+using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -42,11 +43,11 @@ namespace WebDevAPI.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<string>> Register(PostPlayerDto request)
         {
-            var requestedUser = await UserRepository.TryFind(e => e.Email == request.Email);
-            if (requestedUser.succes) return BadRequest("User already exists");
+            var requestedUser = await _userManager.FindByEmailAsync(request.Email);
+            if (requestedUser != null) return BadRequest("User already exists");
 
-            var userNameExists = await PlayerRepository.TryFind(e => e.Username == request.Username);
-            if (userNameExists.succes) return BadRequest("Username is already taken");
+            var userNameExists = await _userManager.FindByNameAsync(request.Username);
+            if (userNameExists != null) return BadRequest("Username is already taken");
 
             var user = new IdentityUser
             {
@@ -82,7 +83,7 @@ namespace WebDevAPI.Controllers
                 Username = request.Username,
                 Email = request.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Key = key,
+                AuthCode = key,
             };
 
             await PlayerRepository.Create(player);
@@ -107,14 +108,10 @@ namespace WebDevAPI.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(PostLoginUserDto request)
         {
-            var data = await PlayerRepository.TryFind(e => e.Email.ToLower() == request.Email.ToLower());
-            var findPlayer = data.result;
-            if (findPlayer == null) return NotFound();
-
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null) return NotFound();
 
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, findPlayer.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return BadRequest(new {message = "Invalid Credentials"});
             }
@@ -127,17 +124,17 @@ namespace WebDevAPI.Controllers
 
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, findPlayer.Username),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Role, "User"),
             };
-            string token = auth.CreateToken(findPlayer.Id, claims);
+            string token = auth.CreateToken(new Guid(user.Id), claims);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
                 HttpOnly = true
             });
 
-            Logger.LogInformation("User: " + findPlayer.Username + " logged in");
+            Logger.LogInformation("User: " + user.UserName + " logged in");
 
             return Ok(new { token });
         }
@@ -151,11 +148,11 @@ namespace WebDevAPI.Controllers
 
             Guid userId = Guid.Parse(jwt.Issuer);
 
-            var player = await PlayerRepository.TryFind(user => user.Id == userId);
+            var player = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (!player.succes || player.result == null) return BadRequest("User not found");
+            if (player == null) return BadRequest("User not found");
 
-            return Ok(player.result.GetPlayerDto());
+            return Ok(player);
 
         }
 
@@ -169,12 +166,12 @@ namespace WebDevAPI.Controllers
         [HttpPost("GAuth")]
         public async Task<ActionResult> ValidateCode(PostGAuthCodeDto data)
         {
-            var user = PlayerRepository.TryFind(u => u.Email == data.Email).Result.result;
+            var user = await _userManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
-            bool result = tfa.ValidateTwoFactorPIN(user.Key, data.Code);
-            if (!result) return BadRequest("Invalid code");
+            //bool result = tfa.ValidateTwoFactorPIN(user.AuthCode, data.Code);
+            //if (!result) return BadRequest("Invalid code");
             return Ok(new { message = "Success" });
         }
     }

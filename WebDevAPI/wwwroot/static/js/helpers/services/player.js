@@ -13,5 +13,5 @@ export const test = async (token) => {
 };
 
 export const test2 = async () => {
-  return await getData('api/test');
+  return await getData('api/test/tablecards');
 };

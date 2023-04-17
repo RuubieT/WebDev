@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -26,8 +27,10 @@ namespace WebDevAPI.Controllers
     public class UserController : BaseController
     {
         private Auth auth;
+        private readonly UserManager<IdentityUser> _userManager;
+
         public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-                IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+                IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, UserManager<IdentityUser> userManager, ILogger<BaseController> logger) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
                 playerHandRepository, pokerTableRepository, logger)
         {
             auth = new Auth(config);
@@ -69,13 +72,13 @@ namespace WebDevAPI.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)
         {
-            var user = UserRepository.TryFind(u => u.Email == data.Email).Result.result;
+            var user = await _userManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
             List<Claim> claims = new List<Claim>()
             {
                 new Claim("User", "User"),
             };
-            string token = auth.CreateToken(user.Id, claims);
+            string token = auth.CreateToken(new Guid(user.Id), claims);
             auth.SendMailAsync(token.ToString()).Wait();
 
             Logger.LogInformation("Email send to " + data.Email);
@@ -89,16 +92,16 @@ namespace WebDevAPI.Controllers
 
         public async Task<ActionResult> ResetPassword(PostChangePasswordDto data)
         {
-            var user = UserRepository.TryFind(u => u.Email == data.Email).Result.result;
+            var user = await _userManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
 
             var output = auth.ValidateToken(data.Token);
             if (output == null) return NotFound("Token invalid");
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(data.Password);
-            await UserRepository.Update(user);
+            await _userManager.UpdateAsync(user);
 
-            return Ok(user.GetUserDto()); ;
+            return Ok(user); ;
         }
     }
 }
