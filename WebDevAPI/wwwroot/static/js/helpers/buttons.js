@@ -128,30 +128,45 @@ function deleteGameButtons() {
   deleteCustomButtons('gameButtons');
 }
 
-function createPokerButtons() {
+async function createPokerButtons() {
   var pokerButtons = document.getElementById('pokerButtons');
   if (!pokerButtons) {
     const div = document.createElement('div');
     div.id = 'pokerButtons';
 
+    var user = await GetUser();
+    console.log(user);
+
     const checkButton = createCustomButtons('checkButton', 'Check');
     checkButton.addEventListener('click', () => {
-      alert('CHECK');
+      s._connection.send('SendMessage', `CHECK`);
+      s._connection.on('ReceiveMessage', (value) => {
+        console.log(value);
+      });
     });
 
     const foldButton = createCustomButtons('foldButton', 'Fold');
     foldButton.addEventListener('click', async () => {
-      await startGame();
+      s._connection.send('SendMessage', 'FOLD');
+      s._connection.on('ReceiveMessage', (value) => {
+        console.log(value);
+      });
     });
 
     const callButton = createCustomButtons('callButton', 'Call');
     callButton.addEventListener('click', () => {
-      alert('CALL');
+      s._connection.send('SendMessage', 'Call');
+      s._connection.on('ReceiveMessage', (value) => {
+        console.log(value);
+      });
     });
 
     const betButton = createCustomButtons('betButton', 'Bet');
     betButton.addEventListener('click', () => {
-      alert('BET');
+      s._connection.send('SendMessage', 'BET + {VALUE}');
+      s._connection.on('ReceiveMessage', (value) => {
+        console.log(value);
+      });
     });
 
     div.appendChild(checkButton);
