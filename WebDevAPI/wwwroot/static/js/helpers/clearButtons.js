@@ -9,8 +9,8 @@ import { getCookie } from './cookieHelper.js';
 import { deleteLeaderboard } from './leaderboard.js';
 import { GetUser, Logout } from './services/auth.js';
 
-function removeRegAndLog() {
-  GetUser()
+async function removeRegAndLog() {
+  await GetUser()
     .then((data) => {
       if (data) {
         var div = document.getElementById('login');

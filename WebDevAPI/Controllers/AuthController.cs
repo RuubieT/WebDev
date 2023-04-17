@@ -146,9 +146,9 @@ namespace WebDevAPI.Controllers
             if(token == null) return NotFound();
             var jwt = auth.ValidateToken(token);
 
-            Guid userId = Guid.Parse(jwt.Issuer);
+            string userId = jwt.Issuer;
 
-            var player = await _userManager.FindByIdAsync(userId.ToString());
+            var player = await _userManager.FindByIdAsync(userId);
 
             if (player == null) return BadRequest("User not found");
 
