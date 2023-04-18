@@ -80,8 +80,14 @@ namespace WebDevAPI.Controllers
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 AuthCode = key,
             };
-
-            await PlayerRepository.Create(player);
+            try
+            {
+                await PlayerRepository.IdentityUserToPlayer(user, player, UserManager);
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
 
             List<Claim> claims = new List<Claim>()
             {
