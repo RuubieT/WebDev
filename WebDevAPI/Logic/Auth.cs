@@ -19,7 +19,7 @@ namespace WebDevAPI.Logic
             _configuration = config;
         }
 
-        public string CreateToken(Guid id, List<Claim> claims)
+        public string CreateToken(string id, List<Claim> claims)
         {
             //Is this Secure?
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
@@ -28,7 +28,7 @@ namespace WebDevAPI.Logic
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                issuer: id.ToString(),
+                issuer: id,
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(320),
                 signingCredentials: creds

@@ -26,9 +26,9 @@ namespace WebDevAPI.Controllers
         private Auth auth;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
             playerHandRepository, pokerTableRepository, logger, userManager)
         {
             auth = new Auth(config);
@@ -72,10 +72,10 @@ namespace WebDevAPI.Controllers
 
             var player = new Player
             {
-                Id = Guid.Parse(await UserManager.GetUserIdAsync(user)),
+                Id = await UserManager.GetUserIdAsync(user),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Username = request.Username,
+                UserName = request.Username,
                 Email = request.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 AuthCode = key,
@@ -122,7 +122,7 @@ namespace WebDevAPI.Controllers
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Role, "User"),
             };
-            string token = auth.CreateToken(new Guid(user.Id), claims);
+            string token = auth.CreateToken(user.Id, claims);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {

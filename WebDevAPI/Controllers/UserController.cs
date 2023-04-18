@@ -29,14 +29,14 @@ namespace WebDevAPI.Controllers
         private Auth auth;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+        public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) 
-            : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            : base(contactFormRepository, playerRepository, cardRepository,
             playerHandRepository, pokerTableRepository, logger, userManager)
         {
             auth = new Auth(config);
         }
-
+        /*
         // GET: api/User
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
@@ -68,7 +68,7 @@ namespace WebDevAPI.Controllers
             await UserRepository.Delete(user);
 
             return NoContent();
-        }
+        }*/
 
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)
@@ -79,7 +79,7 @@ namespace WebDevAPI.Controllers
             {
                 new Claim("User", "User"),
             };
-            string token = auth.CreateToken(new Guid(user.Id), claims);
+            string token = auth.CreateToken(user.Id, claims);
             auth.SendMailAsync(token.ToString()).Wait();
 
             Logger.LogInformation("Email send to " + data.Email);

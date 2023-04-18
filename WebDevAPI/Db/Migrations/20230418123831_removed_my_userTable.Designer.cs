@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebDevAPI.Db;
 
@@ -11,9 +12,11 @@ using WebDevAPI.Db;
 namespace WebDevAPI.Migrations
 {
     [DbContext(typeof(WebDevDbContext))]
-    partial class WebDevDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230418123831_removed_my_userTable")]
+    partial class removed_my_userTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,7 +252,7 @@ namespace WebDevAPI.Migrations
 
                     b.HasKey("CardId");
 
-                    b.ToTable("Cards", (string)null);
+                    b.ToTable("Cards");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.Contactform", b =>
@@ -276,7 +279,7 @@ namespace WebDevAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contactforms", (string)null);
+                    b.ToTable("Contactforms");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.PlayerHand", b =>
@@ -304,7 +307,7 @@ namespace WebDevAPI.Migrations
 
                     b.HasIndex("SecondCardId");
 
-                    b.ToTable("PlayerHands", (string)null);
+                    b.ToTable("PlayerHands");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.PokerTable", b =>
@@ -327,7 +330,7 @@ namespace WebDevAPI.Migrations
 
                     b.HasKey("PokerTableId");
 
-                    b.ToTable("PokerTables", (string)null);
+                    b.ToTable("PokerTables");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>

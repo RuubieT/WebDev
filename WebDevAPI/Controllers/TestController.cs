@@ -25,9 +25,9 @@ namespace WebDevAPI.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
 
 
-        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+        public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager) : base(contactFormRepository, playerRepository, cardRepository,
             playerHandRepository, pokerTableRepository, logger, userManager)
         {
             auth = new Auth(config);
@@ -38,15 +38,16 @@ namespace WebDevAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            var players = await PlayerRepository.TryFindAll(p => p.Username != "Pieter" || p.Username == "Henk" || p.Username == "Bas");
-            return Ok(players);
+            var data = await PlayerRepository.TryFindAll(p => p.UserName == "___TROLL___");
+            //var data = await PlayerRepository.GetAll();
+            return Ok(data);
 
         }
 
         [HttpGet("roles")]
         public async Task<ActionResult> addRoles()
         {
-             string[] roleNames = { "Admin", "Moderator", "User" };
+            string[] roleNames = { "Admin", "Moderator", "User" };
             IdentityResult roleResult;
 
             foreach (var roleName in roleNames)
@@ -90,6 +91,41 @@ namespace WebDevAPI.Controllers
         [HttpGet("user")]
         public async Task<ActionResult> GetUsers()
         {
+            var user = new IdentityUser
+            {
+                UserName = "LemmeKNow",
+                Email = "TEst",
+            };
+
+            var result = await UserManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword("Working"));
+
+            if (result.Succeeded)
+            {
+                await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
+                await UserManager.AddToRoleAsync(user, "User");
+            }
+
+
+            var player = new Player
+            {
+                Id = await UserManager.GetUserIdAsync(user),
+                FirstName = "BOB",
+                LastName = "BOB",
+                UserName = user.UserName,
+                Email = user.Email,
+                Chips = 1500,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Working"),
+            };
+
+            await PlayerRepository.Create(player);
+            Console.WriteLine("CREATED");
+
+            var getplayer = PlayerRepository.Get(Guid.Parse(player.Id));
+            if (getplayer == null)
+            {
+                Console.WriteLine("HERE");
+            }
+
             var users = await UserManager.GetUsersInRoleAsync("User");
             return Ok(users);
         }
