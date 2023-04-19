@@ -1,4 +1,4 @@
-import { assignCaptchaDiv, registerVerify } from '../helpers/verifyForm.js';
+import { assignCaptchaDiv, checkInput, registerVerify } from '../helpers/verifyForm.js';
 import AbstractView from './AbstractView.js';
 
 export default class extends AbstractView {
@@ -7,8 +7,8 @@ export default class extends AbstractView {
     this.setTitle('Register');
 
     window.addEventListener('submit', registerVerify);
-    window.addEventListener('input', (event) => {
-      this.checkInput(event.target.id);
+      window.addEventListener('input', (event) => {
+          checkInput(event.target.id);
     });
   }
 
@@ -58,62 +58,5 @@ export default class extends AbstractView {
         `;
   }
 
-  checkInput(field) {
-    const input = document.getElementById(field).value;
-    if (field == 'password') {
-      var strength = document.getElementById('strength');
-
-      const criteria = {
-        length: false,
-        uppercase: false,
-        lowercase: false,
-        number: false,
-        specialChar: false,
-      };
-
-      // Check if the password meets each criteria
-      if (input.length >= 8) {
-        criteria.length = true;
-      }
-
-      if (/[A-Z]/.test(input)) {
-        criteria.uppercase = true;
-      }
-
-      if (/[a-z]/.test(input)) {
-        criteria.lowercase = true;
-      }
-
-      if (/\d/.test(input)) {
-        criteria.number = true;
-      }
-
-      if (/[$@!%*?&]/.test(input)) {
-        criteria.specialChar = true;
-      }
-
-      // Calculate the number of criteria met
-      const numCriteriaMet = Object.values(criteria).filter(Boolean).length;
-
-      // Return the strength of the password based on the number of criteria met
-      switch (numCriteriaMet) {
-        case 1:
-          strength.innerHTML = '<span style="color:red">Weak!</span>';
-          return;
-        case 2:
-          strength.innerHTML = '<span style="color:red">Weak!</span>';
-        case 3:
-          strength.innerHTML = '<span style="color:orange">Medium!</span>';
-          return;
-        case 4:
-          strength.innerHTML = '<span style="color:orange">Medium!</span>';
-          return;
-        case 5:
-          strength.innerHTML = '<span style="color:green">Strong!</span>';
-          return;
-        default:
-          return '';
-      }
-    }
-  }
+  
 }

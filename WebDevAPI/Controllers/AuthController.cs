@@ -44,23 +44,6 @@ namespace WebDevAPI.Controllers
             var userNameExists = await UserManager.FindByNameAsync(request.Username);
             if (userNameExists != null) return BadRequest("Username is already taken");
 
-            var user = new IdentityUser
-            {
-                UserName = request.Username,
-                Email = request.Email,
-            };
-
-            var result = await UserManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword(request.Password));
-
-            if (result.Succeeded)
-            {
-                Logger.LogInformation(request.FirstName + " created a new account with password.");
-                await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-                await UserManager.AddToRoleAsync(user, "User");
-                Logger.LogInformation(request.FirstName + " was given the role of a user");
-                await _signInManager.SignInAsync(user, isPersistent: false);
-            }
-
             string key = auth.GenerateRandomString(10);
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
@@ -69,10 +52,9 @@ namespace WebDevAPI.Controllers
             string qrCodeImageUrl = setupInfo.QrCodeSetupImageUrl;
             string manualEntrySetupCode = setupInfo.ManualEntryKey;
 
-
             var player = new Player
             {
-                Id = await UserManager.GetUserIdAsync(user),
+                Id = Guid.NewGuid().ToString(),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 UserName = request.Username,
@@ -82,12 +64,18 @@ namespace WebDevAPI.Controllers
             };
             try
             {
-                await PlayerRepository.IdentityUserToPlayer(user, player, UserManager);
-            }catch (Exception ex)
+                await PlayerRepository.Create(player);
+
+       
+                await UserManager.AddClaimAsync(player, new Claim(ClaimTypes.Role, "User"));
+                await UserManager.AddToRoleAsync(player, "User");
+                Logger.LogInformation(request.FirstName + " was given the role of a user");
+                await _signInManager.SignInAsync(player, isPersistent: false);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }
-            
+            }    
 
             List<Claim> claims = new List<Claim>()
             {

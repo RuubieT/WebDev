@@ -38,8 +38,8 @@ namespace WebDevAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            var data = await PlayerRepository.TryFindAll(p => p.UserName == "___TROLL___");
-            //var data = await PlayerRepository.GetAll();
+            //var data = await UserManager.GetUsersInRoleAsync("User");
+            var data = await PlayerRepository.GetAll();
             return Ok(data);
 
         }
@@ -91,47 +91,48 @@ namespace WebDevAPI.Controllers
         [HttpGet("user")]
         public async Task<ActionResult> GetUsers()
         {
-            var user = new IdentityUser
-            {
-                UserName = "LemmeKNow",
-                Email = "TEst",
-            };
-
-            var result = await UserManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword("Working"));
-
-            if (result.Succeeded)
-            {
-                await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-                await UserManager.AddToRoleAsync(user, "User");
-            }
+           
 
 
             var player = new Player
             {
-                Id = await UserManager.GetUserIdAsync(user),
+                Id = new Guid().ToString(),
                 FirstName = "BOB",
                 LastName = "BOB",
-                UserName = user.UserName,
-                Email = user.Email,
+                UserName = "BOB",
+                Email = "BOB",
                 Chips = 1500,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Working"),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("BOB"),
             };
 
             try
             {
-                await PlayerRepository.IdentityUserToPlayer(user, player, UserManager);
+                await PlayerRepository.Create(player);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
 
-            Console.WriteLine("CREATED");
-
-            var getplayer = PlayerRepository.Get(Guid.Parse(player.Id));
-            if (getplayer == null)
+            try
             {
-                Console.WriteLine("HERE");
+                var user = new IdentityUser
+                {
+                    UserName = player.UserName,
+                    Email = player.Email,
+                };
+
+                var result = await UserManager.CreateAsync(user, player.PasswordHash);
+
+                if (result.Succeeded)
+                {
+                    await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
+                    await UserManager.AddToRoleAsync(user, "User");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
 
             var users = await UserManager.GetUsersInRoleAsync("User");
