@@ -67,12 +67,6 @@ function createPlayButton() {
       s._connection.on('ReceiveMessage', (value) => {
         console.log(value);
       });
-      let user = await GetUser();
-        console.log(user);
-        let auth = await test(jwtToken.token);
-        let unauth = await test2(jwtToken.token);
-        console.log("Auth: " + auth);
-        console.log("Unauth: " + unauth);
 
       navigateTo('/game');
     });
