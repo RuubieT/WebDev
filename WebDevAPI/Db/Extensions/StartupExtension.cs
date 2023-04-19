@@ -18,7 +18,6 @@ namespace WebDevAPI.Db.Extensions
 
         public static void RegisterRepositories(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddTransient<IUserRepository, UserRepository>();
             serviceCollection.AddTransient<IContactFormRepository, ContactFormRepository>();
             serviceCollection.AddTransient<IPlayerRepository, PlayerRepository>();
             serviceCollection.AddTransient<IPokerTableRepository, PokerTableRepository>();

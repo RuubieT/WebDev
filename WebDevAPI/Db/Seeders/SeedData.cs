@@ -20,7 +20,7 @@ namespace WebDevAPI.Db.Seeders
                 serviceProvider.GetRequiredService<
                     DbContextOptions<WebDevDbContext>>()))
             {
-                if (context.Users.Any())
+                if (context.Players.Any())
                 {
                     return;
                 }
@@ -63,31 +63,17 @@ namespace WebDevAPI.Db.Seeders
                     "___TROLL___"
                 };
 
-                var users = new List<User>();
-                for (var i = 0; i < 10; i++)
-                {
-                    var user = new User
-                    {
-                        Id = Guid.NewGuid(),
-                        FirstName = firstnames[rand.Next(0, firstnames.Count)],
-                        LastName = lastnames[rand.Next(0, lastnames.Count)],
-                        Email = emails[rand.Next(0, emails.Count)],
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordList[rand.Next(0, passwordList.Count)]),
-                    };
-                    users.Add(user);
-                }
-
                 var players = new List<Player>();
                 for (var i = 0; i < 10; i++)
                 {
                     var player = new Player
                     {
-                        Id = Guid.NewGuid(),
+                        Id = Guid.NewGuid().ToString(),
                         FirstName = firstnames[rand.Next(0, firstnames.Count)],
                         LastName = lastnames[rand.Next(0, lastnames.Count)],
                         Email = emails[rand.Next(0, emails.Count)],
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordList[rand.Next(0, passwordList.Count)]),
-                        Username = usernameList[rand.Next(0, usernameList.Count)],
+                        UserName = usernameList[rand.Next(0, usernameList.Count)],
                         Chips = rand.Next(0, 15000),
                         PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
                     };
@@ -103,14 +89,14 @@ namespace WebDevAPI.Db.Seeders
                     BigBlind = 30,
                     MaxSeats = 8,
                 });
-                context.Users.Add(new Player
+                context.Players.Add(new Player
                 {
-                    Id = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
+                    Id = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8").ToString(),
                     FirstName = firstnames[rand.Next(0, firstnames.Count)],
                     LastName = lastnames[rand.Next(0, lastnames.Count)],
                     Email = emails[rand.Next(0, emails.Count)],
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(passwordList[rand.Next(0, passwordList.Count)]),
-                    Username = usernameList[rand.Next(0, usernameList.Count)],
+                    UserName = usernameList[rand.Next(0, usernameList.Count)],
                     Chips = rand.Next(0, 15000),
                     PokerTableId = new Guid("539F9F45-53A7-4087-B728-8F664E765F92"),
                 });
@@ -118,7 +104,7 @@ namespace WebDevAPI.Db.Seeders
                 context.PlayerHands.Add(new PlayerHand
                 {
                     PlayerHandId = new Guid("DB8289A8-3382-429B-B915-31989D6F7FC8"),
-                    PlayerId = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8"),
+                    PlayerId = new Guid("DA8289A8-3382-429B-B915-31989D6F7FC8").ToString(),
                 });
                 context.SaveChanges();
                 #endregion
@@ -134,8 +120,7 @@ namespace WebDevAPI.Db.Seeders
                 }
 
                 context.Cards.AddRange(cards);
-                context.Users.AddRange(users);
-                context.Users.AddRange(players);
+                context.Players.AddRange(players);
                 context.SaveChanges();
             }
         }

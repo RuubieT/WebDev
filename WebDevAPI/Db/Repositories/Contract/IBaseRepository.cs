@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ namespace WebDevAPI.Db.Repositories.Contract
     public interface IBaseRepository<T, TId> where T : class
     {
         public Task<IList<T>> GetAll();
+
+        public Task<IList<T>> GetUsers(UserManager<IdentityUser> userManager);
 
         public Task<T> Get(TId id);
 

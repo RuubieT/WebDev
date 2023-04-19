@@ -6,6 +6,7 @@ import { joinPokertable } from './services/pokertable.js';
 import { test, test2 } from './services/player.js';
 import { loginVerify } from './verifyForm.js';
 import { GetUser } from './services/auth.js';
+import { getCookie } from './cookieHelper.js';
 
 const appDiv = document.getElementById("app");
 
@@ -66,15 +67,13 @@ function createPlayButton() {
       s._connection.on('ReceiveMessage', (value) => {
         console.log(value);
       });
-      let user = await GetUser();
-      console.log(user)
 
       navigateTo('/game');
     });
 
     div.appendChild(btn);
     
-    appDiv.appendChild(div);
+    document.body.appendChild(div);
     console.log(appDiv);
   }
 }
@@ -93,9 +92,7 @@ function createGameButtons() {
     createbutton.classList.add('game');
 
     createbutton.addEventListener('click', async () => {
-      //await createGame();
-      loginVerify();
-      //navigateTo('/table');
+      //Setup game
     });
 
     const joinbutton = createCustomButtons('joinButton', 'Join');
@@ -120,7 +117,7 @@ function createGameButtons() {
     div.appendChild(x);
     div.appendChild(joinbutton);
     div.appendChild(startbutton);
-    appDiv.appendChild(div);
+      document.body.appendChild(div);
   }
 }
 
@@ -173,7 +170,7 @@ async function createPokerButtons() {
     div.appendChild(foldButton);
     div.appendChild(callButton);
     div.appendChild(betButton);
-    appDiv.appendChild(div);
+      document.body.appendChild(div);
   }
 }
 

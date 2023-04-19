@@ -21,19 +21,6 @@ namespace WebDevAPI.Db.Models
         [AllowNull]
         public string AuthCode { get; set; }
 
-        public User()
-        {
-
-        }
-
-        public User(Guid id, string firstName, string lastName, string password, string email) {
-            Id = id;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            PasswordHash = password;
-        }
-
         public GetUserDto GetUserDto()
         {
             return new()

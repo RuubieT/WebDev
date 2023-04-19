@@ -26,9 +26,9 @@ namespace WebDevAPI.Controllers
         private Auth auth;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
+            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
             playerHandRepository, pokerTableRepository, logger, userManager)
         {
             auth = new Auth(config);
@@ -44,23 +44,6 @@ namespace WebDevAPI.Controllers
             var userNameExists = await UserManager.FindByNameAsync(request.Username);
             if (userNameExists != null) return BadRequest("Username is already taken");
 
-            var user = new IdentityUser
-            {
-                UserName = request.Username,
-                Email = request.Email,
-            };
-
-            var result = await UserManager.CreateAsync(user, BCrypt.Net.BCrypt.HashPassword(request.Password));
-
-            if (result.Succeeded)
-            {
-                Logger.LogInformation(request.FirstName + " created a new account with password.");
-                await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-                await UserManager.AddToRoleAsync(user, "User");
-                Logger.LogInformation(request.FirstName + " was given the role of a user");
-                await _signInManager.SignInAsync(user, isPersistent: false);
-            }
-
             string key = auth.GenerateRandomString(10);
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
@@ -69,19 +52,30 @@ namespace WebDevAPI.Controllers
             string qrCodeImageUrl = setupInfo.QrCodeSetupImageUrl;
             string manualEntrySetupCode = setupInfo.ManualEntryKey;
 
-
             var player = new Player
             {
-                Id = Guid.Parse(await UserManager.GetUserIdAsync(user)),
+                Id = Guid.NewGuid().ToString(),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Username = request.Username,
+                UserName = request.Username,
                 Email = request.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 AuthCode = key,
             };
+            try
+            {
+                await PlayerRepository.Create(player);
 
-            await PlayerRepository.Create(player);
+       
+                await UserManager.AddClaimAsync(player, new Claim(ClaimTypes.Role, "User"));
+                await UserManager.AddToRoleAsync(player, "User");
+                Logger.LogInformation(request.FirstName + " was given the role of a user");
+                await _signInManager.SignInAsync(player, isPersistent: false);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }    
 
             List<Claim> claims = new List<Claim>()
             {
@@ -122,7 +116,7 @@ namespace WebDevAPI.Controllers
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Role, "User"),
             };
-            string token = auth.CreateToken(new Guid(user.Id), claims);
+            string token = auth.CreateToken(user.Id, claims);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {

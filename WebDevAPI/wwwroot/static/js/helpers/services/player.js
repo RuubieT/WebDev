@@ -12,6 +12,6 @@ export const test = async (token) => {
   return await getAuthorizedData('api/test/cards', token);
 };
 
-export const test2 = async () => {
-  return await getData('api/test/tablecards');
+export const test2 = async (token) => {
+  return await getAuthorizedData('api/test/tablecards', token);
 };
