@@ -117,7 +117,15 @@ namespace WebDevAPI.Controllers
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Working"),
             };
 
-            await PlayerRepository.Create(player);
+            try
+            {
+                await PlayerRepository.IdentityUserToPlayer(user, player, UserManager);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
             Console.WriteLine("CREATED");
 
             var getplayer = PlayerRepository.Get(Guid.Parse(player.Id));
