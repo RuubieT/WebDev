@@ -286,7 +286,7 @@ function removeEventListeners() {
   window.removeEventListener('input', (event) => {
     inputsAreNotNull(event.target.id);
   });
-    window.addEventListener('input', (event) => {
+    window.removeEventListener('input', (event) => {
         checkInput(event.target.id);
     });
 }
