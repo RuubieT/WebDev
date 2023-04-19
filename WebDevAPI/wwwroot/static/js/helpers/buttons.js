@@ -3,6 +3,12 @@ import { Contactform } from '../../models/Contactform.js';
 import { createGame, getHand, joinGame, startGame } from './gamelogic.js';
 import { createContactform } from './services/contactform.js';
 import { joinPokertable } from './services/pokertable.js';
+import { test, test2 } from './services/player.js';
+import { loginVerify } from './verifyForm.js';
+import { GetUser } from './services/auth.js';
+import { getCookie } from './cookieHelper.js';
+
+const appDiv = document.getElementById("app");
 
 function createSubmitFormButton() {
   var submitFormButton = document.getElementById('contactFormButtonDiv');
@@ -39,7 +45,7 @@ function createSubmitFormButton() {
       let data = await response.json();
       alert(JSON.stringify(data));
     });
-
+    btn.disabled = true;
     div.appendChild(btn);
     return div;
   }
@@ -66,7 +72,9 @@ function createPlayButton() {
     });
 
     div.appendChild(btn);
+    
     document.body.appendChild(div);
+    console.log(appDiv);
   }
 }
 
@@ -84,8 +92,7 @@ function createGameButtons() {
     createbutton.classList.add('game');
 
     createbutton.addEventListener('click', async () => {
-      await createGame();
-      //navigateTo('/table');
+      //Setup game
     });
 
     const joinbutton = createCustomButtons('joinButton', 'Join');
@@ -110,7 +117,7 @@ function createGameButtons() {
     div.appendChild(x);
     div.appendChild(joinbutton);
     div.appendChild(startbutton);
-    document.body.appendChild(div);
+      document.body.appendChild(div);
   }
 }
 
@@ -148,7 +155,7 @@ function createPokerButtons() {
     div.appendChild(foldButton);
     div.appendChild(callButton);
     div.appendChild(betButton);
-    document.body.appendChild(div);
+      document.body.appendChild(div);
   }
 }
 

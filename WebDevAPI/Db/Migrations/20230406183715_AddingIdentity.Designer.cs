@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebDevAPI.Db;
 
@@ -11,9 +12,11 @@ using WebDevAPI.Db;
 namespace WebDevAPI.Migrations
 {
     [DbContext(typeof(WebDevDbContext))]
-    partial class WebDevDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230406183715_AddingIdentity")]
+    partial class AddingIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,10 +89,6 @@ namespace WebDevAPI.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -141,10 +140,6 @@ namespace WebDevAPI.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -249,7 +244,7 @@ namespace WebDevAPI.Migrations
 
                     b.HasKey("CardId");
 
-                    b.ToTable("Cards", (string)null);
+                    b.ToTable("Cards");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.Contactform", b =>
@@ -276,7 +271,7 @@ namespace WebDevAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contactforms", (string)null);
+                    b.ToTable("Contactforms");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.PlayerHand", b =>
@@ -288,9 +283,8 @@ namespace WebDevAPI.Migrations
                     b.Property<Guid?>("FirstCardId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("PlayerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("PlayerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("SecondCardId")
                         .HasColumnType("uniqueidentifier");
@@ -304,7 +298,7 @@ namespace WebDevAPI.Migrations
 
                     b.HasIndex("SecondCardId");
 
-                    b.ToTable("PlayerHands", (string)null);
+                    b.ToTable("PlayerHands");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.PokerTable", b =>
@@ -327,19 +321,37 @@ namespace WebDevAPI.Migrations
 
                     b.HasKey("PokerTableId");
 
-                    b.ToTable("PokerTables", (string)null);
+                    b.ToTable("PokerTables");
                 });
 
-            modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>
+            modelBuilder.Entity("WebDevAPI.Db.Models.Roles", b =>
                 {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AuthCode")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Chips")
-                        .HasColumnType("int");
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -349,9 +361,51 @@ namespace WebDevAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.UserRoles", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RolesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("RolesId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>
+                {
+                    b.HasBaseType("WebDevAPI.Db.Models.User");
+
+                    b.Property<int>("Chips")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("PokerTableId")
                         .IsRequired()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasIndex("PokerTableId");
 
@@ -430,6 +484,25 @@ namespace WebDevAPI.Migrations
                     b.Navigation("Player");
 
                     b.Navigation("SecondCard");
+                });
+
+            modelBuilder.Entity("WebDevAPI.Db.Models.UserRoles", b =>
+                {
+                    b.HasOne("WebDevAPI.Db.Models.Roles", "Roles")
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebDevAPI.Db.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Roles");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebDevAPI.Db.Models.Player", b =>

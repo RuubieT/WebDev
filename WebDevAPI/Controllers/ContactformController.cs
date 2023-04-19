@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db;
@@ -17,9 +18,9 @@ namespace WebDevAPI.Controllers
     [ApiController]
     public class ContactformController : BaseController
     {
-        public ContactformController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-             playerHandRepository, pokerTableRepository)
+        public ContactformController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
 
         }
@@ -72,7 +73,7 @@ namespace WebDevAPI.Controllers
 
             await ContactFormRepository.Create(contactform);
 
-            contactform.SendMailAsync(contactformModel.Email).Wait();
+            //contactform.SendMailAsync(contactformModel.Email).Wait();
 
             return Ok(contactform.GetContactformDto());
         }

@@ -1,33 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using NuGet.Common;
 using WebDevAPI.Db;
 using WebDevAPI.Db.Dto_s.Contactform;
 using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
+using WebDevAPI.Logic;
 
 namespace WebDevAPI.Controllers
 {
-    [Authorize(Roles = "Admin")]
+
     [Route("api/User")]
     [ApiController]
     public class UserController : BaseController
     {
+        private Auth auth;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UserController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-                IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-                playerHandRepository, pokerTableRepository)
+        public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) 
+            : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
-
+            auth = new Auth(config);
         }
-
+        /*
         // GET: api/User
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
@@ -59,6 +68,41 @@ namespace WebDevAPI.Controllers
             await UserRepository.Delete(user);
 
             return NoContent();
+        }*/
+
+        [HttpPost("ForgotPassword")]
+        public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)
+        {
+            var user = await _userManager.FindByEmailAsync(data.Email);
+            if (user == null) return NotFound();
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim("User", "User"),
+            };
+            string token = auth.CreateToken(user.Id, claims);
+            auth.SendMailAsync(token.ToString()).Wait();
+
+            Logger.LogInformation("Email send to " + data.Email);
+
+            
+            
+            return Ok(new { token });
+        }
+
+        [HttpPut("ChangePassword")]
+
+        public async Task<ActionResult> ResetPassword(PostChangePasswordDto data)
+        {
+            var user = await _userManager.FindByEmailAsync(data.Email);
+            if (user == null) return NotFound();
+
+            var output = auth.ValidateToken(data.Token);
+            if (output == null) return NotFound("Token invalid");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(data.Password);
+            await _userManager.UpdateAsync(user);
+
+            return Ok(user); ;
         }
     }
 }

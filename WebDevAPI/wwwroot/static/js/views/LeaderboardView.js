@@ -6,8 +6,6 @@ export default class extends AbstractView {
     super(params);
     this.setTitle('Leaderboard');
 
-    document.getElementById('contact').style.display = 'none';
-
     const uri = 'api/Player/Leaderboard';
 
     fetch(uri)

@@ -1,17 +1,20 @@
 import AbstractView from './AbstractView.js';
 import { createSubmitFormButton } from '../helpers/buttons.js';
+import { GetUser } from '../helpers/services/auth.js';
+import { assignCaptchaDiv } from '../helpers/verifyForm.js';
 
 export default class extends AbstractView {
   constructor(params) {
     super(params);
     this.setTitle('Contact');
 
-    //window.addEventListener("input", (event) => { checkInput(event.target.id) });
-  }
+    // window.addEventListener('input', (event) => {
+    //   checkInput(event.target.id);
+    // });
 
-  assignCaptchaDiv() {
-    var catpcha = document.getElementById('contact');
-    return catpcha.innerHTML;
+    // let person = this.getCurrentUser().then((data) => {
+    //   return data;
+    // });
   }
 
   async getHtml() {
@@ -41,8 +44,8 @@ export default class extends AbstractView {
                         <label for="description">Description</label>
                         <span class="error" aria-live="polite"></span>
                     </div>
-                    <div class="remember-forgot" id="captcha">
-                        ${this.assignCaptchaDiv()}
+                    <div class="remember-forgot" id="captchaDiv">
+                        ${assignCaptchaDiv()}
                     </div>
                         ${createSubmitFormButton().innerHTML}
                 </form>

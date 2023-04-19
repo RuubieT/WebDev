@@ -9,7 +9,6 @@ export default class extends AbstractView {
     this.setTitle('Game');
 
     createGameButtons();
-    document.getElementById('contact').style.display = 'none';
   }
 
   async getHtml() {

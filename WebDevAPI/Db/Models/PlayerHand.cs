@@ -16,7 +16,7 @@ namespace WebDevAPI.Db.Models
         public Card SecondCard { get; set; }
 
 
-        public Guid PlayerId { get; set; }
+        public string PlayerId { get; set; }
         public virtual Player Player { get; set; }
 
         public GetPlayerHandDto GetPlayerHandDto()

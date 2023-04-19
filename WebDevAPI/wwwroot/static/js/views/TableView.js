@@ -6,7 +6,6 @@ import {
 } from '../helpers/buttons.js';
 import {
   getHand,
-  getPlayers,
   getTableCards,
   assignPokertable,
 } from '../helpers/gamelogic.js';
@@ -20,7 +19,6 @@ export default class extends AbstractView {
     //getPlayers();
     // getTableCards();
     assignPokertable();
-    document.getElementById('contact').style.display = 'none';
   }
 
   async getHtml() {

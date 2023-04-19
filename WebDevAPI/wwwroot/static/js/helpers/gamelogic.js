@@ -141,7 +141,6 @@ export {
   createGame,
   startGame,
   joinGame,
-  getPlayers,
   getHand,
   getTableCards,
   assignPokertable,

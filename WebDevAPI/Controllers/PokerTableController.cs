@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.PlayerHand;
@@ -16,9 +17,9 @@ namespace WebDevAPI.Controllers
     {
         DealCards DealCards;
 
-        public PokerTableController(IContactFormRepository contactFormRepository, IUserRepository userRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository) : base(contactFormRepository, userRepository, playerRepository, cardRepository,
-             playerHandRepository, pokerTableRepository)
+        public PokerTableController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, logger, userManager)
         {
             DealCards = new DealCards();
         }
@@ -26,13 +27,14 @@ namespace WebDevAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> CreateGame(PostCreatePokerTableDto creator)
         {
-            var result = PlayerRepository.TryFind(u => u.Username == creator.Username).Result;
-            if (result.result == null || !result.succes) return NotFound("No matching player found");
-            if (result.result.PokerTableId != null) return BadRequest("Already in a game");
+            var result = await UserManager.FindByNameAsync(creator.Username);
+            if (result == null) return NotFound("No matching player found");
+            var player = await PlayerRepository.Get(Guid.Parse(result.Id));
+            if (player.PokerTableId != null) return BadRequest("Already in a game");
 
             ICollection<Player> players = new List<Player>
             {
-                result.result
+                player
             };
 
             PokerTable pokerTable = new PokerTable
@@ -41,8 +43,7 @@ namespace WebDevAPI.Controllers
                 Ante = 10,
                 SmallBlind = 20,
                 BigBlind = 30,
-                MaxSeats = 8,
-                Players = players
+                MaxSeats = 8
             };
 
             await PokerTableRepository.Create(pokerTable);
@@ -53,12 +54,13 @@ namespace WebDevAPI.Controllers
         [HttpPut("Join")]
         public async Task<ActionResult<IEnumerable<GetPlayerDto>>> JoinGame(PutJoinPokerTableDto data)
         {
-            var result = PlayerRepository.TryFind(u => u.Username == data.Username).Result.result;
-            if (result == null) return NotFound("No matching player found");
+            var user = await UserManager.FindByNameAsync(data.Username);
+            if (user == null) return NotFound("No matching player found");
+            var result = await PlayerRepository.Get(Guid.Parse(user.Id));
             if (result.PokerTableId != null) return BadRequest("Already in a game");
 
             var pokertable = await PokerTableRepository.Get(data.PokerTableId);
-            if (pokertable == null) return NotFound();
+            if (pokertable == null) return NotFound("No matching pokertable found");
             result.PokerTableId = data.PokerTableId;
 
             await PlayerRepository.Update(result);
@@ -122,10 +124,11 @@ namespace WebDevAPI.Controllers
         [HttpGet("Hand/{username}")]
         public async Task<ActionResult<GetPlayerHandDto>> GetHand(string username)
         {
-            var data = await PlayerRepository.TryFind(u => u.Username == username);
-            if (data.result == null) return NotFound();
+            var data = await UserManager.FindByNameAsync(username);
+                await PlayerRepository.TryFind(u => u.UserName == username);
+            if (data == null) return NotFound();
 
-            var playerhand = await PlayerHandRepository.TryFind(h => h.PlayerId == data.result.Id);
+            var playerhand = await PlayerHandRepository.TryFind(h => h.PlayerId == data.Id);
             if (playerhand.result == null || playerhand.result.FirstCardId == null || playerhand.result.SecondCardId == null) return NotFound("No hand found");
 
             var firstcard = await CardRepository.Get(playerhand.result.FirstCardId ?? Guid.Empty);

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebDevAPI.Db.Repositories.Contract;
 
 namespace WebDevAPI.Db.Repositories
@@ -17,6 +18,26 @@ namespace WebDevAPI.Db.Repositories
         public virtual async Task<IList<T>> GetAll()
         {
             return _dbSet.ToList();
+        }
+
+        public virtual async Task<IList<T>> GetUsers(UserManager<IdentityUser> userManager)
+        {
+            var users = await userManager.GetUsersInRoleAsync("User");
+            var myUsers = new List<T>();
+            if(users != null)
+            {
+                foreach (var user in users)
+                {
+                    var entity = await _dbSet.FindAsync(Guid.Parse(user.Id));
+                    if (entity != null)
+                    {
+                        myUsers.Add(entity);
+                    }
+                }
+
+            };
+
+            return myUsers; 
         }
 
         public virtual async Task<T> Get(TId id)

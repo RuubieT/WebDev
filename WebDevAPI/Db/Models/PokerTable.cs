@@ -11,7 +11,6 @@ namespace WebDevAPI.Db.Models
         public int SmallBlind { get; set; }
         public int BigBlind { get; set; }
         public int MaxSeats { get; set; }
-        public virtual ICollection<Player>? Players { get; set; }
 
         public GetPokerTableDto GetPokerTableDto()
         {
@@ -22,10 +21,10 @@ namespace WebDevAPI.Db.Models
                 SmallBlind = SmallBlind,
                 BigBlind = BigBlind,
                 MaxSeats = MaxSeats,
-                Players = ConvertAllPlayersToDto(Players),
+
             };
         }
-
+        /*
         public ICollection<GetPlayerDto> ConvertAllPlayersToDto(ICollection<Player> players)
         {
             ICollection<GetPlayerDto> allPlayers = new List<GetPlayerDto>();
@@ -47,6 +46,6 @@ namespace WebDevAPI.Db.Models
         {
             if (MaxSeats == Players.Count) return true;
             else return false;
-        }
+        }}*/
     }
 }

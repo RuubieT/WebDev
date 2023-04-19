@@ -1,14 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using WebDevAPI.Db.Dto_s.Player;
 using static WebDevAPI.Db.Models.Card;
 
 namespace WebDevAPI.Db.Models
 {
-    public class Player : User
+    public class Player : IdentityUser
     {
-        public string Username { get; set; }
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        [AllowNull]
+        public string AuthCode { get; set; }
         public int Chips { get; set; }
         
+
 
 
         //Foreign key
@@ -16,22 +24,15 @@ namespace WebDevAPI.Db.Models
         public virtual PokerTable PokerTable { get; set; }
         public virtual PlayerHand PlayerHand { get; set; }
 
-
-        public Player() 
-        {
-            Chips = 15000;
-        }
-
         public GetPlayerDto GetPlayerDto()
         {
             return new()
             {
-                Id = Id,
+                Id = Guid.Parse(Id),
                 FirstName = FirstName,
                 LastName = LastName,
                 Email = Email,
-                PasswordHash = PasswordHash,
-                Username = Username,
+                Username = UserName,
                 Chips = Chips,
                 PokerTableId = PokerTableId,
 
@@ -42,7 +43,7 @@ namespace WebDevAPI.Db.Models
         {
             return new()
             {
-                Username = Username,
+                Username = UserName,
                 Chips = Chips
             };
         }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System;
 using WebDevAPI.Db.Dto_s.User;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WebDevAPI.Db.Models
 {
@@ -17,18 +18,8 @@ namespace WebDevAPI.Db.Models
         [Required] 
         public string PasswordHash { get; set; }
 
-        public User()
-        {
-
-        }
-
-        public User(Guid id, string firstName, string lastName, string password, string email) {
-            Id = id;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            PasswordHash = password;
-        }
+        [AllowNull]
+        public string AuthCode { get; set; }
 
         public GetUserDto GetUserDto()
         {
@@ -38,7 +29,6 @@ namespace WebDevAPI.Db.Models
                 FirstName = FirstName,
                 LastName = LastName,
                 Email = Email,
-                PasswordHash = PasswordHash,
             };
         }
 
