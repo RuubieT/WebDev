@@ -7,15 +7,10 @@
     body: JSON.stringify(data),
   })
     .then(function (res) {
-      // first then()
-      if (res.ok) {
-        return res;
-      }
-
-      throw new Error('Something went wrong.');
+      return handleResponse(res);
     })
     .catch((e) => console.log(e));
-  return response.json();
+  return returnResponse(response);
 }
 
 async function postAuthorizedData(url = '', data, token) {
@@ -28,15 +23,10 @@ async function postAuthorizedData(url = '', data, token) {
     body: JSON.stringify(data),
   })
     .then(function (res) {
-      // first then()
-      if (res.ok) {
-        return res;
-      }
-
-      throw new Error('Something went wrong.');
+      return handleResponse(res);
     })
     .catch((e) => console.log(e));
-  return response.json();
+  return returnResponse(response);
 }
 
 async function getData(url = '') {
@@ -47,15 +37,10 @@ async function getData(url = '') {
     },
   })
     .then(function (res) {
-      // first then()
-      if (res.ok) {
-        return res;
-      }
-
-      throw new Error('Something went wrong.');
+      return handleResponse(res);
     })
     .catch((e) => console.log(e));
-  return response.json();
+  return returnResponse(response);
 }
 
 async function getAuthorizedData(url = '', token) {
@@ -67,15 +52,10 @@ async function getAuthorizedData(url = '', token) {
     },
   })
     .then(function (res) {
-      // first then()
-      if (res.ok) {
-        return res;
-      }
-
-      throw new Error('Something went wrong.');
+      return handleResponse(res);
     })
     .catch((e) => console.log(e));
-  return response.json();
+  return returnResponse(response);
 }
 
 async function putData(url = '', data) {
@@ -87,15 +67,10 @@ async function putData(url = '', data) {
     body: JSON.stringify(data),
   })
     .then(function (res) {
-      // first then()
-      if (res.ok) {
-        return res;
-      }
-
-      throw new Error('Something went wrong.');
+      return handleResponse(res);
     })
     .catch((e) => console.log(e));
-  return response.json();
+  return returnResponse(response);
 }
 
 async function putAuthorizedData(url = '', data, token) {
@@ -108,15 +83,24 @@ async function putAuthorizedData(url = '', data, token) {
     body: JSON.stringify(data),
   })
     .then(function (res) {
-      // first then()
-      if (res.ok) {
-        return res;
-      }
-
-      throw new Error('Something went wrong.');
+      return handleResponse(res);
     })
     .catch((e) => console.log(e));
-  return response.json();
+  return returnResponse(response);
+}
+
+function handleResponse(response) {
+  if (!response.ok) {
+    return response.text().then((text) => {
+      throw new Error(text);
+    });
+  }
+  return response;
+}
+
+function returnResponse(response) {
+  if (response) return response.json();
+  return response;
 }
 
 export {

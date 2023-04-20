@@ -32,7 +32,6 @@ namespace WebDevAPI.Controllers
             var player = await PlayerRepository.GetByString(result.Id);
             if (player.PokerTableId != null) return BadRequest("Already in a game");
 
-
             PokerTable pokerTable = new PokerTable
             {
                 PokerTableId = Guid.NewGuid(),
@@ -43,6 +42,9 @@ namespace WebDevAPI.Controllers
             };
 
             await PokerTableRepository.Create(pokerTable);
+            
+            player.PokerTableId = pokerTable.PokerTableId;
+            await PlayerRepository.Update(player);
 
             return Ok(pokerTable.GetPokerTableDto());
         }

@@ -132,7 +132,7 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
             var token = Request.Cookies["jwt"];
-            if(token == null) return NotFound();
+            if(token == null) return NotFound("No logged in user");
             var jwt = auth.ValidateToken(token);
 
             string userId = jwt.Issuer;
@@ -160,8 +160,9 @@ namespace WebDevAPI.Controllers
             var player = await PlayerRepository.GetByString(user.Id);
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
-            bool result = tfa.ValidateTwoFactorPIN(player.AuthCode, data.Code);
-            if (!result) return BadRequest("Invalid code");
+//#TODO temporarily turned off for testing purposes
+            //bool result = tfa.ValidateTwoFactorPIN(player.AuthCode, data.Code);
+            //if (!result) return BadRequest("Invalid code");
             return Ok(new { message = "Success" });
         }
     }
