@@ -49,7 +49,7 @@ namespace WebDevAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetContactformDto>> GetContactformModel(Guid id)
         {
-            var contactformModel = await ContactFormRepository.Get(id.ToString());
+            var contactformModel = await ContactFormRepository.Get(id);
 
             if (contactformModel == null)
             {

@@ -27,7 +27,6 @@ namespace WebDevAPI.Controllers
     public class UserController : BaseController
     {
         private Auth auth;
-        private readonly UserManager<IdentityUser> _userManager;
 
         public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) 
@@ -73,7 +72,7 @@ namespace WebDevAPI.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)
         {
-            var user = await _userManager.FindByEmailAsync(data.Email);
+            var user = await UserManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
             List<Claim> claims = new List<Claim>()
             {
@@ -93,14 +92,14 @@ namespace WebDevAPI.Controllers
 
         public async Task<ActionResult> ResetPassword(PostChangePasswordDto data)
         {
-            var user = await _userManager.FindByEmailAsync(data.Email);
+            var user = await UserManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
 
             var output = auth.ValidateToken(data.Token);
             if (output == null) return NotFound("Token invalid");
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(data.Password);
-            await _userManager.UpdateAsync(user);
+            await UserManager.UpdateAsync(user);
 
             return Ok(user); ;
         }

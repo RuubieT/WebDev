@@ -20,7 +20,16 @@ namespace WebDevAPI.Db.Repositories
             return _dbSet.ToList();
         }
 
-        public virtual async Task<T> Get(string id)
+        public virtual async Task<T> Get(TId id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity == null)
+                return null;
+
+            return entity;
+        }
+
+        public virtual async Task<T> GetByString(string id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity == null)

@@ -8,7 +8,7 @@ import { loginVerify } from './verifyForm.js';
 import { GetUser } from './services/auth.js';
 import { getCookie } from './cookieHelper.js';
 
-const appDiv = document.getElementById("app");
+const appDiv = document.getElementById('app');
 
 function createSubmitFormButton() {
   var submitFormButton = document.getElementById('contactFormButtonDiv');
@@ -72,7 +72,7 @@ function createPlayButton() {
     });
 
     div.appendChild(btn);
-    
+
     document.body.appendChild(div);
     console.log(appDiv);
   }
@@ -117,7 +117,7 @@ function createGameButtons() {
     div.appendChild(x);
     div.appendChild(joinbutton);
     div.appendChild(startbutton);
-      document.body.appendChild(div);
+    document.body.appendChild(div);
   }
 }
 
@@ -130,9 +130,6 @@ async function createPokerButtons() {
   if (!pokerButtons) {
     const div = document.createElement('div');
     div.id = 'pokerButtons';
-
-    var user = await GetUser();
-    console.log(user);
 
     const checkButton = createCustomButtons('checkButton', 'Check');
     checkButton.addEventListener('click', () => {
@@ -170,7 +167,7 @@ async function createPokerButtons() {
     div.appendChild(foldButton);
     div.appendChild(callButton);
     div.appendChild(betButton);
-      document.body.appendChild(div);
+    document.body.appendChild(div);
   }
 }
 

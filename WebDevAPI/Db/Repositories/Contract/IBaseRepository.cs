@@ -9,7 +9,9 @@ namespace WebDevAPI.Db.Repositories.Contract
     {
         public Task<IList<T>> GetAll();
 
-        public Task<T> Get(string id);
+        public Task<T> Get(TId id);
+
+        public Task<T> GetByString(string id);
 
         public Task Update(T entity);
 

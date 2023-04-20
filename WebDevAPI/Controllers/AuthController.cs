@@ -157,10 +157,11 @@ namespace WebDevAPI.Controllers
         {
             var user = await UserManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
+            var player = await PlayerRepository.GetByString(user.Id);
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
-            //bool result = tfa.ValidateTwoFactorPIN(user.AuthCode, data.Code);
-            //if (!result) return BadRequest("Invalid code");
+            bool result = tfa.ValidateTwoFactorPIN(player.AuthCode, data.Code);
+            if (!result) return BadRequest("Invalid code");
             return Ok(new { message = "Success" });
         }
     }

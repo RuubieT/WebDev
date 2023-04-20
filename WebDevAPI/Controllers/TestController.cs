@@ -91,9 +91,6 @@ namespace WebDevAPI.Controllers
         [HttpGet("user")]
         public async Task<ActionResult> GetUsers()
         {
-           
-
-
             var player = new Player
             {
                 Id = new Guid().ToString(),

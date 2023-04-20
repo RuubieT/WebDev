@@ -11,15 +11,6 @@ namespace WebDevAPI.Db.Repositories
         {
         }
 
-        public virtual async Task<Player> Get(string id)
-        {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity == null)
-                return null;
-
-            return entity;
-        }
-
         public async Task IdentityUserToPlayer(IdentityUser oldUser, Player newPlayer, UserManager<IdentityUser> usermanager)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
