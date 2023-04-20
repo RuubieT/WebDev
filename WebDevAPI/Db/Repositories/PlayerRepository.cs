@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
 
@@ -8,7 +9,15 @@ namespace WebDevAPI.Db.Repositories
     {
         public PlayerRepository(WebDevDbContext context) : base(context)
         {
+        }
 
+        public virtual async Task<Player> Get(string id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity == null)
+                return null;
+
+            return entity;
         }
 
         public async Task IdentityUserToPlayer(IdentityUser oldUser, Player newPlayer, UserManager<IdentityUser> usermanager)

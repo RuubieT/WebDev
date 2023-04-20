@@ -9,9 +9,7 @@ namespace WebDevAPI.Db.Repositories.Contract
     {
         public Task<IList<T>> GetAll();
 
-        public Task<IList<T>> GetUsers(UserManager<IdentityUser> userManager);
-
-        public Task<T> Get(TId id);
+        public Task<T> Get(string id);
 
         public Task Update(T entity);
 

@@ -129,7 +129,6 @@ const loginVerify = async () => {
       Code: value,
     };
     result = await ValidateCode(data);
-    console.log(result);
     if (result.message == 'Success') {
       let tokenJson = await Login(user);
       CurrentUser = await GetUser();
@@ -138,7 +137,7 @@ const loginVerify = async () => {
         if (tokenJson) {
           jwtToken.token = tokenJson.token;
         }
-        setCookie('username', CurrentUser.username, 1);
+        setCookie('username', CurrentUser.userName, 1);
         alert('Logged in');
         navigateTo('/');
       } else alert('User not found');
@@ -186,7 +185,7 @@ const registerVerify = async () => {
     if (registerData) {
       jwtToken.token = registerData.token;
     }
-    setCookie('username', CurrentUser.username, 1);
+    setCookie('username', CurrentUser.userName, 1);
     alert('Registered succesfully');
 
     var modal = document.getElementById('myModal');
