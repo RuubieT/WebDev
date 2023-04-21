@@ -38,9 +38,12 @@ namespace WebDevAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            //var data = await UserManager.GetUsersInRoleAsync("User");
-            var data = await PlayerRepository.GetAll();
-            return Ok(data);
+            var cards = await CardRepository.GetAll();
+            var deckOfCards = new DeckOfCards();
+            deckOfCards.ShuffleCards(cards);
+
+            var deck = new Queue<Card>(deckOfCards.getDeck);
+            return Ok(deck);
 
         }
 
@@ -138,7 +141,6 @@ namespace WebDevAPI.Controllers
 
 
         [HttpGet("tablecards")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetTableCards()
         {
             var cards = await CardRepository.TryFindAll(c => c.InHand == false);
@@ -153,7 +155,6 @@ namespace WebDevAPI.Controllers
 
         
         [HttpGet("cards")]
-        [Authorize(Roles = "User")]
         public async Task<ActionResult> GetCards()
         {
             var user = HttpContext.User;

@@ -4,11 +4,7 @@ import {
   deletePlayButton,
   createPokerButtons,
 } from '../helpers/buttons.js';
-import {
-  getHand,
-  getTableCards,
-  assignPokertable,
-} from '../helpers/gamelogic.js';
+import { getTableCards, assignPokertable } from '../helpers/gamelogic.js';
 
 export default class extends AbstractView {
   constructor(params) {

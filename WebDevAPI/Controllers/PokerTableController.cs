@@ -37,7 +37,7 @@ namespace WebDevAPI.Controllers
                 PokerTableId = Guid.NewGuid(),
                 Ante = 10,
                 SmallBlind = 20,
-                BigBlind = 30,
+                BigBlind = 40,
                 MaxSeats = 8
             };
 
@@ -66,13 +66,44 @@ namespace WebDevAPI.Controllers
             return Ok(result.GetPlayerDto());
         }
 
-        [HttpGet("{pokertableId}")]
-        public async Task<ActionResult<GetPokerTableDto>> GetPokertable(Guid pokertableId)
+        [HttpGet("Start/{pokertableId}")]
+        public async Task<ActionResult<GetPokerTableDto>> StartGame(Guid pokertableId)
         {
+            var cards = await CardRepository.GetAll();
+            var deckOfCards = new DeckOfCards();
+            deckOfCards.ShuffleCards(cards);
+            var deck = new Queue<Card>(deckOfCards.getDeck);
+           
+
             var pokertable = await PokerTableRepository.Get(pokertableId);
             if (pokertable == null) return NotFound("No pokertable found!");
 
-            return Ok(pokertable.GetPokerTableDto());
+            var players = await PlayerRepository.TryFindAll(p => p.PokerTableId == pokertableId);
+            if (players == null || !(players.Count > 0)) return BadRequest("No players on the table");
+
+            await ClearHands(players);
+
+            
+            List<PlayerHand> playerHands = (List<PlayerHand>)DealCards.Deal(players, deck);
+            foreach (var hand in playerHands)
+            {
+                await PlayerHandRepository.Create(hand);
+                var card1 = hand.FirstCard;
+                card1.InHand = true;
+                await CardRepository.Update(card1);
+                var card2 = hand.SecondCard;
+                card2.InHand = true;
+                await CardRepository.Update(card2);
+                //From this moment the game is started
+            }
+
+            var cardsLeft = await CardRepository.TryFindAll(c => c.InHand == false);
+            deckOfCards.EmptyDeck();
+            deckOfCards.ShuffleCards(cardsLeft);
+            var deckLeft = new Queue<Card>(deckOfCards.getDeck);
+            var tablecards = DealCards.TableCards(deckLeft);
+
+            return Ok(tablecards);
         }
 
         [HttpGet("Players/{pokertableId}")]
@@ -92,41 +123,14 @@ namespace WebDevAPI.Controllers
             return Ok(playersDto);
         }
 
-        [HttpGet("Start/{pokertableId}")]
-        public async Task<ActionResult<GetPokerTableDto>> StartGame(Guid pokertableId)
-        {
-            var cards = await CardRepository.GetAll();
-            var deck = new Queue<Card>((IEnumerable<Card>)cards);
-
-            var pokertable = await PokerTableRepository.Get(pokertableId);
-            if (pokertable == null) return NotFound("No pokertable found!");
-
-            var players = await PlayerRepository.TryFindAll(p => p.PokerTableId == pokertableId);
-            if (players == null || !(players.Count > 0)) return BadRequest("No players on the table");
-
-            
-            List<PlayerHand> playerHands = (List<PlayerHand>)DealCards.Deal(players, deck);
-            foreach (var hand in playerHands)
-            {
-                await PlayerHandRepository.Create(hand);
-                var card1 = hand.FirstCard;
-                card1.InHand = true;
-                await CardRepository.Update(card1);
-                var card2 = hand.SecondCard;
-                card2.InHand = true;
-                await CardRepository.Update(card2);
-            }
-            return Ok(pokertable.GetPokerTableDto());
-        }
-
         [HttpGet("Hand/{username}")]
         public async Task<ActionResult<GetPlayerHandDto>> GetHand(string username)
         {
-            var data = await UserManager.FindByNameAsync(username);
-                await PlayerRepository.TryFind(u => u.UserName == username);
-            if (data == null) return NotFound();
+            var player = await PlayerRepository.TryFind(p=> p.UserName == username);
+            if (player.result == null) return NotFound();
 
-            var playerhand = await PlayerHandRepository.TryFind(h => h.PlayerId == data.Id);
+
+            var playerhand = await PlayerHandRepository.TryFind(h => h.PlayerId == player.result.Id);
             if (playerhand.result == null || playerhand.result.FirstCardId == null || playerhand.result.SecondCardId == null) return NotFound("No hand found");
 
             var firstcard = await CardRepository.Get(playerhand.result.FirstCardId ?? Guid.Empty);
@@ -138,6 +142,39 @@ namespace WebDevAPI.Controllers
                 SecondCard = secondcard,
             }.GetPlayerHandDto());
 
+        }
+
+          [HttpGet("{pokertableId}")]
+        public async Task<ActionResult<GetPokerTableDto>> GetPokertable(Guid pokertableId)
+        {
+            var pokertable = await PokerTableRepository.Get(pokertableId);
+            if (pokertable == null) return NotFound("No pokertable found!");
+
+            return Ok(pokertable.GetPokerTableDto());
+        }
+
+        private async Task ClearHands(IList<Player> players)
+        {
+            var inHandCards = await CardRepository.TryFindAll(c => c.InHand == true);
+            if (inHandCards != null && inHandCards.Count > 0)
+            {
+                foreach (var card in inHandCards)
+                {
+                    card.InHand = false;
+                    await CardRepository.Update(card);
+                }
+            }
+            
+            //Remove existing hands
+            foreach (var player in players)
+            {
+                var hand = await PlayerHandRepository.TryFind(h => h.PlayerId == player.Id);
+
+                if (hand.result != null)
+                {
+                    await PlayerHandRepository.Delete(hand.result);
+                }
+            }
         }
     }
 }

@@ -20,62 +20,62 @@ function inputsAreNotNull() {
 }
 
 function checkInput(field) {
-    const input = document.getElementById(field).value;
-    if (field == 'password') {
-        var strength = document.getElementById('strength');
+  const input = document.getElementById(field).value;
+  if (field == 'password') {
+    var strength = document.getElementById('strength');
 
-        const criteria = {
-            length: false,
-            uppercase: false,
-            lowercase: false,
-            number: false,
-            specialChar: false,
-        };
+    const criteria = {
+      length: false,
+      uppercase: false,
+      lowercase: false,
+      number: false,
+      specialChar: false,
+    };
 
-        // Check if the password meets each criteria
-        if (input.length >= 8) {
-            criteria.length = true;
-        }
-
-        if (/[A-Z]/.test(input)) {
-            criteria.uppercase = true;
-        }
-
-        if (/[a-z]/.test(input)) {
-            criteria.lowercase = true;
-        }
-
-        if (/\d/.test(input)) {
-            criteria.number = true;
-        }
-
-        if (/[$@!%*?&]/.test(input)) {
-            criteria.specialChar = true;
-        }
-
-        // Calculate the number of criteria met
-        const numCriteriaMet = Object.values(criteria).filter(Boolean).length;
-
-        // Return the strength of the password based on the number of criteria met
-        switch (numCriteriaMet) {
-            case 1:
-                strength.innerHTML = '<span style="color:red">Weak!</span>';
-                return;
-            case 2:
-                strength.innerHTML = '<span style="color:red">Weak!</span>';
-            case 3:
-                strength.innerHTML = '<span style="color:orange">Medium!</span>';
-                return;
-            case 4:
-                strength.innerHTML = '<span style="color:orange">Medium!</span>';
-                return;
-            case 5:
-                strength.innerHTML = '<span style="color:green">Strong!</span>';
-                return;
-            default:
-                return '';
-        }
+    // Check if the password meets each criteria
+    if (input.length >= 8) {
+      criteria.length = true;
     }
+
+    if (/[A-Z]/.test(input)) {
+      criteria.uppercase = true;
+    }
+
+    if (/[a-z]/.test(input)) {
+      criteria.lowercase = true;
+    }
+
+    if (/\d/.test(input)) {
+      criteria.number = true;
+    }
+
+    if (/[$@!%*?&]/.test(input)) {
+      criteria.specialChar = true;
+    }
+
+    // Calculate the number of criteria met
+    const numCriteriaMet = Object.values(criteria).filter(Boolean).length;
+
+    // Return the strength of the password based on the number of criteria met
+    switch (numCriteriaMet) {
+      case 1:
+        strength.innerHTML = '<span style="color:red">Weak!</span>';
+        return;
+      case 2:
+        strength.innerHTML = '<span style="color:red">Weak!</span>';
+      case 3:
+        strength.innerHTML = '<span style="color:orange">Medium!</span>';
+        return;
+      case 4:
+        strength.innerHTML = '<span style="color:orange">Medium!</span>';
+        return;
+      case 5:
+        strength.innerHTML = '<span style="color:green">Strong!</span>';
+        return;
+      default:
+        return '';
+    }
+  }
 }
 
 const loginVerify = async () => {
@@ -140,7 +140,10 @@ const loginVerify = async () => {
         setCookie('username', CurrentUser.userName, 1);
         alert('Logged in');
         navigateTo('/');
-      } else alert('User not found');
+        if (modalcontent.hasChildNodes) {
+          modalcontent.innerHTML = '';
+        }
+      }
     }
   });
 
@@ -285,17 +288,17 @@ function removeEventListeners() {
   window.removeEventListener('input', (event) => {
     inputsAreNotNull(event.target.id);
   });
-    window.removeEventListener('input', (event) => {
-        checkInput(event.target.id);
-    });
+  window.removeEventListener('input', (event) => {
+    checkInput(event.target.id);
+  });
 }
 
 export {
   loginVerify,
   registerVerify,
   forgotPassword,
-    inputsAreNotNull,
-    checkInput,
+  inputsAreNotNull,
+  checkInput,
   removeEventListeners,
   changePassword,
   assignCaptchaDiv,

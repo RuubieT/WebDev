@@ -43,7 +43,7 @@ export const navigateTo = (url) => {
 };
 
 const router = async () => {
-  removeRegAndLog();
+  //removeRegAndLog();
   const routes = [
     { path: '/', view: Dashboard },
     { path: '/contact', view: Contact },
