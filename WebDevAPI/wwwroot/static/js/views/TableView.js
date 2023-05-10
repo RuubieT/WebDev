@@ -11,8 +11,6 @@ export default class extends AbstractView {
     super(params);
     this.setTitle('Table');
 
-    //createPokerButtons();
-    //getPlayers();
     // getTableCards();
     assignPokertable();
   }

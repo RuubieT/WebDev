@@ -40,6 +40,7 @@ async function startGame() {
   if (startedGame) {
     createPlayerDivs();
     pokertable.cards = startedGame;
+
     let count = 0;
 
     var firstcard = new Card();
@@ -51,7 +52,7 @@ async function startGame() {
       carddiv.id = 'cards ' + i.username;
       if (i.username == username) {
         let hand = await getPlayerhand(username);
-        console.log(i.username + ' hand is: ' + JSON.stringify(hand));
+        console.log((pokertable.players));
         if (hand) {
           firstcard = new Card(
             SUITS[hand.firstCard.suit],
@@ -74,11 +75,15 @@ async function startGame() {
         carddiv.appendChild(cardBack);
         carddiv.appendChild(cardBack2);
       }
+      i.seat = count;
+      count++;
 
       var div = document.getElementById('player ' + i.username);
       div.appendChild(carddiv);
     });
     alert('Cards have been dealt.');
+    //Temp table cards (Later split in flop, turn, river)
+    getTableCards();
   }
 }
 
