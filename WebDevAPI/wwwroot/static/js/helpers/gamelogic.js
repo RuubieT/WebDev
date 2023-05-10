@@ -14,6 +14,7 @@ import {
 } from './services/pokertable.js';
 import { PokerTable } from '../../models/PokerTable.js';
 import { JoinPokertable } from '../../models/Dto/PokerTable/JoinPokertable.js';
+import { clearChildNodes, createPokerButtons } from './buttons.js';
 
 export const pokertable = new PokerTable();
 let username;
@@ -41,34 +42,11 @@ async function startGame() {
     pokertable.cards = startedGame;
     let count = 0;
 
-    // pokertable.players.forEach(async (i) => {
-    //   var firstcard = new Card();
-    //   var secondcard = new Card();
-    //   let hand = await getPlayerhand(i.username);
-    //   if (hand) {
-    //     firstcard = new Card(
-    //       SUITS[hand.firstCard.suit],
-    //       VALUES[hand.firstCard.value],
-    //     );
-    //     secondcard = new Card(
-    //       SUITS[hand.secondCard.suit],
-    //       VALUES[hand.secondCard.value],
-    //     );
-    //   }
-    //   const carddiv = document.createElement('div');
-    //   carddiv.id = 'cards ' + i.username;
-    //   carddiv.appendChild(firstcard.getCardHTML());
-    //   carddiv.appendChild(secondcard.getCardHTML());
-
-    //   var div = document.getElementById('player ' + i.username);
-    //   div.appendChild(carddiv);
-    //   count++;
-    // });
-
     var firstcard = new Card();
     var secondcard = new Card();
 
     pokertable.players.forEach(async (i) => {
+      //#TODO begin onderaan bij currentuser en draai kaarten recht.
       const carddiv = document.createElement('div');
       carddiv.id = 'cards ' + i.username;
       if (i.username == username) {
@@ -90,7 +68,9 @@ async function startGame() {
         var cardBack = document.createElement('img');
         cardBack.src = '../static/images/cardBack.png';
         cardBack.classList.add('card');
-        var cardBack2 = cardBack;
+        var cardBack2 = document.createElement('img');
+        cardBack2.src = '../static/images/cardBack.png';
+        cardBack2.classList.add('card');
         carddiv.appendChild(cardBack);
         carddiv.appendChild(cardBack2);
       }
@@ -119,13 +99,12 @@ async function assignPokertable() {
     pokertable.maxSeats = data.maxSeats;
   }
   createPlayerDivs();
+  createPokerButtons();
 }
 
 function createPlayerDivs() {
   var playersDiv = document.getElementById('players');
-  if (playersDiv.hasChildNodes) {
-    playersDiv.innerHTML = '';
-  }
+  clearChildNodes(playersDiv);
   let count = 0;
 
   pokertable.players.forEach(async (i) => {
