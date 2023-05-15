@@ -14,6 +14,7 @@ using static System.Runtime.CompilerServices.RuntimeHelpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Azure.Core;
+using Audit.Core;
 
 namespace WebDevAPI.Controllers
 {
@@ -27,8 +28,9 @@ namespace WebDevAPI.Controllers
 
         public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger, userManager)
+            SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager,
+            AuditScopeFactory auditScopeFactory) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, logger, auditScopeFactory)
         {
             auth = new Auth(config);
             _roleManager = roleManager;

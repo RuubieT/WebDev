@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Audit.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebDevAPI.Db.Dto_s.Player;
@@ -8,6 +9,7 @@ using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic.CardLogic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebDevAPI.Controllers
 {
@@ -18,8 +20,9 @@ namespace WebDevAPI.Controllers
         DealCards DealCards;
 
         public PokerTableController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger, userManager)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
+            AuditScopeFactory auditScopeFactory) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, logger, auditScopeFactory)
         {
             DealCards = new DealCards();
         }
@@ -40,12 +43,16 @@ namespace WebDevAPI.Controllers
                 BigBlind = 40,
                 MaxSeats = 8
             };
-
-            await PokerTableRepository.Create(pokerTable);
-            
+            using (AuditScopeFactory.Create("Pokertable:Create", () => pokerTable))
+            {
+                await PokerTableRepository.Create(pokerTable);
+            }
             player.PokerTableId = pokerTable.PokerTableId;
-            await PlayerRepository.Update(player);
-
+            using (AuditScopeFactory.Create("Player:Update", () => player))
+            {
+                await PlayerRepository.Update(player);
+            }
+            Logger.LogInformation("Pokertable created with id " + pokerTable.PokerTableId);
             return Ok(pokerTable.GetPokerTableDto());
         }
 
@@ -62,6 +69,8 @@ namespace WebDevAPI.Controllers
             result.PokerTableId = data.PokerTableId;
 
             await PlayerRepository.Update(result);
+            
+            Logger.LogInformation(data.Username + " Added to pokertable: " + pokertable.PokerTableId);
 
             return Ok(result.GetPlayerDto());
         }
@@ -73,7 +82,8 @@ namespace WebDevAPI.Controllers
             var deckOfCards = new DeckOfCards();
             deckOfCards.ShuffleCards(cards);
             var deck = new Queue<Card>(deckOfCards.getDeck);
-           
+
+            Logger.LogInformation("New deck shuffled");
 
             var pokertable = await PokerTableRepository.Get(pokertableId);
             if (pokertable == null) return NotFound("No pokertable found!");
@@ -96,12 +106,14 @@ namespace WebDevAPI.Controllers
                 await CardRepository.Update(card2);
                 //From this moment the game is started
             }
+            Logger.LogInformation("Hands dealt");
 
             var cardsLeft = await CardRepository.TryFindAll(c => c.InHand == false);
             deckOfCards.EmptyDeck();
             deckOfCards.ShuffleCards(cardsLeft);
             var deckLeft = new Queue<Card>(deckOfCards.getDeck);
             var tablecards = DealCards.TableCards(deckLeft);
+            Logger.LogInformation("Tablecards drawn");
 
             return Ok(tablecards);
         }
@@ -120,6 +132,8 @@ namespace WebDevAPI.Controllers
                 playersDto.Add(player.GetPlayerDto());
             }
 
+            Logger.LogInformation("Retrieve players from table " + pokertableId);
+
             return Ok(playersDto);
         }
 
@@ -136,6 +150,9 @@ namespace WebDevAPI.Controllers
             var firstcard = await CardRepository.Get(playerhand.result.FirstCardId ?? Guid.Empty);
             var secondcard = await CardRepository.Get(playerhand.result.SecondCardId ?? Guid.Empty);
             if (firstcard == null || secondcard == null) return NotFound("No cards found");
+
+            Logger.LogInformation("Retrieve cards from " + username);
+
             return Ok(new PlayerHand
             {
                 FirstCard = firstcard,

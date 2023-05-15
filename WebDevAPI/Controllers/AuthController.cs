@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using Audit.Core;
+using Azure.Core;
 using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,8 +29,8 @@ namespace WebDevAPI.Controllers
 
         public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger, userManager)
+            SignInManager<IdentityUser> signInManager, AuditScopeFactory auditScopeFactory) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, logger, auditScopeFactory)
         {
             auth = new Auth(config);
             _signInManager = signInManager;
@@ -64,12 +65,16 @@ namespace WebDevAPI.Controllers
             };
             try
             {
-                await PlayerRepository.Create(player);
-
+                using (AuditScopeFactory.Create("User:Create",()=> player))
+                {
+                    await PlayerRepository.Create(player);
+                }
+               
        
                 await UserManager.AddClaimAsync(player, new Claim(ClaimTypes.Role, "User"));
                 await UserManager.AddToRoleAsync(player, "User");
                 Logger.LogInformation(request.FirstName + " was given the role of a user");
+                //AuditScopeFactory.Log("Create User", new { ExtraField = (request.FirstName + " was given the role of a user"});
                 await _signInManager.SignInAsync(player, isPersistent: false);
             }
             catch (Exception ex)
@@ -105,10 +110,15 @@ namespace WebDevAPI.Controllers
                 return BadRequest(new {message = "Invalid Credentials"});
             }
 
-            var result = await _signInManager.CanSignInAsync(user);
+            var result = false;
+            using (AuditScopeFactory.Create("User:LoggedIn", () => user))
+            {
+                result = await _signInManager.CanSignInAsync(user);
+            }
+            
             if (result)
             {
-                Logger.LogInformation("User logged in.");
+                    Logger.LogInformation("User logged in.");
             }
 
             List<Claim> claims = new List<Claim>()
@@ -141,6 +151,8 @@ namespace WebDevAPI.Controllers
 
             if (player == null) return BadRequest("User not found");
 
+            Logger.LogInformation(player + " data retrieved");
+
             return Ok(player);
 
         }
@@ -148,6 +160,8 @@ namespace WebDevAPI.Controllers
         [HttpPost("Logout")]
         public async Task<ActionResult> Logout()
         {
+            Logger.LogInformation("User logged out");
+
             Response.Cookies.Delete("jwt");
             return Ok(new { message = "Success" });
         }
@@ -155,14 +169,24 @@ namespace WebDevAPI.Controllers
         [HttpPost("GAuth")]
         public async Task<ActionResult> ValidateCode(PostGAuthCodeDto data)
         {
+
+            Logger.LogInformation(data.Email + " wants to verify their 2FA code!");
+
             var user = await UserManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound();
             var player = await PlayerRepository.GetByString(user.Id);
 
+            Logger.LogInformation(player + " is an existing user");
+
+
+
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
-//#TODO temporarily turned off for testing purposes
+            //#TODO temporarily turned off for testing purposes
             //bool result = tfa.ValidateTwoFactorPIN(player.AuthCode, data.Code);
             //if (!result) return BadRequest("Invalid code");
+
+            Logger.LogInformation("Code matches the 2FA");
+
             return Ok(new { message = "Success" });
         }
     }

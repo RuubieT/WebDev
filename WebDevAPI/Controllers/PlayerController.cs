@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Audit.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +14,7 @@ using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace WebDevAPI.Controllers
 {
@@ -23,8 +25,9 @@ namespace WebDevAPI.Controllers
     {
 
         public PlayerController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger, userManager)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
+            AuditScopeFactory auditScopeFactory) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, logger, auditScopeFactory)
         {
 
         }
@@ -54,6 +57,8 @@ namespace WebDevAPI.Controllers
             var data = await PlayerRepository.TryFind(u => u.Email == email);
             if(data.result == null) return NotFound();
 
+            Logger.LogInformation("Retrieve user " + email);
+
             return data.result.GetPlayerDto();
         }
 
@@ -74,6 +79,7 @@ namespace WebDevAPI.Controllers
                     getPlayers.Add(Player.GetLeaderBoardDto());
                 }
             }
+            Logger.LogInformation("Retrieve leaderboard");
             return Ok(getPlayers.OrderByDescending(p => p.Chips));
         }
     }
