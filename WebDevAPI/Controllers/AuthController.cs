@@ -34,7 +34,7 @@ namespace WebDevAPI.Controllers
         {
             auth = new Auth(config);
             _signInManager = signInManager;
-            }
+        }
 
         [HttpPost("Register")]
         public async Task<ActionResult<string>> Register(PostPlayerDto request)
@@ -66,16 +66,16 @@ namespace WebDevAPI.Controllers
             };
             try
             {
-                //using (AuditScopeFactory.Create("User:Create",()=> player))
-                //{
+                using (AuditFactory.Create("User:Create",()=> player))
+                {
                     await PlayerRepository.Create(player);
-                //}
+                }
                
        
                 await UserManager.AddClaimAsync(player, new Claim(ClaimTypes.Role, "User"));
                 await UserManager.AddToRoleAsync(player, "User");
                 Logger.LogInformation(request.FirstName + " was given the role of a user");
-                //AuditScopeFactory.Log("Create User", new { ExtraField = (request.FirstName + " was given the role of a user"});
+                AuditFactory.Log("Create User", new { ExtraField = (request.FirstName + " was given the role of a user")});
                 await _signInManager.SignInAsync(player, isPersistent: false);
             }
             catch (Exception ex)
