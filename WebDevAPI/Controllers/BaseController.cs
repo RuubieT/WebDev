@@ -16,6 +16,7 @@ namespace WebDevAPI.Controllers
 
         protected readonly UserManager<IdentityUser> UserManager;
         protected readonly ILogger<BaseController> Logger;
+        protected readonly AuditScopeFactory AuditFactory;
 
         public BaseController(IContactFormRepository contactFormRepository, 
             IPlayerRepository playerRepository, ICardRepository cardRepository, 
@@ -29,6 +30,7 @@ namespace WebDevAPI.Controllers
             PlayerHandRepository = playerHandRepository;
             Logger = logger;
             UserManager = userManager;
+            AuditFactory = new AuditScopeFactory();
         }
 
     }

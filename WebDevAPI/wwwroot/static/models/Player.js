@@ -1,7 +1,7 @@
 export class Player {
     constructor(username, chips) {
         this.username = username;
-        this.username = chips;
+        this.chips = chips;
         this.playerhand = playerhand;
         this.pokertable = pokertable;
     }

@@ -25,7 +25,6 @@ namespace WebDevAPI.Controllers
         private Auth auth;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-
         public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager) : base(contactFormRepository, playerRepository, cardRepository,
@@ -39,12 +38,11 @@ namespace WebDevAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            var cards = await CardRepository.GetAll();
-            var deckOfCards = new DeckOfCards();
-            deckOfCards.ShuffleCards(cards);
-
-            var deck = new Queue<Card>(deckOfCards.getDeck);
-            return Ok(deck);
+            var users = PlayerRepository.GetAll();
+            var myuser = users.Result.First();
+            var scope = AuditFactory.Create(new AuditScopeOptions());
+            var scope2 = AuditFactory.Create("event:UPDATE", ()=>myuser);
+            return Ok(new {scope, scope2});
 
         }
 
