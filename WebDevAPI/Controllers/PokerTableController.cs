@@ -1,4 +1,4 @@
-﻿using Audit.Core;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +9,11 @@ using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic.CardLogic;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace WebDevAPI.Controllers
 {
+    //[Authorize]
     [Route("api/Pokertable")]
     [ApiController]
     public class PokerTableController : BaseController
@@ -20,9 +21,8 @@ namespace WebDevAPI.Controllers
         DealCards DealCards;
 
         public PokerTableController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            AuditScopeFactory auditScopeFactory) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger, auditScopeFactory)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, logger)
         {
             DealCards = new DealCards();
         }
@@ -43,15 +43,15 @@ namespace WebDevAPI.Controllers
                 BigBlind = 40,
                 MaxSeats = 8
             };
-            using (AuditScopeFactory.Create("Pokertable:Create", () => pokerTable))
-            {
+            //using (AuditScopeFactory.Create("Pokertable:Create", () => pokerTable))
+            //{
                 await PokerTableRepository.Create(pokerTable);
-            }
+            //}
             player.PokerTableId = pokerTable.PokerTableId;
-            using (AuditScopeFactory.Create("Player:Update", () => player))
-            {
+            //using (AuditScopeFactory.Create("Player:Update", () => player))
+            //{
                 await PlayerRepository.Update(player);
-            }
+            //}
             Logger.LogInformation("Pokertable created with id " + pokerTable.PokerTableId);
             return Ok(pokerTable.GetPokerTableDto());
         }
@@ -75,6 +75,7 @@ namespace WebDevAPI.Controllers
             return Ok(result.GetPlayerDto());
         }
 
+        //[Authorize(Roles = "Admin,Moderator")]
         [HttpGet("Start/{pokertableId}")]
         public async Task<ActionResult<GetPokerTableDto>> StartGame(Guid pokertableId)
         {
@@ -161,7 +162,8 @@ namespace WebDevAPI.Controllers
 
         }
 
-          [HttpGet("{pokertableId}")]
+
+        [HttpGet("{pokertableId}")]
         public async Task<ActionResult<GetPokerTableDto>> GetPokertable(Guid pokertableId)
         {
             var pokertable = await PokerTableRepository.Get(pokertableId);

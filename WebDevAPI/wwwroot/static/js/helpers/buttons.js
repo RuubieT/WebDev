@@ -160,7 +160,12 @@ async function createPokerButtons() {
 
     const testButton = createCustomButtons('testButton', 'Test');
     testButton.addEventListener('click', () => {
-      buttonTEST();
+      
+      s._connection.send('SendMessage', "Starting");
+      s._connection.on('ReceiveMessage', async (value) => {
+        console.log(value);
+        await buttonTEST();
+      });
     });
 
 if(pokerButtons){

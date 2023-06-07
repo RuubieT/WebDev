@@ -25,14 +25,14 @@ namespace WebDevAPI.Controllers
 
     [Route("api/User")]
     [ApiController]
+    //[Authorize]
     public class UserController : BaseController
     {
         private Auth auth;
 
         public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            AuditScopeFactory auditScopeFactory) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger, auditScopeFactory)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, logger)
         {
             auth = new Auth(config);
         }

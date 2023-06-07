@@ -29,8 +29,8 @@ namespace WebDevAPI.Controllers
 
         public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager, AuditScopeFactory auditScopeFactory) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger, auditScopeFactory)
+            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, logger)
         {
             auth = new Auth(config);
             _signInManager = signInManager;
@@ -39,6 +39,7 @@ namespace WebDevAPI.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<string>> Register(PostPlayerDto request)
         {
+            Logger.LogInformation(request.Email + " is trying to register");
             var requestedUser = await UserManager.FindByEmailAsync(request.Email);
             if (requestedUser != null) return BadRequest("User already exists");
 
@@ -65,10 +66,10 @@ namespace WebDevAPI.Controllers
             };
             try
             {
-                using (AuditScopeFactory.Create("User:Create",()=> player))
-                {
+                //using (AuditScopeFactory.Create("User:Create",()=> player))
+                //{
                     await PlayerRepository.Create(player);
-                }
+                //}
                
        
                 await UserManager.AddClaimAsync(player, new Claim(ClaimTypes.Role, "User"));
@@ -91,7 +92,8 @@ namespace WebDevAPI.Controllers
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
-                HttpOnly = true
+                HttpOnly = true,
+                Secure = true
             });
 
             Logger.LogInformation("Registered user: " +  request.Username);
@@ -102,6 +104,7 @@ namespace WebDevAPI.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(PostLoginUserDto request)
         {
+            Logger.LogInformation(request.Email + " is trying to login");
             var user = await UserManager.FindByEmailAsync(request.Email);
             if (user == null) return NotFound();
 
@@ -111,10 +114,10 @@ namespace WebDevAPI.Controllers
             }
 
             var result = false;
-            using (AuditScopeFactory.Create("User:LoggedIn", () => user))
-            {
+            //using (AuditScopeFactory.Create("User:LoggedIn", () => user))
+            //{
                 result = await _signInManager.CanSignInAsync(user);
-            }
+            //}
             
             if (result)
             {
@@ -130,7 +133,8 @@ namespace WebDevAPI.Controllers
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
-                HttpOnly = true
+                HttpOnly = true,
+                Secure = true
             });
 
             Logger.LogInformation("User: " + user.UserName + " logged in");
@@ -138,6 +142,7 @@ namespace WebDevAPI.Controllers
             return Ok(new { token });
         }
 
+        //[Authorize]
         [HttpGet("User")]
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
@@ -157,6 +162,7 @@ namespace WebDevAPI.Controllers
 
         }
 
+        //[Authorize]
         [HttpPost("Logout")]
         public async Task<ActionResult> Logout()
         {
