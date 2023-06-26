@@ -115,9 +115,11 @@ const loginVerify = async () => {
   }
   var form = document.createElement('form');
   form.action = 'javascript:void(0);';
+
   var input = document.createElement('input');
   input.type = 'text';
   input.id = 'code';
+
   var button = document.createElement('button');
   button.id = 'submitCode';
   button.innerText = 'Submit';
@@ -128,15 +130,17 @@ const loginVerify = async () => {
       Email: user.email,
       Code: value,
     };
+
     result = await ValidateCode(data);
+
     if (result.message == 'Success') {
       let tokenJson = await Login(user);
-      CurrentUser = await GetUser();
 
+      if (tokenJson) {
+        CurrentUser = await GetUser();
+        jwtToken.token = tokenJson.token;
+      }
       if (CurrentUser) {
-        if (tokenJson) {
-          jwtToken.token = tokenJson.token;
-        }
         setCookie('username', CurrentUser.userName, 1);
         alert('Logged in');
         navigateTo('/');
@@ -182,12 +186,12 @@ const registerVerify = async () => {
   });
 
   let registerData = await Register(newUser);
-  CurrentUser = await GetUser();
 
+  if (registerData) {
+    CurrentUser = await GetUser();
+    jwtToken.token = registerData.token;
+  }
   if (CurrentUser) {
-    if (registerData) {
-      jwtToken.token = registerData.token;
-    }
     setCookie('username', CurrentUser.userName, 1);
     alert('Registered succesfully');
 

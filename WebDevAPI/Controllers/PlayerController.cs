@@ -49,6 +49,27 @@ namespace WebDevAPI.Controllers
             return Ok(getPlayers) ;
         }
 
+        // DELETE: api/Player/{email}
+        //authorize
+        [HttpDelete("{email}")]
+        public async Task<IActionResult> DeleteUser(string email)
+        {
+            var user = PlayerRepository.TryFind(u => u.Email == email).Result.result;
+            if (user == null) return NotFound("No user to delete");
+
+            //Make sure no loose references are lingering around
+            if(user.PokerTableId != null)
+            {
+                var hand = PlayerHandRepository.TryFind(h => h.PlayerId == user.Id).Result.result;
+                await PlayerHandRepository.Delete(hand);
+                user.PokerTableId = null;
+            }
+
+            await PlayerRepository.Delete(user);
+
+            return NoContent();
+        }
+
         // GET: api/player/Find/{email}
         [HttpGet("Find/{email}")]
         public async Task<ActionResult<GetPlayerDto>> GetPlayer(string email)

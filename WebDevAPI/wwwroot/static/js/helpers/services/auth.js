@@ -29,5 +29,5 @@ export const ValidateCode = async (data) => {
 };
 
 export const DeleteUser = async (data) => {
-  return await deleteData('api/User/' + data);
-}
+  return await deleteData('api/Player/' + data);
+};

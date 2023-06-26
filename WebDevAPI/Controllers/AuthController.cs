@@ -17,6 +17,7 @@ using WebDevAPI.Db.Repositories;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebDevAPI.Controllers
 {
@@ -107,8 +108,8 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult<string>> Login(PostLoginUserDto request)
         {
             Logger.LogInformation(request.Email + " is trying to login");
-            var user = await UserManager.FindByEmailAsync(request.Email);
-            if (user == null) return NotFound();
+            var user = PlayerRepository.TryFind(u => u.Email == request.Email).Result.result;
+            if (user == null) return NotFound("No user found");
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
@@ -180,7 +181,7 @@ namespace WebDevAPI.Controllers
 
             Logger.LogInformation(data.Email + " wants to verify their 2FA code!");
 
-            var user = await UserManager.FindByEmailAsync(data.Email);
+            var user = PlayerRepository.TryFind(u => u.Email == data.Email).Result.result;
             if (user == null) return NotFound("User not found");
             var player = await PlayerRepository.GetByString(user.Id);
 

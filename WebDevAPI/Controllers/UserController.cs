@@ -39,7 +39,7 @@ namespace WebDevAPI.Controllers
         
         // GET: api/User
        // [Authorize(Roles = "Admin, Moderator")]
-        //[HttpGet]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
         {
             var users = await UserManager.GetUsersInRoleAsync("User");
@@ -47,17 +47,7 @@ namespace WebDevAPI.Controllers
             return Ok(users) ;
         }
 
-        
-        // DELETE: api/User/{email}
-        [HttpDelete("{email}")]
-        public async Task<IActionResult> DeleteUser(string email)
-        {
-            var user = await PlayerRepository.TryFind(u => u.Email == email);
-            if (user.result == null) return NotFound("No user to delete");
-            await PlayerRepository.Delete(user.result);
-
-            return NoContent();
-        }
+       
 
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)

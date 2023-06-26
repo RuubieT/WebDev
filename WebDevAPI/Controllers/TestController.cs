@@ -70,26 +70,32 @@ namespace WebDevAPI.Controllers
         [HttpGet("createAdminAndMod")]
         public async Task<ActionResult> CreateAdmin()
         {
-            var Admin = new Player
+            if(PlayerRepository.TryFind(u => u.Email == "Admin@Admin").Result.result == null)
             {
-                UserName = "Admin",
-                Email = "Admin@Admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin"),
-            };
-            var Moderator = new Player
-            {
-                UserName = "Moderator",
-                Email = "Moderator@Moderator",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Moderator"),
-            };
-            await PlayerRepository.Create(Admin);
-            await PlayerRepository.Create(Moderator);
-            await UserManager.AddClaimAsync(Admin, new Claim(ClaimTypes.Role, "Admin"));
-            await UserManager.AddClaimAsync(Moderator, new Claim(ClaimTypes.Role, "Moderator"));
-            await UserManager.AddToRoleAsync(Admin, "Admin");
-            await UserManager.AddToRoleAsync(Moderator, "Moderator");
+                var Admin = new Player
+                {
+                    UserName = "Admin",
+                    Email = "Admin@Admin",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin"),
+                };
+                var Moderator = new Player
+                {
+                    UserName = "Moderator",
+                    Email = "Moderator@Moderator",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Moderator"),
+                };
+                await PlayerRepository.Create(Admin);
+                await PlayerRepository.Create(Moderator);
+                await UserManager.AddClaimAsync(Admin, new Claim(ClaimTypes.Role, "Admin"));
+                await UserManager.AddClaimAsync(Moderator, new Claim(ClaimTypes.Role, "Moderator"));
+                await UserManager.AddToRoleAsync(Admin, "Admin");
+                await UserManager.AddToRoleAsync(Moderator, "Moderator");
+                var user = await UserManager.FindByEmailAsync(Admin.Email);
+                return Ok(user);
+            }
+          
 
-            return Ok();
+            return NoContent();
 
         }
 
