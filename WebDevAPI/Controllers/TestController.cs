@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Azure.Core;
 using Audit.Core;
+using System.Numerics;
 
 namespace WebDevAPI.Controllers
 {
@@ -69,23 +70,25 @@ namespace WebDevAPI.Controllers
         [HttpGet("createAdminAndMod")]
         public async Task<ActionResult> CreateAdmin()
         {
-            var Admin = new IdentityUser
+            var Admin = new Player
             {
                 UserName = "Admin",
-                Email = "Admin@Admin"
+                Email = "Admin@Admin",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin"),
             };
-            var Moderator = new IdentityUser
+            var Moderator = new Player
             {
                 UserName = "Moderator",
-                Email = "Moderator@Moderator"
+                Email = "Moderator@Moderator",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Moderator"),
             };
-            var suc = await UserManager.CreateAsync(Admin, BCrypt.Net.BCrypt.HashPassword("Admin"));
-            var ceed = await UserManager.CreateAsync(Moderator, BCrypt.Net.BCrypt.HashPassword("Moderator"));
-                if( suc.Succeeded && ceed.Succeeded)
-            {
-                await UserManager.AddToRoleAsync(Admin, "Admin");
-                await UserManager.AddToRoleAsync(Moderator, "Moderator");
-            }
+            await PlayerRepository.Create(Admin);
+            await PlayerRepository.Create(Moderator);
+            await UserManager.AddClaimAsync(Admin, new Claim(ClaimTypes.Role, "Admin"));
+            await UserManager.AddClaimAsync(Moderator, new Claim(ClaimTypes.Role, "Moderator"));
+            await UserManager.AddToRoleAsync(Admin, "Admin");
+            await UserManager.AddToRoleAsync(Moderator, "Moderator");
+
             return Ok();
 
         }

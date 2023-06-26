@@ -36,39 +36,28 @@ namespace WebDevAPI.Controllers
         {
             auth = new Auth(config);
         }
-        /*
+        
         // GET: api/User
-        [HttpGet]
+       // [Authorize(Roles = "Admin, Moderator")]
+        //[HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
         {
-            var users = await UserRepository.GetAll();
-            var getUsers = new List<GetUserDto>();
-            if (users == null)
-            {
-                return NotFound();
-            } else {
-               foreach (var user in users)
-                {
-                    getUsers.Add(user.GetUserDto());
-                }
-            }
-            return Ok(getUsers) ;
+            var users = await UserManager.GetUsersInRoleAsync("User");
+
+            return Ok(users) ;
         }
 
-
-        // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        
+        // DELETE: api/User/{email}
+        [HttpDelete("{email}")]
+        public async Task<IActionResult> DeleteUser(string email)
         {
-            var user = await UserRepository.Get(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            await UserRepository.Delete(user);
+            var user = await PlayerRepository.TryFind(u => u.Email == email);
+            if (user.result == null) return NotFound("No user to delete");
+            await PlayerRepository.Delete(user.result);
 
             return NoContent();
-        }*/
+        }
 
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)

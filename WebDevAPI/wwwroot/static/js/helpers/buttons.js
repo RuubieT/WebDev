@@ -215,4 +215,6 @@ export {
   createPokerButtons,
   deletePokerButtons,
   clearChildNodes,
+  createCustomButtons,
+  deleteCustomButtons,
 };

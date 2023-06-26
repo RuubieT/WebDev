@@ -126,12 +126,8 @@ namespace WebDevAPI.Controllers
                     Logger.LogInformation("User logged in.");
             }
 
-            List<Claim> claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, "User"),
-            };
-            string token = auth.CreateToken(user.Id, claims);
+            var claims = await UserManager.GetClaimsAsync(user);
+            string token = auth.CreateToken(user.Id, (List<Claim>)claims);
 
             Logger.LogInformation("Creating a jwt token for " + user.UserName);
 
@@ -147,7 +143,7 @@ namespace WebDevAPI.Controllers
             return Ok(new { token });
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("User")]
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
@@ -164,7 +160,7 @@ namespace WebDevAPI.Controllers
 
             Logger.LogInformation(player + " data retrieved");
 
-            return Ok(player);
+            return Ok(new { player, role = jwt.Claims.First().Value });
 
         }
 

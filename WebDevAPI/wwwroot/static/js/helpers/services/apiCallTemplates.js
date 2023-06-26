@@ -89,6 +89,25 @@ async function putAuthorizedData(url = '', data, token) {
   return returnResponse(response);
 }
 
+async function deleteData(url = '') {
+  await fetch(url, {
+    method: 'DELETE',
+  })
+  .then(res => res.text()) // or res.json()
+  .then(res => console.log(res))
+}
+
+async function deleteAuthorizedData(url = '', token) {
+  let response = await fetch(url, {
+    method: 'DELETE',
+  })
+    .then(function (res) {
+      return handleResponse(res);
+    })
+    .catch((e) => console.log(e));
+  return returnResponse(response);
+}
+
 function handleResponse(response) {
   if (!response.ok) {
     return response.text().then((text) => {
@@ -110,4 +129,6 @@ export {
   getAuthorizedData,
   putData,
   putAuthorizedData,
+  deleteData,
+  deleteAuthorizedData,
 };

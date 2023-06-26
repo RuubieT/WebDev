@@ -1,5 +1,6 @@
 import { navigateTo } from '../index.js';
 import {
+  createCustomButtons,
   deleteGameButtons,
   deletePlayButton,
   deletePokerButtons,
@@ -11,24 +12,42 @@ import { GetUser, Logout } from './services/auth.js';
 
 async function removeRegAndLog() {
   await GetUser().then((data) => {
-    if (data) {
+    if (data && getCookie('username') != null) {
+      console.log(data);
       var div = document.getElementById('login');
       div.classList.add('disabled-link');
 
-      const username = getCookie('username');
-
-      div.innerText = 'Welcome back ' + username;
+      div.innerText = 'Welcome back ' + data.player.userName;
 
       var div2 = document.getElementById('register');
-      var button = document.createElement('button');
-      button.innerText = 'Logout';
-      button.addEventListener('click', async () => {
+      div2.href = ""; 
+      const logoutButton = createCustomButtons('logoutButton', 'Logout');
+      logoutButton.addEventListener('click', async () => {
         navigateTo('/');
         await Logout();
         deleteAllCookies();
       });
       div2.innerText = '';
-      div2.appendChild(button);
+      div2.appendChild(logoutButton);
+
+
+      if (data.role == 'Moderator'){
+        const moderatorButton = createCustomButtons('moderatorButton', 'Manage users');
+        moderatorButton.addEventListener('click', async () => {
+        navigateTo('/register'); 
+        });
+        
+        div2.appendChild(moderatorButton);
+      }
+
+      if (data.role == 'Admin'){
+        const adminButton = createCustomButtons('adminButton', 'Manage roles');
+        adminButton.addEventListener('click', async () => {
+        navigateTo('/admin'); 
+        });
+        div2.appendChild(adminButton);
+      }
+      
     }
   });
 }

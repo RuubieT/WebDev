@@ -1,4 +1,4 @@
-import { getData, postData, putData } from './apiCallTemplates.js';
+import { deleteData, getData, postData, putData } from './apiCallTemplates.js';
 
 export const Login = async (user) => {
   return await postData('/api/Auth/Login', user);
@@ -27,3 +27,7 @@ export const ChangePw = async (data) => {
 export const ValidateCode = async (data) => {
   return await postData('api/Auth/GAuth', data);
 };
+
+export const DeleteUser = async (data) => {
+  return await deleteData('api/User/' + data);
+}

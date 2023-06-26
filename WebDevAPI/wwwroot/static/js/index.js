@@ -12,6 +12,8 @@ import { Auth } from '../models/Auth.js';
 import { SignalRService } from './helpers/services/signalR.js';
 import ForgotPassword from './views/ForgotPasswordView.js';
 import ChangePassword from './views/ChangePasswordView.js';
+import Moderator from './views/ModeratorView.js';
+import Admin from './views/AdminView.js';
 
 //const apiUrl = localhost
 
@@ -43,7 +45,7 @@ export const navigateTo = (url) => {
 };
 
 const router = async () => {
-  //removeRegAndLog();
+  removeRegAndLog();
   const routes = [
     { path: '/', view: Dashboard },
     { path: '/contact', view: Contact },
@@ -55,6 +57,8 @@ const router = async () => {
     { path: '/table', view: Table },
     { path: '/forgotpw', view: ForgotPassword },
     { path: '/changepw', view: ChangePassword },
+    { path: '/moderator', view: Moderator },
+    { path: '/admin', view: Admin },
   ];
 
   // Test each route for potential match
