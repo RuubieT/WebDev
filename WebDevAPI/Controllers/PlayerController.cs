@@ -54,9 +54,9 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult<GetPlayerDto>> GetPlayer(string email)
         {
             var data = await PlayerRepository.TryFind(u => u.Email == email);
-            if(data.result == null) return NotFound();
+            if(data.result == null) return NotFound("Not user uses the given email");
 
-            Logger.LogInformation("Retrieve user " + email);
+            Logger.LogInformation("Retrieved user by email: " + email);
 
             return data.result.GetPlayerDto();
         }
@@ -78,7 +78,7 @@ namespace WebDevAPI.Controllers
                     getPlayers.Add(Player.GetLeaderBoardDto());
                 }
             }
-            Logger.LogInformation("Retrieve leaderboard");
+            Logger.LogInformation("Leaderboard loaded in");
             return Ok(getPlayers.OrderByDescending(p => p.Chips));
         }
     }

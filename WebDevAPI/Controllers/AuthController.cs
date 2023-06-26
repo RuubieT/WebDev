@@ -50,6 +50,7 @@ namespace WebDevAPI.Controllers
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
             SetupCode setupInfo = tfa.GenerateSetupCode("S1144640 Web app", request.Email, key, false, 3);
+            Logger.LogInformation("Two Factory Authentication is setupped");
 
             string qrCodeImageUrl = setupInfo.QrCodeSetupImageUrl;
             string manualEntrySetupCode = setupInfo.ManualEntryKey;
@@ -74,8 +75,8 @@ namespace WebDevAPI.Controllers
        
                 await UserManager.AddClaimAsync(player, new Claim(ClaimTypes.Role, "User"));
                 await UserManager.AddToRoleAsync(player, "User");
-                Logger.LogInformation(request.FirstName + " was given the role of a user");
-                AuditFactory.Log("Create User", new { ExtraField = (request.FirstName + " was given the role of a user")});
+                Logger.LogInformation(request.Username + " was given the role of a user");
+                AuditFactory.Log("Create User", new { ExtraField = (request.Username + " was given the role of a user")});
                 await _signInManager.SignInAsync(player, isPersistent: false);
             }
             catch (Exception ex)
@@ -89,13 +90,14 @@ namespace WebDevAPI.Controllers
                 new Claim(ClaimTypes.Role, "User"),
             };
             string token = auth.CreateToken(player.Id, claims);
+            Logger.LogInformation("Creating a jwt token for " + request.Username);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true
             });
-
+            Logger.LogInformation("JWT token appended");
             Logger.LogInformation("Registered user: " +  request.Username);
 
             return Ok(new { token, qrCodeImageUrl, manualEntrySetupCode });
@@ -114,10 +116,10 @@ namespace WebDevAPI.Controllers
             }
 
             var result = false;
-            //using (AuditScopeFactory.Create("User:LoggedIn", () => user))
-            //{
+            using (AuditFactory.Create("User:LoggedIn", () => user))
+            {
                 result = await _signInManager.CanSignInAsync(user);
-            //}
+            }
             
             if (result)
             {
@@ -131,30 +133,34 @@ namespace WebDevAPI.Controllers
             };
             string token = auth.CreateToken(user.Id, claims);
 
+            Logger.LogInformation("Creating a jwt token for " + user.UserName);
+
             Response.Cookies.Append("jwt", token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true
             });
-
+            Logger.LogInformation("JWT token appended");
+            Logger.LogInformation("Logged in user: " + user.UserName);
             Logger.LogInformation("User: " + user.UserName + " logged in");
 
             return Ok(new { token });
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("User")]
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
             var token = Request.Cookies["jwt"];
             if(token == null) return NotFound("No logged in user");
             var jwt = auth.ValidateToken(token);
+            Logger.LogInformation("Validating token");
 
             string userId = jwt.Issuer;
 
             var player = await UserManager.FindByIdAsync(userId);
 
-            if (player == null) return BadRequest("User not found");
+            if (player == null) return NotFound("User not found");
 
             Logger.LogInformation(player + " data retrieved");
 
@@ -162,7 +168,7 @@ namespace WebDevAPI.Controllers
 
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("Logout")]
         public async Task<ActionResult> Logout()
         {
@@ -179,7 +185,7 @@ namespace WebDevAPI.Controllers
             Logger.LogInformation(data.Email + " wants to verify their 2FA code!");
 
             var user = await UserManager.FindByEmailAsync(data.Email);
-            if (user == null) return NotFound();
+            if (user == null) return NotFound("User not found");
             var player = await PlayerRepository.GetByString(user.Id);
 
             Logger.LogInformation(player + " is an existing user");

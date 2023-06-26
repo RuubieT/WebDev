@@ -9,6 +9,7 @@ using WebDevAPI.Db.Dto_s.User;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
 using WebDevAPI.Logic.CardLogic;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 
 namespace WebDevAPI.Controllers
@@ -35,6 +36,8 @@ namespace WebDevAPI.Controllers
             var player = await PlayerRepository.GetByString(result.Id);
             if (player.PokerTableId != null) return BadRequest("Already in a game");
 
+            Logger.LogInformation("Creating a new pokertable for user: " + creator.Username);
+
             PokerTable pokerTable = new PokerTable
             {
                 PokerTableId = Guid.NewGuid(),
@@ -52,6 +55,7 @@ namespace WebDevAPI.Controllers
             //{
                 await PlayerRepository.Update(player);
             //}
+            Logger.LogInformation("Adding the player to the table");
             Logger.LogInformation("Pokertable created with id " + pokerTable.PokerTableId);
             return Ok(pokerTable.GetPokerTableDto());
         }
@@ -67,6 +71,8 @@ namespace WebDevAPI.Controllers
             var pokertable = await PokerTableRepository.Get(data.PokerTableId);
             if (pokertable == null) return NotFound("No matching pokertable found");
             result.PokerTableId = data.PokerTableId;
+
+            Logger.LogInformation("Adding the player to the table");
 
             await PlayerRepository.Update(result);
             
@@ -92,6 +98,7 @@ namespace WebDevAPI.Controllers
             var players = await PlayerRepository.TryFindAll(p => p.PokerTableId == pokertableId);
             if (players == null || !(players.Count > 0)) return BadRequest("No players on the table");
 
+            Logger.LogInformation("Resetting the player their hands");
             await ClearHands(players);
 
             
@@ -142,7 +149,7 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult<GetPlayerHandDto>> GetHand(string username)
         {
             var player = await PlayerRepository.TryFind(p=> p.UserName == username);
-            if (player.result == null) return NotFound();
+            if (player.result == null) return NotFound("No matching player found");
 
 
             var playerhand = await PlayerHandRepository.TryFind(h => h.PlayerId == player.result.Id);
@@ -152,7 +159,7 @@ namespace WebDevAPI.Controllers
             var secondcard = await CardRepository.Get(playerhand.result.SecondCardId ?? Guid.Empty);
             if (firstcard == null || secondcard == null) return NotFound("No cards found");
 
-            Logger.LogInformation("Retrieve cards from " + username);
+            Logger.LogInformation("Retrieve hand from " + username);
 
             return Ok(new PlayerHand
             {

@@ -74,11 +74,12 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)
         {
             var user = await UserManager.FindByEmailAsync(data.Email);
-            if (user == null) return NotFound();
+            if (user == null) return NotFound("No user uses the entered email");
             List<Claim> claims = new List<Claim>()
             {
                 new Claim("User", "User"),
             };
+            Logger.LogInformation("Unique code sent");
             string token = auth.CreateToken(user.Id, claims);
             auth.SendMailAsync(token.ToString()).Wait();
 
@@ -94,7 +95,7 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult> ResetPassword(PostChangePasswordDto data)
         {
             var user = await UserManager.FindByEmailAsync(data.Email);
-            if (user == null) return NotFound();
+            if (user == null) return NotFound("No user uses the entered email");
 
             var output = auth.ValidateToken(data.Token);
             if (output == null) return NotFound("Token invalid");
