@@ -47,7 +47,34 @@ namespace WebDevAPI.Controllers
             return Ok(users) ;
         }
 
-       
+        [HttpGet("Roles")]
+        public async Task<ActionResult<IEnumerable<GetUserRoleDto>>> GetUserRoles ()
+        {
+            var users = await PlayerRepository.GetAll();
+            IList<GetUserRoleDto> usersWithRoles = new List<GetUserRoleDto>();
+            if(users.Count > 0)
+            {
+                foreach (var user in users)
+                {
+                    var roles = await UserManager.GetRolesAsync(user);
+                    usersWithRoles.Add(new GetUserRoleDto
+                    {
+                        Id = Guid.Parse(user.Id),
+                        Username = user.UserName,
+                        Email = user.Email,
+                        Role = roles,
+                    });
+                }
+            }
+          
+
+
+            return Ok(usersWithRoles);
+        }
+
+
+
+
 
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)

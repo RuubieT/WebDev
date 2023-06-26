@@ -61,7 +61,11 @@ namespace WebDevAPI.Controllers
             if(user.PokerTableId != null)
             {
                 var hand = PlayerHandRepository.TryFind(h => h.PlayerId == user.Id).Result.result;
-                await PlayerHandRepository.Delete(hand);
+                if(hand != null)
+                {
+                    await PlayerHandRepository.Delete(hand);
+                }
+                
                 user.PokerTableId = null;
             }
 

@@ -36,7 +36,7 @@ async function removeRegAndLog() {
           'Manage users',
         );
         moderatorButton.addEventListener('click', async () => {
-          navigateTo('/register');
+          navigateTo('/moderator');
         });
 
         div2.appendChild(moderatorButton);
