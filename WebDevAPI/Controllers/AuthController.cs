@@ -30,8 +30,8 @@ namespace WebDevAPI.Controllers
 
         public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger)
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
         {
             auth = new Auth(config);
             _signInManager = signInManager;

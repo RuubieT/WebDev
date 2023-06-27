@@ -94,7 +94,6 @@ async function deleteData(url = '') {
     method: 'DELETE',
   })
   .then(res => res.text()) // or res.json()
-  .then(res => console.log(res))
 }
 
 async function deleteAuthorizedData(url = '', token) {

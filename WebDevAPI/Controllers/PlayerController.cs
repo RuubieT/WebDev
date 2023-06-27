@@ -25,8 +25,9 @@ namespace WebDevAPI.Controllers
     {
 
         public PlayerController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) 
+            : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
         {
 
         }

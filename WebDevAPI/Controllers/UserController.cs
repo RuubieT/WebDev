@@ -31,8 +31,9 @@ namespace WebDevAPI.Controllers
         private Auth auth;
 
         public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) 
+            : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
         {
             auth = new Auth(config);
         }
@@ -47,9 +48,10 @@ namespace WebDevAPI.Controllers
             return Ok(users) ;
         }
 
-        [HttpGet("Roles")]
+        [HttpGet("UserRoles")]
         public async Task<ActionResult<IEnumerable<GetUserRoleDto>>> GetUserRoles ()
         {
+            Logger.LogInformation("Retrieving the users with roles.");
             var users = await PlayerRepository.GetAll();
             IList<GetUserRoleDto> usersWithRoles = new List<GetUserRoleDto>();
             if(users.Count > 0)
@@ -66,13 +68,43 @@ namespace WebDevAPI.Controllers
                     });
                 }
             }
-          
-
-
             return Ok(usersWithRoles);
         }
 
+        [HttpGet("Roles")]
+        public async Task<ActionResult> ExistingRoles()
+        {
+            Logger.LogInformation("Retrieving existing roles");
+            var roles = RoleManager.Roles.ToArray();
+            return Ok(roles);
+        }
 
+        [HttpPut("UpdateRole")]
+        public async Task<ActionResult> UpdateRole(PutUserDto updateUser)
+        {
+            Logger.LogInformation("Trying to update the role of " + updateUser.Email);
+            var user = PlayerRepository.TryFind(u => u.Email == updateUser.Email).Result.result;
+            if (user == null) return NotFound("No matching user to update");
+
+            Logger.LogInformation("Get the old and new role for the user");
+            var oldRoles = await UserManager.GetRolesAsync(user);
+            var newRole = await RoleManager.FindByNameAsync(updateUser.RoleName);
+
+            if (oldRoles != null && newRole != null && newRole.Name != null)
+            {
+                Logger.LogInformation("Removing the old role");
+                await UserManager.RemoveFromRolesAsync(user, oldRoles);
+                
+                Logger.LogInformation("Adding the new role");
+                await UserManager.AddToRoleAsync(user, newRole.Name);
+                
+                var updatedRole = await UserManager.GetRolesAsync(user);
+                return Ok(updatedRole);
+            }
+
+            return BadRequest("Role was invalid");
+
+        }
 
 
 

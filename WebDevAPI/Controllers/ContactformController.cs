@@ -22,9 +22,9 @@ namespace WebDevAPI.Controllers
     public class ContactformController : BaseController
     {
         public ContactformController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
             SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger)
+            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
         {
 
         }

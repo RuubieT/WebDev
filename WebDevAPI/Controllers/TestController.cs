@@ -29,7 +29,7 @@ namespace WebDevAPI.Controllers
         public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, logger)
+            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
         {
             auth = new Auth(config);
             _roleManager = roleManager;

@@ -8,6 +8,7 @@ import {
 } from './buttons.js';
 import { deleteAllCookies, getCookie } from './cookieHelper.js';
 import { deleteLeaderboard } from './leaderboard.js';
+import { deleteRoleList, deleteUserList } from './management.js';
 import { GetUser, Logout } from './services/auth.js';
 
 async function removeRegAndLog() {
@@ -31,23 +32,13 @@ async function removeRegAndLog() {
       div2.appendChild(logoutButton);
 
       if (data.role == 'Moderator') {
-        const moderatorButton = createCustomButtons(
-          'moderatorButton',
-          'Manage users',
-        );
-        moderatorButton.addEventListener('click', async () => {
-          navigateTo('/moderator');
-        });
-
-        div2.appendChild(moderatorButton);
+        var modButton = document.getElementById("modPanel");
+        modButton.removeAttribute("hidden");
       }
 
       if (data.role == 'Admin') {
-        const adminButton = createCustomButtons('adminButton', 'Manage roles');
-        adminButton.addEventListener('click', async () => {
-          navigateTo('/admin');
-        });
-        div2.appendChild(adminButton);
+        var adminButton = document.getElementById("adminPanel");
+        adminButton.removeAttribute("hidden");
       }
     }
   });
@@ -62,6 +53,8 @@ function deleteAllButtons() {
 
   deleteGameButtons();
   deleteLeaderboard();
+  deleteRoleList();
+  deleteUserList();
   deletePlayButton();
   deletePokerButtons();
   deleteSubmitFormButton();
