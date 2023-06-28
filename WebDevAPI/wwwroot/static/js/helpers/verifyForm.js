@@ -4,7 +4,7 @@ import { PlayerRegisterDto } from '../../models/Dto/Auth/PlayerRegisterDto.js';
 import { jwtToken, navigateTo } from '../index.js';
 import { getCookie, setCookie } from './cookieHelper.js';
 import {
-  ChangePw,
+  ForgotChangePw,
   ForgotPw,
   GetUser,
   Login,
@@ -99,13 +99,11 @@ const loginVerify = async () => {
 
   span.onclick = function () {
     modal.style.display = 'none';
-    navigateTo('/');
   };
 
   window.onclick = function (event) {
     if (event.target == modal) {
       modal.style.display = 'none';
-      navigateTo('/');
     }
   };
 
@@ -132,20 +130,22 @@ const loginVerify = async () => {
     };
 
     result = await ValidateCode(data);
+    if (result) {
+      if (result.message == 'Success') {
+        let tokenJson = await Login(user);
 
-    if (result.message == 'Success') {
-      let tokenJson = await Login(user);
-
-      if (tokenJson) {
-        CurrentUser = await GetUser();
-        jwtToken.token = tokenJson.token;
-      }
-      if (CurrentUser) {
-        setCookie('username', CurrentUser.userName, 1);
-        alert('Logged in');
-        navigateTo('/');
-        if (modalcontent.hasChildNodes) {
-          modalcontent.innerHTML = '';
+        if (tokenJson) {
+          CurrentUser = await GetUser();
+          jwtToken.token = tokenJson.token;
+        }
+        if (CurrentUser) {
+          setCookie('username', CurrentUser.userName, 1);
+          alert('Logged in');
+          navigateTo('/');
+          modal.style.display = 'none';
+          if (modalcontent.hasChildNodes) {
+            modalcontent.innerHTML = '';
+          }
         }
       }
     }
@@ -223,7 +223,6 @@ const forgotPassword = async () => {
   let data = await ForgotPw({ email: inputs[0].value });
 
   if (data) {
-    console.log(data);
     setCookie('email', inputs[0].value, 1);
     setCookie('forgotpwtoken', data.token, 1);
     navigateTo('/changepw');
@@ -253,7 +252,7 @@ const changePassword = async () => {
   } else {
     let email = getCookie('email');
 
-    let data = await ChangePw({
+    let data = await ForgotChangePw({
       email: email,
       password: newPassword.password,
       token: newPassword.token,

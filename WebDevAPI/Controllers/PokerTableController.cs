@@ -14,7 +14,7 @@ using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace WebDevAPI.Controllers
 {
-    //[Authorize]
+    [Authorize(Roles = "User,Moderator,Admin")]
     [Route("api/Pokertable")]
     [ApiController]
     public class PokerTableController : BaseController

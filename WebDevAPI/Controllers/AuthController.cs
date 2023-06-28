@@ -113,7 +113,7 @@ namespace WebDevAPI.Controllers
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
-                return BadRequest(new {message = "Invalid Credentials"});
+                return BadRequest("Invalid Credentials");
             }
 
             var result = false;
@@ -144,7 +144,7 @@ namespace WebDevAPI.Controllers
             return Ok(new { token });
         }
 
-        //[Authorize]
+ 
         [HttpGet("User")]
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
@@ -161,7 +161,16 @@ namespace WebDevAPI.Controllers
 
             Logger.LogInformation(player + " data retrieved");
 
-            return Ok(new { player, role = jwt.Claims.First().Value });
+            var role = "";
+            foreach(var claim in jwt.Claims)
+            {
+                if(claim.Type == ClaimTypes.Role)
+                {
+                    role = claim.Value;
+                }
+            }
+
+            return Ok(new { player, role });
 
         }
 

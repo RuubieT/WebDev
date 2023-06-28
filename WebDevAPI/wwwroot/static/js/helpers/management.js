@@ -43,7 +43,7 @@ async function createUserList() {
       actiontd.innerText = 'delete';
       actiontd.addEventListener('click', async () => {
         await DeleteUser(element.email);
-        alert("Deleted: " + element.email);
+        alert('Deleted: ' + element.email);
         deleteUserList();
         createUserList();
       });
@@ -62,7 +62,7 @@ async function createUserList() {
 
 function deleteUserList() {
   var userList = document.getElementById('userListDiv');
-  
+
   if (userList) {
     document.body.removeChild(userList);
   }
@@ -115,79 +115,79 @@ async function createRoleList() {
           modal.style.display = 'none';
         };
 
-          var modalcontent = document.getElementById('modalcontent');
-          if (modalcontent.hasChildNodes) {
-            modalcontent.innerHTML = '';
-          }
-          var dropdowndiv = document.createElement("div");
-          dropdowndiv.classList.add("dropdown");
+        var modalcontent = document.getElementById('modalcontent');
+        if (modalcontent.hasChildNodes) {
+          modalcontent.innerHTML = '';
+        }
+        var dropdowndiv = document.createElement('div');
+        dropdowndiv.classList.add('dropdown');
 
-          var selectbutton = document.createElement("button");
-          selectbutton.classList.add("dropbtn");
-          selectbutton.innerText = element.role[0];
+        var selectbutton = document.createElement('button');
+        selectbutton.classList.add('dropbtn');
+        selectbutton.innerText = element.role[0];
 
-          var roles = await getAuthorizedData('api/User/Roles', jwtToken.token);
+        var roles = await getAuthorizedData('api/User/Roles', jwtToken.token);
 
-          selectbutton.addEventListener('click', async (e) => {
-            
-            document.getElementById("roleDropdown").classList.toggle("show");
-            window.onclick = function (event) {
-              if (event.target == modal) {
-                modal.style.display = 'none';
+        selectbutton.addEventListener('click', async (e) => {
+          document.getElementById('roleDropdown').classList.toggle('show');
+          window.onclick = function (event) {
+            if (event.target == modal) {
+              modal.style.display = 'none';
+            }
+            var validValue = false;
+            roles.forEach((role) => {
+              if (role.name == event.target.innerText) {
+                validValue = true;
               }
-              var validValue = false;
-              roles.forEach((role) =>{
-                if(role.name == event.target.innerText){
-                  validValue = true;
-                }
-              })
-              if(validValue){
-                selectbutton.innerText = event.target.innerText;
-              }
-              if (!event.target.matches('.dropbtn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                var i;
-                for (i = 0; i < dropdowns.length; i++) {
-                  var openDropdown = dropdowns[i];
-                  if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                  }
-                }
-              }
-            };
-          })
-
-          var dropdownOptions = document.createElement("div");
-          dropdownOptions.id = "roleDropdown";
-          dropdownOptions.classList.add("dropdown-content");
-          
-          roles.forEach((role) =>{
-            var option = document.createElement('a');
-            option.innerText = role.name;
-            dropdownOptions.appendChild(option);
-          })
-
-          var button = document.createElement('button');
-          button.id = 'EditRole';
-          button.innerText = 'Confirm edit role';
-          button.addEventListener('click', async (e) => {
-            e.preventDefault();
-
-            await UpdateUserRole({
-              email : element.email,
-              RoleName : selectbutton.innerText
             });
-           
-            modal.style.display = 'none';
-            deleteRoleList();
-            createRoleList();
+            if (validValue) {
+              selectbutton.innerText = event.target.innerText;
+            }
+            if (!event.target.matches('.dropbtn')) {
+              var dropdowns =
+                document.getElementsByClassName('dropdown-content');
+              var i;
+              for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                  openDropdown.classList.remove('show');
+                }
+              }
+            }
+          };
+        });
+
+        var dropdownOptions = document.createElement('div');
+        dropdownOptions.id = 'roleDropdown';
+        dropdownOptions.classList.add('dropdown-content');
+
+        roles.forEach((role) => {
+          var option = document.createElement('a');
+          option.innerText = role.name;
+          dropdownOptions.appendChild(option);
+        });
+
+        var button = document.createElement('button');
+        button.id = 'EditRole';
+        button.innerText = 'Confirm edit role';
+        button.addEventListener('click', async (e) => {
+          e.preventDefault();
+
+          await UpdateUserRole({
+            email: element.email,
+            RoleName: selectbutton.innerText,
           });
 
-          dropdowndiv.appendChild(selectbutton);
-          dropdowndiv.appendChild(dropdownOptions);
+          modal.style.display = 'none';
+          deleteRoleList();
+          createRoleList();
+        });
 
-          modalcontent.appendChild(button);
-          modalcontent.appendChild(dropdowndiv);
+        dropdowndiv.appendChild(selectbutton);
+        dropdowndiv.appendChild(dropdownOptions);
+
+        modalcontent.appendChild(button);
+        modalcontent.appendChild(dropdowndiv);
       });
 
       row.appendChild(indexOfUser);

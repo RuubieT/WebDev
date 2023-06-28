@@ -20,7 +20,7 @@ namespace WebDevAPI.Controllers
 {
     [Route("api/Player")]
     [ApiController]
-    //[Authorize(Roles ="User")]
+    [Authorize(Roles ="User,Moderator,Admin")]
     public class PlayerController : BaseController
     {
 
@@ -33,6 +33,7 @@ namespace WebDevAPI.Controllers
         }
 
         // GET: api/Player
+        [Authorize(Roles = "Moderator,Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetPlayerDto>>> GetPlayers()
         {
@@ -40,7 +41,7 @@ namespace WebDevAPI.Controllers
             var getPlayers = new List<GetPlayerDto>();
             if (Players == null)
             {
-                return NotFound();
+                return NotFound("No players");
             } else {
                foreach (var Player in Players)
                 {
@@ -51,7 +52,7 @@ namespace WebDevAPI.Controllers
         }
 
         // DELETE: api/Player/{email}
-        //authorize
+        [Authorize(Roles = "Moderator,Admin")]
         [HttpDelete("{email}")]
         public async Task<IActionResult> DeleteUser(string email)
         {
@@ -95,7 +96,7 @@ namespace WebDevAPI.Controllers
             var getPlayers = new List<GetLeaderBoardDto>();
             if (Players == null)
             {
-                return NotFound();
+                return NotFound("Not players");
             }
             else
             {

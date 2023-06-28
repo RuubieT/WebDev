@@ -8,22 +8,20 @@ export default class extends AbstractView {
   }
 
   async getHtml() {
-
     let data = await GetUser();
 
-        if (data != undefined) {
-          console.log(data);
-            return `
+    if (data != undefined) {
+      console.log(data);
+      return `
             <h2>Account information</h2>
             <div>Role: ${data.role}</div>
             <u></u>
             <div>Username: ${data.player.userName}</div>
             <div>Email: ${data.player.email}</div>
-            <div>Change password</div>
           `;
-        } 
+    }
 
-            return `
+    return `
             <section class="personalia">
     
             <img class="person-logo" src="/static/images/Ruben.jpg">
@@ -82,7 +80,5 @@ export default class extends AbstractView {
                 </div>
             </section>
             `;
-    
-    }
-    
+  }
 }

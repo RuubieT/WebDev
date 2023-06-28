@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using NuGet.Common;
+using Org.BouncyCastle.Asn1.Ocsp;
 using WebDevAPI.Db;
 using WebDevAPI.Db.Dto_s.Contactform;
 using WebDevAPI.Db.Dto_s.Player;
@@ -25,7 +26,7 @@ namespace WebDevAPI.Controllers
 
     [Route("api/User")]
     [ApiController]
-    //[Authorize]
+    [Authorize(Roles = "User,Moderator,Admin")]
     public class UserController : BaseController
     {
         private Auth auth;
@@ -39,7 +40,7 @@ namespace WebDevAPI.Controllers
         }
         
         // GET: api/User
-       // [Authorize(Roles = "Admin, Moderator")]
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
         {
@@ -48,6 +49,7 @@ namespace WebDevAPI.Controllers
             return Ok(users) ;
         }
 
+        [Authorize(Roles = "Moderator,Admin")]
         [HttpGet("UserRoles")]
         public async Task<ActionResult<IEnumerable<GetUserRoleDto>>> GetUserRoles ()
         {
@@ -71,6 +73,7 @@ namespace WebDevAPI.Controllers
             return Ok(usersWithRoles);
         }
 
+        [Authorize(Roles = "Moderator,Admin")]
         [HttpGet("Roles")]
         public async Task<ActionResult> ExistingRoles()
         {
@@ -79,6 +82,7 @@ namespace WebDevAPI.Controllers
             return Ok(roles);
         }
 
+        [Authorize(Roles = "Moderator,Admin")]
         [HttpPut("UpdateRole")]
         public async Task<ActionResult> UpdateRole(PutUserDto updateUser)
         {
@@ -90,6 +94,16 @@ namespace WebDevAPI.Controllers
             var oldRoles = await UserManager.GetRolesAsync(user);
             var newRole = await RoleManager.FindByNameAsync(updateUser.RoleName);
 
+            Logger.LogInformation("Get the old claims for the user");
+            var oldClaims = await UserManager.GetClaimsAsync(user);
+            if (oldClaims != null)
+            {
+                Logger.LogInformation("Removing the old claims");
+                await UserManager.RemoveClaimsAsync(user, oldClaims);
+            }
+
+
+
             if (oldRoles != null && newRole != null && newRole.Name != null)
             {
                 Logger.LogInformation("Removing the old role");
@@ -97,7 +111,11 @@ namespace WebDevAPI.Controllers
                 
                 Logger.LogInformation("Adding the new role");
                 await UserManager.AddToRoleAsync(user, newRole.Name);
-                
+
+                Logger.LogInformation("Adding the new claims");
+                await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.UserName));
+                await UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, newRole.Name));
+
                 var updatedRole = await UserManager.GetRolesAsync(user);
                 return Ok(updatedRole);
             }
@@ -111,6 +129,8 @@ namespace WebDevAPI.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<ActionResult> ResetPasswordToken(GetChangePasswordDto data)
         {
+            Logger.LogInformation(data.Email + " forgot their password");
+
             var user = await UserManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound("No user uses the entered email");
             List<Claim> claims = new List<Claim>()
@@ -128,10 +148,11 @@ namespace WebDevAPI.Controllers
             return Ok(new { token });
         }
 
-        [HttpPut("ChangePassword")]
+        [HttpPut("ForgotPassword")]
 
-        public async Task<ActionResult> ResetPassword(PostChangePasswordDto data)
+        public async Task<ActionResult> ResetPassword(PutForgotPasswordDto data)
         {
+            Logger.LogInformation(data.Email + " wants to change their password");
             var user = await UserManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound("No user uses the entered email");
 
@@ -139,6 +160,26 @@ namespace WebDevAPI.Controllers
             if (output == null) return NotFound("Token invalid");
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(data.Password);
+            await UserManager.UpdateAsync(user);
+
+            Logger.LogInformation(user.UserName + " changed their password");
+
+            return Ok(user); ;
+        }
+
+        [HttpPut("ChangePassword")]
+
+        public async Task<ActionResult> ChangePassword(PutChangePasswordDto data)
+        {
+            var user = await UserManager.FindByEmailAsync(data.Email);
+            if (user == null) return NotFound("No user uses the entered email");
+
+            if (!BCrypt.Net.BCrypt.Verify(data.OldPassword, user.PasswordHash))
+            {
+                return BadRequest(new { message = "Old password does not match" });
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(data.NewPassword);
             await UserManager.UpdateAsync(user);
 
             Logger.LogInformation(user.UserName + " changed their password");

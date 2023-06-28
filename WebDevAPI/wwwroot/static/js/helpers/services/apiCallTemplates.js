@@ -9,7 +9,9 @@
     .then(function (res) {
       return handleResponse(res);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      if (e.message) alert(e.message);
+    });
   return returnResponse(response);
 }
 
@@ -25,7 +27,9 @@ async function postAuthorizedData(url = '', data, token) {
     .then(function (res) {
       return handleResponse(res);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      if (e.message) alert(e.message);
+    });
   return returnResponse(response);
 }
 
@@ -39,7 +43,9 @@ async function getData(url = '') {
     .then(function (res) {
       return handleResponse(res);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      if (e.message) alert(e.message);
+    });
   return returnResponse(response);
 }
 
@@ -54,7 +60,9 @@ async function getAuthorizedData(url = '', token) {
     .then(function (res) {
       return handleResponse(res);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      if (e.message) alert(e.message);
+    });
   return returnResponse(response);
 }
 
@@ -69,7 +77,9 @@ async function putData(url = '', data) {
     .then(function (res) {
       return handleResponse(res);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      if (e.message) alert(e.message);
+    });
   return returnResponse(response);
 }
 
@@ -85,15 +95,16 @@ async function putAuthorizedData(url = '', data, token) {
     .then(function (res) {
       return handleResponse(res);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      if (e.message) alert(e.message);
+    });
   return returnResponse(response);
 }
 
 async function deleteData(url = '') {
   await fetch(url, {
     method: 'DELETE',
-  })
-  .then(res => res.text()) // or res.json()
+  }).then((res) => res.text()); // or res.json()
 }
 
 async function deleteAuthorizedData(url = '', token) {
@@ -103,7 +114,9 @@ async function deleteAuthorizedData(url = '', token) {
     .then(function (res) {
       return handleResponse(res);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      if (e.message) alert(e.message);
+    });
   return returnResponse(response);
 }
 
