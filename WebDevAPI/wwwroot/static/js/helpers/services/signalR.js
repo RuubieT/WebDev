@@ -11,6 +11,8 @@ export class SignalRService {
   createConnection() {
     this._connection = new signalR.HubConnectionBuilder()
       .withUrl('/pokerHub')
+      .configureLogging(signalR.LogLevel.Information)
+      .withAutomaticReconnect()
       .build();
   }
 

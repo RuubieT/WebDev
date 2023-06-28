@@ -14,6 +14,8 @@ using static System.Runtime.CompilerServices.RuntimeHelpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Azure.Core;
+using Audit.Core;
+using System.Numerics;
 
 namespace WebDevAPI.Controllers
 {
@@ -24,11 +26,10 @@ namespace WebDevAPI.Controllers
         private Auth auth;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-
         public TestController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
             IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger, userManager)
+            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
         {
             auth = new Auth(config);
             _roleManager = roleManager;
@@ -38,9 +39,11 @@ namespace WebDevAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> test()
         {
-            //var data = await UserManager.GetUsersInRoleAsync("User");
-            var data = await PlayerRepository.GetAll();
-            return Ok(data);
+            var users = PlayerRepository.GetAll();
+            var myuser = users.Result.First();
+            var scope = AuditFactory.Create(new AuditScopeOptions());
+            var scope2 = AuditFactory.Create("event:UPDATE", ()=>myuser);
+            return Ok(new {scope, scope2});
 
         }
 
@@ -67,33 +70,38 @@ namespace WebDevAPI.Controllers
         [HttpGet("createAdminAndMod")]
         public async Task<ActionResult> CreateAdmin()
         {
-            var Admin = new IdentityUser
+            if(PlayerRepository.TryFind(u => u.Email == "Admin@Admin").Result.result == null)
             {
-                UserName = "Admin",
-                Email = "Admin@Admin"
-            };
-            var Moderator = new IdentityUser
-            {
-                UserName = "Moderator",
-                Email = "Moderator@Moderator"
-            };
-            var suc = await UserManager.CreateAsync(Admin, BCrypt.Net.BCrypt.HashPassword("Admin"));
-            var ceed = await UserManager.CreateAsync(Moderator, BCrypt.Net.BCrypt.HashPassword("Moderator"));
-                if( suc.Succeeded && ceed.Succeeded)
-            {
+                var Admin = new Player
+                {
+                    UserName = "Admin",
+                    Email = "Admin@Admin",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin"),
+                };
+                var Moderator = new Player
+                {
+                    UserName = "Moderator",
+                    Email = "Moderator@Moderator",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Moderator"),
+                };
+                await PlayerRepository.Create(Admin);
+                await PlayerRepository.Create(Moderator);
+                await UserManager.AddClaimAsync(Admin, new Claim(ClaimTypes.Role, "Admin"));
+                await UserManager.AddClaimAsync(Moderator, new Claim(ClaimTypes.Role, "Moderator"));
                 await UserManager.AddToRoleAsync(Admin, "Admin");
                 await UserManager.AddToRoleAsync(Moderator, "Moderator");
+                var user = await UserManager.FindByEmailAsync(Admin.Email);
+                return Ok(user);
             }
-            return Ok();
+          
+
+            return NoContent();
 
         }
 
         [HttpGet("user")]
         public async Task<ActionResult> GetUsers()
         {
-           
-
-
             var player = new Player
             {
                 Id = new Guid().ToString(),
@@ -141,7 +149,6 @@ namespace WebDevAPI.Controllers
 
 
         [HttpGet("tablecards")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetTableCards()
         {
             var cards = await CardRepository.TryFindAll(c => c.InHand == false);
@@ -156,7 +163,6 @@ namespace WebDevAPI.Controllers
 
         
         [HttpGet("cards")]
-        [Authorize(Roles = "User")]
         public async Task<ActionResult> GetCards()
         {
             var user = HttpContext.User;

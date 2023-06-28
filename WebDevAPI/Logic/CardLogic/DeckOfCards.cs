@@ -29,26 +29,35 @@ namespace WebDevAPI.Logic.CardLogic
                 }
             }
 
-            ShuffleCards();
+            ShuffleCards(shuffleDeck);
         }
 
-        public void ShuffleCards()
+        public void EmptyDeck()
+        {
+            while (deck.Count > 0)
+            {
+                deck.Dequeue();
+            }
+        }
+
+        public void ShuffleCards(IList<Card> unshuffledDeck)
         {
             Random rand = new Random();
             Card temp;
+            
 
             for (int shuffleTimes = 0; shuffleTimes < 1000; shuffleTimes++)
             {
-                for (int i = 0; i < NUM_OF_CARDS; i++)
+                for (int i = 0; i < unshuffledDeck.Count; i++)
                 {
                     int secondCardIndex = rand.Next(13);
-                    temp = shuffleDeck[i];
-                    shuffleDeck[i] = shuffleDeck[secondCardIndex];
-                    shuffleDeck[secondCardIndex] = temp;
+                    temp = unshuffledDeck[i];
+                    unshuffledDeck[i] = unshuffledDeck[secondCardIndex];
+                    unshuffledDeck[secondCardIndex] = temp;
                 }
             }
 
-            foreach (var card in shuffleDeck)
+            foreach (var card in unshuffledDeck)
             {
                 deck.Enqueue(card);
             }

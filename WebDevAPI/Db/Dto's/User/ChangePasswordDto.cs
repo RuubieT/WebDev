@@ -5,10 +5,17 @@
         public string Email { get; set; }
     }
 
-    public class PostChangePasswordDto
+    public class PutForgotPasswordDto
     {
         public string Email { get; set; }
         public string Password { get; set; }
         public string Token { get; set; }
+    }
+
+    public class PutChangePasswordDto
+    {
+        public string Email { get; set; }
+        public string OldPassword { get; set; }
+        public string NewPassword { get; set; }
     }
 }

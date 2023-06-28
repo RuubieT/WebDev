@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Audit.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,23 +14,26 @@ using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Dto_s.Player;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace WebDevAPI.Controllers
 {
     [Route("api/Player")]
     [ApiController]
-    //[Authorize(Roles ="User")]
+    [Authorize(Roles ="User,Moderator,Admin")]
     public class PlayerController : BaseController
     {
 
         public PlayerController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, logger, userManager)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) 
+            : base(contactFormRepository, playerRepository, cardRepository,
+            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
         {
 
         }
 
         // GET: api/Player
+        [Authorize(Roles = "Moderator,Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetPlayerDto>>> GetPlayers()
         {
@@ -37,7 +41,7 @@ namespace WebDevAPI.Controllers
             var getPlayers = new List<GetPlayerDto>();
             if (Players == null)
             {
-                return NotFound();
+                return NotFound("No players");
             } else {
                foreach (var Player in Players)
                 {
@@ -47,12 +51,39 @@ namespace WebDevAPI.Controllers
             return Ok(getPlayers) ;
         }
 
+        // DELETE: api/Player/{email}
+        [Authorize(Roles = "Moderator,Admin")]
+        [HttpDelete("{email}")]
+        public async Task<IActionResult> DeleteUser(string email)
+        {
+            var user = PlayerRepository.TryFind(u => u.Email == email).Result.result;
+            if (user == null) return NotFound("No user to delete");
+
+            //Make sure no loose references are lingering around
+            if(user.PokerTableId != null)
+            {
+                var hand = PlayerHandRepository.TryFind(h => h.PlayerId == user.Id).Result.result;
+                if(hand != null)
+                {
+                    await PlayerHandRepository.Delete(hand);
+                }
+                
+                user.PokerTableId = null;
+            }
+
+            await PlayerRepository.Delete(user);
+
+            return NoContent();
+        }
+
         // GET: api/player/Find/{email}
         [HttpGet("Find/{email}")]
         public async Task<ActionResult<GetPlayerDto>> GetPlayer(string email)
         {
             var data = await PlayerRepository.TryFind(u => u.Email == email);
-            if(data.result == null) return NotFound();
+            if(data.result == null) return NotFound("Not user uses the given email");
+
+            Logger.LogInformation("Retrieved user by email: " + email);
 
             return data.result.GetPlayerDto();
         }
@@ -65,7 +96,7 @@ namespace WebDevAPI.Controllers
             var getPlayers = new List<GetLeaderBoardDto>();
             if (Players == null)
             {
-                return NotFound();
+                return NotFound("Not players");
             }
             else
             {
@@ -74,6 +105,7 @@ namespace WebDevAPI.Controllers
                     getPlayers.Add(Player.GetLeaderBoardDto());
                 }
             }
+            Logger.LogInformation("Leaderboard loaded in");
             return Ok(getPlayers.OrderByDescending(p => p.Chips));
         }
     }

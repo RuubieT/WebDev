@@ -1,39 +1,47 @@
 import { navigateTo } from '../index.js';
 import {
+  createCustomButtons,
   deleteGameButtons,
   deletePlayButton,
   deletePokerButtons,
   deleteSubmitFormButton,
 } from './buttons.js';
-import { getCookie } from './cookieHelper.js';
+import { deleteAllCookies, getCookie } from './cookieHelper.js';
 import { deleteLeaderboard } from './leaderboard.js';
+import { deleteRoleList, deleteUserList } from './management.js';
 import { GetUser, Logout } from './services/auth.js';
 
 async function removeRegAndLog() {
-  await GetUser()
-    .then((data) => {
-      if (data) {
-        var div = document.getElementById('login');
-        div.classList.add('disabled-link');
+  await GetUser().then((data) => {
+    if (data != undefined && getCookie('username') != null) {
+      console.log(data);
+      var div = document.getElementById('login');
+      div.classList.add('disabled-link');
 
-        const username = getCookie('username');
+      div.innerText = 'Welcome back ' + data.player.userName;
 
-        div.innerText = 'Welcome back ' + username;
+      var div2 = document.getElementById('register');
+      div2.href = '';
+      const logoutButton = createCustomButtons('logoutButton', 'Logout');
+      logoutButton.addEventListener('click', async () => {
+        navigateTo('/');
+        await Logout();
+        deleteAllCookies();
+      });
+      div2.innerText = '';
+      div2.appendChild(logoutButton);
 
-        var div2 = document.getElementById('register');
-        var button = document.createElement('button');
-        button.innerText = 'Logout';
-        button.addEventListener('click', async () => {
-          await Logout();
-          navigateTo('/');
-        });
-        div2.innerText = '';
-        div2.appendChild(button);
+      if (data.role == 'Moderator') {
+        var modButton = document.getElementById("modPanel");
+        modButton.removeAttribute("hidden");
       }
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+
+      if (data.role == 'Admin') {
+        var adminButton = document.getElementById("adminPanel");
+        adminButton.removeAttribute("hidden");
+      }
+    }
+  });
 }
 
 function deleteAllButtons() {
@@ -45,6 +53,8 @@ function deleteAllButtons() {
 
   deleteGameButtons();
   deleteLeaderboard();
+  deleteRoleList();
+  deleteUserList();
   deletePlayButton();
   deletePokerButtons();
   deleteSubmitFormButton();

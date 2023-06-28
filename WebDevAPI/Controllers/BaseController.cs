@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Audit.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebDevAPI.Db.Repositories.Contract;
@@ -12,13 +13,16 @@ namespace WebDevAPI.Controllers
         protected readonly ICardRepository CardRepository;
         protected readonly IPlayerHandRepository PlayerHandRepository;
         protected readonly IPokerTableRepository PokerTableRepository;
-        protected readonly ILogger<BaseController> Logger;
-        protected readonly UserManager<IdentityUser> UserManager;
 
+        protected readonly UserManager<IdentityUser> UserManager;
+        protected readonly RoleManager<IdentityRole> RoleManager;
+        protected readonly ILogger<BaseController> Logger;
+        protected readonly AuditScopeFactory AuditFactory;
 
         public BaseController(IContactFormRepository contactFormRepository, 
             IPlayerRepository playerRepository, ICardRepository cardRepository, 
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, 
+            UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<BaseController> logger)
         {
             ContactFormRepository = contactFormRepository;
             PlayerRepository = playerRepository;
@@ -27,6 +31,8 @@ namespace WebDevAPI.Controllers
             PlayerHandRepository = playerHandRepository;
             Logger = logger;
             UserManager = userManager;
+            RoleManager = roleManager;
+            AuditFactory = new AuditScopeFactory();
         }
 
     }

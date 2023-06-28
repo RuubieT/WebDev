@@ -20,27 +20,16 @@ namespace WebDevAPI.Db.Repositories
             return _dbSet.ToList();
         }
 
-        public virtual async Task<IList<T>> GetUsers(UserManager<IdentityUser> userManager)
+        public virtual async Task<T> Get(TId id)
         {
-            var users = await userManager.GetUsersInRoleAsync("User");
-            var myUsers = new List<T>();
-            if(users != null)
-            {
-                foreach (var user in users)
-                {
-                    var entity = await _dbSet.FindAsync(Guid.Parse(user.Id));
-                    if (entity != null)
-                    {
-                        myUsers.Add(entity);
-                    }
-                }
+            var entity = await _dbSet.FindAsync(id);
+            if (entity == null)
+                return null;
 
-            };
-
-            return myUsers; 
+            return entity;
         }
 
-        public virtual async Task<T> Get(TId id)
+        public virtual async Task<T> GetByString(string id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity == null)

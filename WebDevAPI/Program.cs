@@ -66,6 +66,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
 builder.Services.ConfigureEf(builder.Configuration);
 builder.Services.RegisterRepositories();
 
+builder.Services.Configure<SecurityStampValidatorOptions>(o =>
+    o.ValidationInterval = TimeSpan.FromMinutes(1)
+    );
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

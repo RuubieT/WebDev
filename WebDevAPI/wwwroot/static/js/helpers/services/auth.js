@@ -1,4 +1,10 @@
-import { getData, postData, putData } from './apiCallTemplates.js';
+import {
+  deleteData,
+  getData,
+  postData,
+  putAuthorizedData,
+  putData,
+} from './apiCallTemplates.js';
 
 export const Login = async (user) => {
   return await postData('/api/Auth/Login', user);
@@ -20,10 +26,18 @@ export const ForgotPw = async (email) => {
   return await postData('api/User/ForgotPassword', email);
 };
 
-export const ChangePw = async (data) => {
-  return await putData('api/User/ChangePassword', data);
+export const ForgotChangePw = async (data) => {
+  return await putData('api/User/ForgotPassword', data);
 };
 
 export const ValidateCode = async (data) => {
   return await postData('api/Auth/GAuth', data);
+};
+
+export const DeleteUser = async (data) => {
+  return await deleteData('api/Player/' + data);
+};
+
+export const UpdateUserRole = async (data) => {
+  return await putAuthorizedData('api/User/UpdateRole', data);
 };

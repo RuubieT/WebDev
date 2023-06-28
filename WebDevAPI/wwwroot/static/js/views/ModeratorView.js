@@ -1,17 +1,18 @@
-import { createRoleList } from '../helpers/management.js';
+import { createUserList } from '../helpers/management.js';
+
 import AbstractView from './AbstractView.js';
 
 export default class extends AbstractView {
   constructor(params) {
     super(params);
-    this.setTitle('Admin Page');
+    this.setTitle('Moderator Page');
 
-    createRoleList();
+    createUserList();
   }
 
   async getHtml() {
     return `
-       
+          
         
         
         `;

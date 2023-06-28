@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography;
 using WebDevAPI.Db.Models;
 using WebDevAPI.Db.Repositories.Contract;
 
@@ -8,7 +9,6 @@ namespace WebDevAPI.Db.Repositories
     {
         public PlayerRepository(WebDevDbContext context) : base(context)
         {
-
         }
 
         public async Task IdentityUserToPlayer(IdentityUser oldUser, Player newPlayer, UserManager<IdentityUser> usermanager)

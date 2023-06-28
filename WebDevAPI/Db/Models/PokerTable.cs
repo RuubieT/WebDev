@@ -11,6 +11,7 @@ namespace WebDevAPI.Db.Models
         public int SmallBlind { get; set; }
         public int BigBlind { get; set; }
         public int MaxSeats { get; set; }
+        //Things as Ingame, seat palcement? Dealer etc....
 
         public GetPokerTableDto GetPokerTableDto()
         {
