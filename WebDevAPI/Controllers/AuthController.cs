@@ -149,7 +149,7 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
             var token = Request.Cookies["jwt"];
-            if(token == null) return NotFound("No logged in user");
+            if(token == null) return Ok("No logged in user");
             var jwt = auth.ValidateToken(token);
             Logger.LogInformation("Validating token");
 
