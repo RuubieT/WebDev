@@ -9,17 +9,23 @@ env:
   USERNAME: <username>
   REMOTE_DIRECTORY: <remote_directory>
 jobs:
-  web-deploy:
-    name: 🚀 Deploy Website Every Commit
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '7.x.x' ]
+
     steps:
-    - name: 🚚 Get Latest Code
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+
     
-    - name: 📂 Sync Files
-      uses: SamKirkland/web-deploy@v1
-      with:
-        target-server: example.com
-        remote-user: username
-        private-ssh-key: ${{ secrets.SSH_KEY }}
-        destination-path: ~/destinationFolder/
