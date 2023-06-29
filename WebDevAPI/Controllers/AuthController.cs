@@ -152,23 +152,7 @@ namespace WebDevAPI.Controllers
             var token = Request.Cookies["jwt"];
             if(token == null)
             {
-                return Ok();
-                /*
-                 Logger.LogInformation("User has no valid token, creating a temporary guest token");
-                List<Claim> claims = new List<Claim>()
-                {
-                new Claim(ClaimTypes.Role, "Guest"),
-                };
-                string newToken = auth.CreateToken("Guest", claims);
-                Logger.LogInformation("Creating a guest token");
-
-                Response.Cookies.Append("jwt", newToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true
-                });
-                return Accepted(newToken);
-                */
+                return NotFound("No valid token found");
             }
 
 
@@ -228,8 +212,8 @@ namespace WebDevAPI.Controllers
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
             //#TODO temporarily turned off for testing purposes
-            //bool result = tfa.ValidateTwoFactorPIN(player.AuthCode, data.Code);
-            //if (!result) return BadRequest("Invalid code");
+            bool result = tfa.ValidateTwoFactorPIN(player.AuthCode, data.Code);
+            if (!result) return BadRequest("Invalid code");
 
             Logger.LogInformation("Code matches the 2FA");
 

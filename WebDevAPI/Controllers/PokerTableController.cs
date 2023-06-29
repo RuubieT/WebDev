@@ -48,15 +48,15 @@ namespace WebDevAPI.Controllers
                 BigBlind = 40,
                 MaxSeats = 8
             };
-            //using (AuditScopeFactory.Create("Pokertable:Create", () => pokerTable))
-            //{
+            using (AuditFactory.Create("Pokertable:Create", () => pokerTable))
+            {
                 await PokerTableRepository.Create(pokerTable);
-            //}
+            }
             player.PokerTableId = pokerTable.PokerTableId;
-            //using (AuditScopeFactory.Create("Player:Update", () => player))
-            //{
+            using (AuditFactory.Create("Player:Update", () => player))
+            {
                 await PlayerRepository.Update(player);
-            //}
+            }
             Logger.LogInformation("Adding the player to the table");
             Logger.LogInformation("Pokertable created with id " + pokerTable.PokerTableId);
             return Ok(pokerTable.GetPokerTableDto());
