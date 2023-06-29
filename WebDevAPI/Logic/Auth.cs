@@ -50,6 +50,7 @@ namespace WebDevAPI.Logic
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateLifetime = false,
                     IssuerSigningKey = key
                 }, out SecurityToken validatedToken);
             return (JwtSecurityToken)validatedToken;

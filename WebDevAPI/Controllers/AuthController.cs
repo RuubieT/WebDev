@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.IdentityModel.Tokens.Jwt;
 using System.Numerics;
 using System.Security.Claims;
@@ -149,7 +150,28 @@ namespace WebDevAPI.Controllers
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
             var token = Request.Cookies["jwt"];
-            if(token == null) return Ok("No logged in user");
+            if(token == null)
+            {
+                return Ok();
+                /*
+                 Logger.LogInformation("User has no valid token, creating a temporary guest token");
+                List<Claim> claims = new List<Claim>()
+                {
+                new Claim(ClaimTypes.Role, "Guest"),
+                };
+                string newToken = auth.CreateToken("Guest", claims);
+                Logger.LogInformation("Creating a guest token");
+
+                Response.Cookies.Append("jwt", newToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true
+                });
+                return Accepted(newToken);
+                */
+            }
+
+
             var jwt = auth.ValidateToken(token);
             Logger.LogInformation("Validating token");
 

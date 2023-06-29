@@ -15,6 +15,21 @@ export const VALUES = [
   'A',
 ];
 
+export const GameStates = {
+  PRE_FLOP: "pre-flop",
+  FLOP: "flop",
+  TURN: "turn",
+  RIVER: "river",
+};
+
+export const PlayerActions = {
+  FOLD: "fold",
+  CALL: "call",
+  RAISE: "raise",
+  CHECK: "check",
+};
+
+
 export class Game {
   constructor(id, cards, players) {
     this.id = id;
@@ -40,3 +55,4 @@ export class Card {
     return cardDiv;
   }
 }
+
