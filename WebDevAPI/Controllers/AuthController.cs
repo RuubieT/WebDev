@@ -178,7 +178,6 @@ namespace WebDevAPI.Controllers
             string userId = jwt.Issuer;
 
             var player = await UserManager.FindByIdAsync(userId);
-
             if (player == null) return NotFound("User not found");
 
             Logger.LogInformation(player + " data retrieved");
@@ -192,7 +191,14 @@ namespace WebDevAPI.Controllers
                 }
             }
 
-            return Ok(new { player, role });
+            var playerInformation = PlayerRepository.TryFind(u => u.UserName == player.UserName).Result.result;
+            if (playerInformation == null)
+            {
+                return Ok(new { player, role });
+            }
+            return Ok(new { player, role, playerInformation });
+
+
 
         }
 

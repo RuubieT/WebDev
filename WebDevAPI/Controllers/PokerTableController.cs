@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebDevAPI.Db.Dto_s.Player;
@@ -32,9 +33,9 @@ namespace WebDevAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<IEnumerable<GetPokerTableDto>>> CreateGame(PostCreatePokerTableDto creator)
         {
-            var result = await UserManager.FindByNameAsync(creator.Username);
-            if (result == null) return NotFound("No matching player found");
-            var player = await PlayerRepository.GetByString(result.Id);
+            var user = PlayerRepository.TryFind(u => creator.Username == u.UserName).Result.result;
+            if (user == null) return NotFound("No matching player found");
+            var player = await PlayerRepository.GetByString(user.Id);
             if (player.PokerTableId != null) return BadRequest("Already in a game");
 
             Logger.LogInformation("Creating a new pokertable for user: " + creator.Username);
@@ -64,7 +65,7 @@ namespace WebDevAPI.Controllers
         [HttpPut("Join")]
         public async Task<ActionResult<IEnumerable<GetPlayerDto>>> JoinGame(PutJoinPokerTableDto data)
         {
-            var user = await UserManager.FindByNameAsync(data.Username);
+            var user = PlayerRepository.TryFind(u => data.Username == u.UserName).Result.result;
             if (user == null) return NotFound("No matching player found");
             var result = await PlayerRepository.GetByString(user.Id);
             if (result.PokerTableId != null) return BadRequest("Already in a game");
@@ -123,6 +124,19 @@ namespace WebDevAPI.Controllers
             var deckLeft = new Queue<Card>(deckOfCards.getDeck);
             var tablecards = DealCards.TableCards(deckLeft);
             Logger.LogInformation("Tablecards drawn");
+
+            return Ok(tablecards);
+        }
+
+        [HttpGet("tablecards")]
+        public async Task<ActionResult> GetTableCards()
+        {
+            var cards = await CardRepository.TryFindAll(c => c.InHand == false);
+            var deck = new Queue<Card>((IEnumerable<Card>)cards);
+            DealCards d = new DealCards();
+            DeckOfCards deck2 = new DeckOfCards();
+            deck2.SetUpDeck();
+            var tablecards = d.TableCards(deck2.getDeck);
 
             return Ok(tablecards);
         }

@@ -16,7 +16,8 @@ export const joinPokertable = async (data, token) => {
 
 export const startPokertable = async (pokertableId, token) => {
   return await getAuthorizedData(
-    `/api/Pokertable/Start/${(pokertableId, token)}`,
+    `/api/Pokertable/Start/${pokertableId}`,
+    token,
   );
 };
 

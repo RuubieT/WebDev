@@ -1,6 +1,6 @@
 import { jwtToken, navigateTo, s } from '../index.js';
 import { Contactform } from '../../models/Contactform.js';
-import { buttonTEST, createGame, joinGame, startGame } from './gamelogic.js';
+import { createGame, joinGame, pokertable } from './gamelogic.js';
 import { createContactform } from './services/contactform.js';
 import { joinPokertable } from './services/pokertable.js';
 import { test, test2 } from './services/player.js';
@@ -13,42 +13,42 @@ const appDiv = document.getElementById('app');
 function createSubmitFormButton() {
   var submitFormButton = document.getElementById('contactFormButtonDiv');
   clearChildNodes(submitFormButton);
-    const div = document.createElement('div');
-    div.id = 'contactFormButtonDiv';
+  const div = document.createElement('div');
+  div.id = 'contactFormButtonDiv';
 
-    const btn = createCustomButtons('submitFormButton', 'Submit!');
-    btn.addEventListener('click', async () => {
-      const inputFields = document.querySelectorAll('input');
-      const validInputs = Array.from(inputFields).filter(
-        (input) => input.value !== '',
-      );
-      const contactForm = new Contactform();
-      validInputs.forEach((input) => {
-        switch (input.id) {
-          case 'name':
-            contactForm.name = input.value;
-            break;
-          case 'email':
-            contactForm.email = input.value;
-            break;
-          case 'subject':
-            contactForm.subject = input.value;
-            break;
-          case 'description':
-            contactForm.description = input.value;
-            break;
-        }
-      });
-
-      let response = await createContactform(contactForm);
-
-      let data = await response.json();
-      alert(JSON.stringify(data));
+  const btn = createCustomButtons('submitFormButton', 'Submit!');
+  btn.addEventListener('click', async () => {
+    const inputFields = document.querySelectorAll('input');
+    const validInputs = Array.from(inputFields).filter(
+      (input) => input.value !== '',
+    );
+    const contactForm = new Contactform();
+    validInputs.forEach((input) => {
+      switch (input.id) {
+        case 'name':
+          contactForm.name = input.value;
+          break;
+        case 'email':
+          contactForm.email = input.value;
+          break;
+        case 'subject':
+          contactForm.subject = input.value;
+          break;
+        case 'description':
+          contactForm.description = input.value;
+          break;
+      }
     });
-    btn.disabled = true;
-    div.appendChild(btn);
-    return div;
-  }
+
+    let response = await createContactform(contactForm);
+
+    let data = await response.json();
+    alert(JSON.stringify(data));
+  });
+  btn.disabled = true;
+  div.appendChild(btn);
+  return div;
+}
 
 function deleteSubmitFormButton() {
   deleteCustomButtons('contactFormButtonDiv');
@@ -57,22 +57,18 @@ function deleteSubmitFormButton() {
 function createPlayButton() {
   var playButton = document.getElementById('playButtonDiv');
   clearChildNodes(playButton);
-    const div = document.createElement('div');
-    div.id = 'playButtonDiv';
+  const div = document.createElement('div');
+  div.id = 'playButtonDiv';
 
-    const btn = createCustomButtons('playButton', 'Play Game');
-    btn.addEventListener('click', async () => {
-      s._connection.send('SendMessage', 'game');
-      s._connection.on('ReceiveMessage', (value) => {
-        console.log(value);
-      });
-      navigateTo('/game');
-    });
+  const btn = createCustomButtons('playButton', 'Play Game');
+  btn.addEventListener('click', async () => {
+    navigateTo('/game');
+  });
 
-    div.appendChild(btn);
+  div.appendChild(btn);
 
-    document.body.appendChild(div);
-  }
+  document.body.appendChild(div);
+}
 
 function deletePlayButton() {
   deleteCustomButtons('playButtonDiv');
@@ -81,41 +77,42 @@ function deletePlayButton() {
 function createGameButtons() {
   var playButtons = document.getElementById('gameButtons');
   clearChildNodes(playButtons);
-    const div = document.createElement('div');
-    div.id = 'gameButtons';
+  const div = document.createElement('div');
+  div.id = 'gameButtons';
 
-    const createbutton = createCustomButtons('createButton', 'Create');
-    createbutton.classList.add('game');
+  const createbutton = createCustomButtons('createButton', 'Create');
+  createbutton.classList.add('game');
 
-    createbutton.addEventListener('click', async () => {
-      //Setup game
-    });
+  createbutton.addEventListener('click', async () => {
+    await createGame();
+    navigateTo('/table');
+  });
 
-    const joinbutton = createCustomButtons('joinButton', 'Join');
-    joinbutton.classList.add('game');
+  const joinbutton = createCustomButtons('joinButton', 'Join');
+  joinbutton.classList.add('game');
 
-    joinbutton.addEventListener('click', async () => {
-      await joinGame();
-      navigateTo('/table');
-    });
+  joinbutton.addEventListener('click', async () => {
+    await joinGame();
+    navigateTo('/table');
+  });
 
-    const startbutton = createCustomButtons('startButton', 'Start');
-    startbutton.classList.add('game');
+  const startbutton = createCustomButtons('startButton', 'Start');
+  startbutton.classList.add('game');
 
-    startbutton.addEventListener('click', async () => {
-      navigateTo('/table');
-    });
+  startbutton.addEventListener('click', async () => {
+    navigateTo('/table');
+  });
 
-    var x = document.createElement('input');
-    x.setAttribute('type', 'text');
-    x.id = 'idpokertable';
+  var x = document.createElement('input');
+  x.setAttribute('type', 'text');
+  x.id = 'idpokertable';
 
-    div.appendChild(createbutton);
-    div.appendChild(x);
-    div.appendChild(joinbutton);
-    div.appendChild(startbutton);
-    document.body.appendChild(div);
-  }
+  div.appendChild(createbutton);
+  div.appendChild(x);
+  div.appendChild(joinbutton);
+  div.appendChild(startbutton);
+  document.body.appendChild(div);
+}
 
 function deleteGameButtons() {
   deleteCustomButtons('gameButtons');
@@ -125,50 +122,34 @@ async function createPokerButtons() {
   var pokerButtons = document.getElementById('pokerbuttons');
   clearChildNodes(pokerButtons);
 
-    const checkButton = createCustomButtons('checkButton', 'Check');
-    checkButton.addEventListener('click', () => {
-      s._connection.send('SendMessage', `CHECK`);
-      s._connection.on('ReceiveMessage', (value) => {
-        console.log(value);
-      });
-    });
+  //becomes raise?
+  const checkButton = createCustomButtons('checkButton', 'Check');
+  checkButton.addEventListener('click', () => {
+    s.sendPlayerAction({ id: 0, action: 'check', value: 0 });
+  });
 
-    const foldButton = createCustomButtons('foldButton', 'Fold');
-    foldButton.addEventListener('click', async () => {
-      s._connection.send('SendMessage', 'FOLD');
-      s._connection.on('ReceiveMessage', (value) => {
-        console.log(value);
-      });
-    });
+  const foldButton = createCustomButtons('foldButton', 'Fold');
+  foldButton.addEventListener('click', async () => {
+    s.sendPlayerAction({ id: 0, action: 'fold', value: 0 });
+  });
 
-    const callButton = createCustomButtons('callButton', 'Call');
-    callButton.addEventListener('click', () => {
-      s._connection.send('SendMessage', 'Call');
-      s._connection.on('ReceiveMessage', (value) => {
-        console.log(value);
-      });
-    });
+  const callButton = createCustomButtons('callButton', 'Call');
+  callButton.addEventListener('click', () => {
+    s.sendPlayerAction({ id: 0, action: 'call', value: 0 });
+  });
 
-    const betButton = createCustomButtons('betButton', 'Bet');
-    betButton.addEventListener('click', () => {
-      var slider = document.getElementById("myRange");
-      s._connection.send('SendMessage', `BET + ${slider.value} `);
-      s._connection.on('ReceiveMessage', (value) => {
-        console.log(value);
-      });
-    });
+  const betButton = createCustomButtons('betButton', 'Bet');
+  betButton.addEventListener('click', () => {
+    var slider = document.getElementById('myRange');
+    s.sendPlayerAction({ id: 0, action: 'bet', value: 0 });
+  });
 
-    const testButton = createCustomButtons('testButton', 'Test');
-    testButton.addEventListener('click', () => {
-      
-      s._connection.send('SendMessage', "Starting");
-      s._connection.on('ReceiveMessage', async (value) => {
-        console.log(value);
-        await buttonTEST();
-      });
-    });
+  const testButton = createCustomButtons('testButton', 'Test');
+  testButton.addEventListener('click', async () => {
+    s.startGame(pokertable.players);
+  });
 
-if(pokerButtons){
+  if (pokerButtons) {
     pokerButtons.appendChild(testButton);
 
     pokerButtons.appendChild(checkButton);
@@ -197,8 +178,8 @@ function deleteCustomButtons(name) {
   }
 }
 
-function clearChildNodes(buttonName){
-  if(buttonName){
+function clearChildNodes(buttonName) {
+  if (buttonName) {
     if (buttonName.hasChildNodes) {
       buttonName.innerHTML = '';
     }
