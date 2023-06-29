@@ -110,6 +110,10 @@ async function deleteData(url = '') {
 async function deleteAuthorizedData(url = '', token) {
   let response = await fetch(url, {
     method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'bearer ' + token,
+    },
   })
     .then(function (res) {
       return handleResponse(res);
