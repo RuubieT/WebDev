@@ -78,6 +78,22 @@ async function dealCards(hand) {
   alert('Cards have been dealt.');
 }
 
+async function tableCards(cards) {
+  //Tablecards 1-3 4 5
+  var tableCardsDiv = document.getElementById('tableCardsDiv');
+  if (tableCardsDiv.hasChildNodes) {
+    tableCardsDiv.innerHTML = '';
+  }
+  for (const i in cards) {
+    //var tablecard = new Card(SUITS[cards[i].mySuit], VALUES[cards[i].myValue]);
+    var cardBack = document.createElement('img');
+    cardBack.src = '../static/images/cardBack.png';
+    cardBack.classList.add('card');
+    tableCardsDiv.appendChild(cardBack);
+    // tableCardsDiv.appendChild(tablecard.getCardHTML());
+  }
+}
+
 //main function //startpokertable is solo <-- delete playerhands
 async function assignPokertable() {
   pokertableId = getCookie('pokerTableId');
@@ -151,4 +167,11 @@ async function joinGame() {
   }
 }
 
-export { createGame, dealCards, joinGame, assignPokertable, createPlayerDivs };
+export {
+  createGame,
+  dealCards,
+  joinGame,
+  assignPokertable,
+  tableCards,
+  createPlayerDivs,
+};

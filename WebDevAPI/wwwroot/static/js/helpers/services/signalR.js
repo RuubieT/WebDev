@@ -1,4 +1,4 @@
-import { assignPokertable, dealCards } from '../gamelogic.js';
+import { assignPokertable, dealCards, tableCards } from '../gamelogic.js';
 
 export class SignalRService {
   _connection;
@@ -26,7 +26,8 @@ export class SignalRService {
     assignPokertable();
   }
 
-  handleStartGame() {
+  handleStartGame(tablecards) {
+    tableCards(tablecards);
     alert('Game started');
   }
 
@@ -35,19 +36,6 @@ export class SignalRService {
 
     dealCards(data);
     console.log('CARDS?');
-
-    //Tablecards
-    // var tableCardsDiv = document.getElementById('tableCardsDiv');
-    // if (tableCardsDiv.hasChildNodes) {
-    //   tableCardsDiv.innerHTML = '';
-    // }
-    // for (const i in pokertable.cards) {
-    //   var tablecard = new Card(
-    //     SUITS[pokertable.cards[i].mySuit],
-    //     VALUES[pokertable.cards[i].myValue],
-    //   );
-    //   tableCardsDiv.appendChild(tablecard.getCardHTML());
-    // }
   }
 
   startConnection() {

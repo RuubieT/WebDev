@@ -49,8 +49,10 @@ namespace WebDevAPI.Hubs
             }
 
             //also return the tablecards?
+            var cardsLeft = deckOfCards.getDeck;
+            var tableCards = dealCards.TableCards(cardsLeft);
 
-            await Clients.All.SendAsync("GameStarted", "Game started");
+            await Clients.All.SendAsync("GameStarted", tableCards);
         }
 
     }
