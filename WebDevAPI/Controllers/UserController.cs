@@ -167,8 +167,8 @@ namespace WebDevAPI.Controllers
             return Ok(user); ;
         }
 
+        /*[Authorize]
         [HttpPut("ChangePassword")]
-
         public async Task<ActionResult> ChangePassword(PutChangePasswordDto data)
         {
             var user = await UserManager.FindByEmailAsync(data.Email);
@@ -185,6 +185,6 @@ namespace WebDevAPI.Controllers
             Logger.LogInformation(user.UserName + " changed their password");
 
             return Ok(user); ;
-        }
+        }*/
     }
 }

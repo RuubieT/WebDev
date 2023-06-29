@@ -24,7 +24,7 @@ async function createGame() {
   username = getCookie('username');
   const createData = new CreatePokerTableDto(username);
 
-  let createdGame = await createPokertable(createData);
+  let createdGame = await createPokertable(createData, jwtToken.token);
 
   if (createdGame) {
     setCookie('pokerTableId', createdGame.id, 1);
@@ -36,7 +36,7 @@ async function startGame() {
   pokertableId = getCookie('pokerTableId');
   username = getCookie('username');
 
-  let startedGame = await startPokertable(pokertableId);
+  let startedGame = await startPokertable(pokertableId, jwtToken.token);
   if (startedGame) {
     createPlayerDivs();
     pokertable.cards = startedGame;
@@ -51,8 +51,8 @@ async function startGame() {
       const carddiv = document.createElement('div');
       carddiv.id = 'cards ' + i.username;
       if (i.username == username) {
-        let hand = await getPlayerhand(username);
-        console.log((pokertable.players));
+        let hand = await getPlayerhand(username, jwtToken.token);
+        console.log(pokertable.players);
         if (hand) {
           firstcard = new Card(
             SUITS[hand.firstCard.suit],
@@ -95,9 +95,12 @@ async function assignPokertable() {
     pokertableId = getCookie('pokerTableId');
   }
 
-  let data = await findPokertable(pokertableId);
+  let data = await findPokertable(pokertableId, jwtToken.token);
   if (data) {
-    pokertable.players = await getPokertablePlayers(pokertableId);
+    pokertable.players = await getPokertablePlayers(
+      pokertableId,
+      jwtToken.token,
+    );
     pokertable.ante = data.ante;
     pokertable.smallBlind = data.smallBlind;
     pokertable.bigBlind = data.bigBlind;

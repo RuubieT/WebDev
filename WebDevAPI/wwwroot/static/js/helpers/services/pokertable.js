@@ -1,25 +1,36 @@
-import { postData, getData, putAuthorizedData } from './apiCallTemplates.js';
+import {
+  postData,
+  getData,
+  putAuthorizedData,
+  postAuthorizedData,
+  getAuthorizedData,
+} from './apiCallTemplates.js';
 
-export const createPokertable = async (pokertable) => {
-  return await postData('api/Pokertable/Create', pokertable);
+export const createPokertable = async (pokertable, token) => {
+  return await postAuthorizedData('api/Pokertable/Create', pokertable, token);
 };
 
 export const joinPokertable = async (data, token) => {
   return await putAuthorizedData('api/Pokertable/Join', data, token);
 };
 
-export const startPokertable = async (pokertableId) => {
-  return await getData(`/api/Pokertable/Start/${pokertableId}`);
+export const startPokertable = async (pokertableId, token) => {
+  return await getAuthorizedData(
+    `/api/Pokertable/Start/${(pokertableId, token)}`,
+  );
 };
 
-export const findPokertable = async (pokertableId) => {
-  return await getData(`/api/Pokertable/${pokertableId}`);
+export const findPokertable = async (pokertableId, token) => {
+  return await getAuthorizedData(`/api/Pokertable/${pokertableId}`, token);
 };
 
-export const getPokertablePlayers = async (pokertableId) => {
-  return await getData(`/api/Pokertable/Players/${pokertableId}`);
+export const getPokertablePlayers = async (pokertableId, token) => {
+  return await getAuthorizedData(
+    `/api/Pokertable/Players/${pokertableId}`,
+    token,
+  );
 };
 
-export const getPlayerhand = async (username) => {
-  return await getData(`/api/Pokertable/Hand/${username}`);
+export const getPlayerhand = async (username, token) => {
+  return await getAuthorizedData(`/api/Pokertable/Hand/${username}`, token);
 };

@@ -1,4 +1,4 @@
-import { navigateTo } from '../index.js';
+import { jwtToken, navigateTo } from '../index.js';
 import {
   createCustomButtons,
   deleteGameButtons,
@@ -25,20 +25,20 @@ async function removeRegAndLog() {
       const logoutButton = createCustomButtons('logoutButton', 'Logout');
       logoutButton.addEventListener('click', async () => {
         navigateTo('/');
-        await Logout();
+        await Logout(jwtToken.token);
         deleteAllCookies();
       });
       div2.innerText = '';
       div2.appendChild(logoutButton);
 
       if (data.role == 'Moderator') {
-        var modButton = document.getElementById("modPanel");
-        modButton.removeAttribute("hidden");
+        var modButton = document.getElementById('modPanel');
+        modButton.removeAttribute('hidden');
       }
 
       if (data.role == 'Admin') {
-        var adminButton = document.getElementById("adminPanel");
-        adminButton.removeAttribute("hidden");
+        var adminButton = document.getElementById('adminPanel');
+        adminButton.removeAttribute('hidden');
       }
     }
   });
