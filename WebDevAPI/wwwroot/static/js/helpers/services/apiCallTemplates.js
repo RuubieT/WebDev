@@ -44,7 +44,7 @@ async function getData(url = '') {
       return handleResponse(res);
     })
     .catch((e) => {
-      if (e.message) alert(e.message);
+      if (e.message) console.log(e.message);
     });
   return returnResponse(response);
 }
@@ -61,7 +61,7 @@ async function getAuthorizedData(url = '', token) {
       return handleResponse(res);
     })
     .catch((e) => {
-      if (e.message) alert(e.message);
+      if (e.message) console.log(e.message);
     });
   return returnResponse(response);
 }

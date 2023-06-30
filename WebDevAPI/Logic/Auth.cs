@@ -57,6 +57,37 @@ namespace WebDevAPI.Logic
        
         }
 
+        public string RefreshToken(string token, List<Claim> claims)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+               _configuration.GetSection("AppSettings:Token").Value!));
+
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                IssuerSigningKey = key
+            }, out SecurityToken validatedToken);
+
+            if(validatedToken.ValidTo > DateTime.Now)
+            {
+                return "Token has not expires yet";
+            }
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var refreshedtoken = new JwtSecurityToken(
+                issuer: validatedToken.Id,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(320),
+                signingCredentials: creds
+                );
+            return tokenHandler.WriteToken(refreshedtoken);
+        }
+
         public string GetClaim(string token, string claimType)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

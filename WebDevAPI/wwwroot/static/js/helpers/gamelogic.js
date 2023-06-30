@@ -2,7 +2,13 @@ import { jwtToken, s } from '../index.js';
 import { CreatePokerTableDto } from '../../models/Dto/PokerTable/CreatePokerTableDto.js';
 import { getCookie, setCookie } from './cookieHelper.js';
 import { getData, postData } from './services/apiCallTemplates.js';
-import { Card, GameStates, SUITS, VALUES } from '../../models/Game.js';
+import {
+  Card,
+  GameStates,
+  PlayerActions,
+  SUITS,
+  VALUES,
+} from '../../models/Game.js';
 import { PlayerHand } from '../../models/PlayerHand.js';
 import {
   createPokertable,
@@ -15,6 +21,7 @@ import {
 import { PokerTable } from '../../models/PokerTable.js';
 import { JoinPokertable } from '../../models/Dto/PokerTable/JoinPokertable.js';
 import { clearChildNodes, createPokerButtons } from './buttons.js';
+import { Player } from '../../models/Player.js';
 
 export const pokertable = new PokerTable();
 let username;
@@ -78,19 +85,60 @@ async function dealCards(hand) {
   alert('Cards have been dealt.');
 }
 
-async function tableCards(cards) {
+function generatecardback() {
+  var cardBack = document.createElement('img');
+  cardBack.src = '../static/images/cardBack.png';
+  cardBack.classList.add('card');
+  tableCardsDiv.appendChild(cardBack);
+}
+
+async function tableCards(cards, gamestate) {
   //Tablecards 1-3 4 5
   var tableCardsDiv = document.getElementById('tableCardsDiv');
   if (tableCardsDiv.hasChildNodes) {
     tableCardsDiv.innerHTML = '';
   }
   for (const i in cards) {
-    //var tablecard = new Card(SUITS[cards[i].mySuit], VALUES[cards[i].myValue]);
-    var cardBack = document.createElement('img');
-    cardBack.src = '../static/images/cardBack.png';
-    cardBack.classList.add('card');
-    tableCardsDiv.appendChild(cardBack);
-    // tableCardsDiv.appendChild(tablecard.getCardHTML());
+    switch (gamestate) {
+      case GameStates.PRE_FLOP:
+        generatecardback();
+
+        break;
+      case GameStates.FLOP:
+        for (let i = 0; i < 3; i++) {
+          var tablecard = new Card(
+            SUITS[cards[i].mySuit],
+            VALUES[cards[i].myValue],
+          );
+
+          tableCardsDiv.appendChild(tablecard.getCardHTML());
+        }
+        generatecardback();
+
+        break;
+      case GameStates.TURN:
+        for (let i = 0; i < 4; i++) {
+          var tablecard = new Card(
+            SUITS[cards[i].mySuit],
+            VALUES[cards[i].myValue],
+          );
+
+          tableCardsDiv.appendChild(tablecard.getCardHTML());
+        }
+        generatecardback();
+        break;
+      case GameStates.RIVER:
+        for (let i = 0; i < 5; i++) {
+          var tablecard = new Card(
+            SUITS[cards[i].mySuit],
+            VALUES[cards[i].myValue],
+          );
+
+          tableCardsDiv.appendChild(tablecard.getCardHTML());
+        }
+        generatecardback();
+        break;
+    }
   }
 }
 
@@ -104,10 +152,16 @@ async function assignPokertable() {
 
   let data = await findPokertable(pokertableId, jwtToken.token);
   if (data) {
-    pokertable.players = await getPokertablePlayers(
-      pokertableId,
-      jwtToken.token,
-    );
+    let data = await getPokertablePlayers(pokertableId, jwtToken.token);
+    data.forEach((player, i) => {
+      pokertable.players[i] = new Player(
+        player.username,
+        player.chips,
+        null,
+        pokertableId,
+        null,
+      );
+    });
     pokertable.ante = data.ante;
     pokertable.smallBlind = data.smallBlind;
     pokertable.bigBlind = data.bigBlind;
@@ -115,9 +169,9 @@ async function assignPokertable() {
     pokertable.pot = 0;
     pokertable.gamestate = GameStates.PRE_FLOP;
     pokertable.activePlayer = 0;
+    createPlayerDivs();
+    createPokerButtons();
   }
-  createPlayerDivs();
-  createPokerButtons();
 }
 
 function createPlayerDivs() {
@@ -167,6 +221,64 @@ async function joinGame() {
   }
 }
 
+async function playerAction(action) {
+  var player = pokertable.players[pokertable.activePlayer];
+
+  switch (action) {
+    case PlayerActions.FOLD:
+      player.action = player.FOLD;
+      break;
+    case PlayerActions.CHECK:
+      player.action = player.CHECK;
+      break;
+    case PlayerActions.RAISE:
+      player.action = player.FOLD;
+      player.chips -= action.value;
+      pokertable.bet = action.value;
+      pokertable.pot += action.value;
+      break;
+    case PlayerActions.CALL:
+      player.action = player.CALL;
+      player.chips -= action.value;
+      pokertable.pot += action.value;
+      break;
+  }
+  pokertable.activePlayer =
+    (pokertable.activePlayer + 1) % pokertable.players.length;
+
+  let actionsLeft = 0;
+  var allPlayersActed = false;
+  pokertable.players.forEach((player) => {
+    if (player.action == null) {
+      actionsLeft++;
+    }
+  });
+  if (actionsLeft == 0) {
+    allPlayersActed = true;
+  }
+
+  if (allPlayersActed) {
+    switch (pokertable.gamestate) {
+      case GameStates.PRE_FLOP:
+        currentState = GameStates.FLOP;
+        break;
+      case GameStates.FLOP:
+        currentState = GameStates.TURN;
+        break;
+      case GameStates.TURN:
+        currentState = GameStates.RIVER;
+        break;
+      case GameStates.RIVER:
+        // Determine the winner and distribute the pot
+        break;
+    }
+    pokertable.players.forEach((player) => {
+      player.action = null;
+    });
+    pokertable.bet = 0;
+  }
+}
+
 export {
   createGame,
   dealCards,
@@ -174,4 +286,5 @@ export {
   assignPokertable,
   tableCards,
   createPlayerDivs,
+  playerAction,
 };

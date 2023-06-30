@@ -6,15 +6,24 @@ import {
   deletePokerButtons,
   deleteSubmitFormButton,
 } from './buttons.js';
-import { deleteAllCookies, getCookie } from './cookieHelper.js';
+import { deleteAllCookies, getCookie, setCookie } from './cookieHelper.js';
 import { deleteLeaderboard } from './leaderboard.js';
 import { deleteRoleList, deleteUserList } from './management.js';
 import { GetUser, Logout } from './services/auth.js';
 
 async function removeRegAndLog() {
   await GetUser().then((data) => {
-    if (data != undefined && getCookie('username') != null) {
-      console.log(data);
+    if (data != undefined) {
+      if (getCookie('username') == null) {
+        setCookie('username', data.player.userName, 1);
+        if (data.playerInformation.pokerTableId) {
+          setCookie('pokerTableId', data.playerInformation.pokerTableId, 1);
+        }
+        if (data.refreshedToken) {
+          jwtToken.token = data.refreshedToken;
+        }
+      }
+      // && getCookie('username') != null
       var div = document.getElementById('login');
       div.classList.add('disabled-link');
 
@@ -24,9 +33,10 @@ async function removeRegAndLog() {
       div2.href = '';
       const logoutButton = createCustomButtons('logoutButton', 'Logout');
       logoutButton.addEventListener('click', async () => {
-        navigateTo('/');
-        await Logout(jwtToken.token);
         deleteAllCookies();
+        await Logout(jwtToken.token);
+
+        navigateTo('/');
       });
       div2.innerText = '';
       div2.appendChild(logoutButton);

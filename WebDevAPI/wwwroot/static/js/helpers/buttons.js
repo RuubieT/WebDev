@@ -7,6 +7,7 @@ import { test, test2 } from './services/player.js';
 import { loginVerify } from './verifyForm.js';
 import { GetUser } from './services/auth.js';
 import { getCookie } from './cookieHelper.js';
+import { ActionDto } from '../../models/Dto/ActionDto.js';
 
 const appDiv = document.getElementById('app');
 
@@ -125,23 +126,23 @@ async function createPokerButtons() {
   //becomes raise?
   const checkButton = createCustomButtons('checkButton', 'Check');
   checkButton.addEventListener('click', () => {
-    s.sendPlayerAction({ id: 0, action: 'check', value: 0 });
+    s.sendPlayerAction(new ActionDto(0, 'fold', 0));
   });
 
   const foldButton = createCustomButtons('foldButton', 'Fold');
   foldButton.addEventListener('click', async () => {
-    s.sendPlayerAction({ id: 0, action: 'fold', value: 0 });
+    s.sendPlayerAction(new ActionDto(0, 'fold', 0));
   });
 
   const callButton = createCustomButtons('callButton', 'Call');
   callButton.addEventListener('click', () => {
-    s.sendPlayerAction({ id: 0, action: 'call', value: 0 });
+    s.sendPlayerAction(new ActionDto(0, 'fold', 0));
   });
 
   const betButton = createCustomButtons('betButton', 'Bet');
   betButton.addEventListener('click', () => {
     var slider = document.getElementById('myRange');
-    s.sendPlayerAction({ id: 0, action: 'bet', value: 0 });
+    s.sendPlayerAction(new ActionDto(0, 'fold', slider.value));
   });
 
   const testButton = createCustomButtons('testButton', 'Test');

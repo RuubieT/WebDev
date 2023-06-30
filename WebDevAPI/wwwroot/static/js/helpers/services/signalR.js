@@ -1,4 +1,11 @@
-import { assignPokertable, dealCards, tableCards } from '../gamelogic.js';
+import { GameStates } from '../../../models/Game.js';
+import {
+  assignPokertable,
+  dealCards,
+  playerAction,
+  pokertable,
+  tableCards,
+} from '../gamelogic.js';
 
 export class SignalRService {
   _connection;
@@ -19,7 +26,7 @@ export class SignalRService {
   }
 
   handleGameState(gameState) {
-    console.log(gameState);
+    playerAction(gameState);
   }
 
   handlePlayerJoin() {
@@ -27,15 +34,14 @@ export class SignalRService {
   }
 
   handleStartGame(tablecards) {
-    tableCards(tablecards);
-    alert('Game started');
+    pokertable.tableCards = tablecards;
+    tableCards(tablecards, GameStates.PRE_FLOP);
+
+    //player 1 turn
   }
 
   handleReceiveCards(data) {
-    //update UI
-
     dealCards(data);
-    console.log('CARDS?');
   }
 
   startConnection() {

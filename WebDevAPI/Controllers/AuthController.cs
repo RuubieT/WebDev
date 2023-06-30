@@ -155,45 +155,69 @@ namespace WebDevAPI.Controllers
                 return NotFound("No valid token found");
             }
 
-
-            var jwt = auth.ValidateToken(token);
-            Logger.LogInformation("Validating token");
-
-            string userId = jwt.Issuer;
-
-            var player = await UserManager.FindByIdAsync(userId);
-            if (player == null) return NotFound("User not found");
-
-            Logger.LogInformation(player + " data retrieved");
-
-            var role = "";
-            foreach(var claim in jwt.Claims)
+            JwtSecurityToken jwt = null;
+            try
             {
-                if(claim.Type == ClaimTypes.Role)
+                Logger.LogInformation("Validating token");
+                jwt = auth.ValidateToken(token);
+            }catch (Exception ex) { }
+
+            if(jwt != null) {
+                string refreshedToken = null;
+                if (jwt.ValidTo < DateTime.UtcNow)
                 {
-                    role = claim.Value;
+                    Logger.LogInformation("Refreshing token for user");
+                    refreshedToken = auth.RefreshToken(token, jwt.Claims.ToList());
+                    Response.Cookies.Append("jwt", token, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true
+                    });
                 }
+
+                string userId = jwt.Issuer;
+
+                var player = await UserManager.FindByIdAsync(userId);
+                if (player == null) return NotFound("User not found");
+
+                Logger.LogInformation(player + " data retrieved");
+
+                var role = "";
+                foreach (var claim in jwt.Claims)
+                {
+                    if (claim.Type == ClaimTypes.Role)
+                    {
+                        role = claim.Value;
+                    }
+                }
+
+                var playerInformation = PlayerRepository.TryFind(u => u.UserName == player.UserName).Result.result;
+                if (playerInformation == null)
+                {
+                    return Ok(new { player, role });
+                }
+                return Ok(new { player, role, playerInformation, refreshedToken });
             }
 
-            var playerInformation = PlayerRepository.TryFind(u => u.UserName == player.UserName).Result.result;
-            if (playerInformation == null)
+            var temptoken = auth.CreateToken(Guid.NewGuid().ToString(), new List<Claim> { new Claim("Role", "Guest"), });
+            Response.Cookies.Append("jwt", temptoken, new CookieOptions
             {
-                return Ok(new { player, role });
-            }
-            return Ok(new { player, role, playerInformation });
-
-
-
+                HttpOnly = true,
+                Secure = true
+            });
+            return Ok(temptoken);
         }
 
         [Authorize]
-        [HttpPost("Logout")]
+        [HttpGet("Logout")]
         public async Task<ActionResult> Logout()
         {
+            Response.Cookies.Delete("jwt", new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(-1)
+            });
             Logger.LogInformation("User logged out");
-
-            Response.Cookies.Delete("jwt");
-            return Ok(new { message = "Success" });
+            return Ok("Success");
         }
 
         [HttpPost("GAuth")]

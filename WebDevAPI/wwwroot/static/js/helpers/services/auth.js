@@ -1,5 +1,6 @@
 import {
   deleteAuthorizedData,
+  getAuthorizedData,
   getData,
   postAuthorizedData,
   postData,
@@ -20,7 +21,7 @@ export const GetUser = async () => {
 };
 
 export const Logout = async (token) => {
-  return await postAuthorizedData('api/Auth/Logout', token);
+  return await getAuthorizedData('api/Auth/Logout', token);
 };
 
 export const ValidateCode = async (data) => {

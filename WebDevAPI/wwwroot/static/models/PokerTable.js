@@ -10,6 +10,8 @@ export class PokerTable {
     gamestate,
     pot,
     activePlayer,
+    tableCards,
+    bet,
   ) {
     this.ante = ante;
     this.smallBlind = smallBlind;
@@ -21,5 +23,7 @@ export class PokerTable {
     this.gamestate = gamestate;
     this.pot = pot;
     this.activePlayer = activePlayer;
+    this.tableCards = tableCards;
+    this.bet = bet;
   }
 }
