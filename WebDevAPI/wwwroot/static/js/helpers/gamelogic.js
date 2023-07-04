@@ -153,15 +153,19 @@ async function assignPokertable() {
   let data = await findPokertable(pokertableId, jwtToken.token);
   if (data) {
     let data = await getPokertablePlayers(pokertableId, jwtToken.token);
-    data.forEach((player, i) => {
-      pokertable.players[i] = new Player(
-        player.username,
-        player.chips,
-        null,
-        pokertableId,
-        null,
-      );
-    });
+    pokertable.players = await getPokertablePlayers(
+      pokertableId,
+      jwtToken.token,
+    );
+    // pokertable.players.forEach((player, i) => {
+    //   pokertable.players[i] = new Player(
+    //     player.username,
+    //     player.chips,
+    //     undefined,
+    //     pokertableId,
+    //     undefined,
+    //   );
+    // });
     pokertable.ante = data.ante;
     pokertable.smallBlind = data.smallBlind;
     pokertable.bigBlind = data.bigBlind;
@@ -172,6 +176,18 @@ async function assignPokertable() {
     createPlayerDivs();
     createPokerButtons();
   }
+}
+
+function createTableDivs(){
+    var tablenameDiv = document.getElementById('tablename');
+    clearChildNodes(tablenameDiv);
+    tablenameDiv.innerText = "Pokertable: " + getCookie('pokerTableId');
+
+    var joincodeDiv = document.getElementById('joincode');
+    joincodeDiv.innerText = "Invite your friends by sending them this code: " + getCookie('pokerTableId');
+
+
+
 }
 
 function createPlayerDivs() {
@@ -204,6 +220,8 @@ function createPlayerDivs() {
     playersDiv.appendChild(div);
     count++;
   });
+
+  createTableDivs();
 }
 
 async function joinGame() {

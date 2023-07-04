@@ -19,11 +19,6 @@ namespace WebDevAPI.Hubs
 
         public async Task HandlePlayerAction(ActionDto action)
         {
-            // Process the player action and update the game state accordingly
-            // ...
-
-            // Send the updated game state to all connected clients
-            
             await SendGameState(action);
         }
 
