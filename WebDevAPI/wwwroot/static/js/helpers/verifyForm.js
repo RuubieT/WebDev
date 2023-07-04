@@ -139,7 +139,14 @@ const loginVerify = async () => {
           jwtToken.token = tokenJson.token;
         }
         if (CurrentUser) {
-          setCookie('username', CurrentUser.userName, 1);
+          setCookie('username', CurrentUser.player.userName, 1);
+          if (CurrentUser.playerInformation.pokerTableId) {
+            setCookie(
+              'pokerTableId',
+              CurrentUser.playerInformation.pokerTableId,
+              1,
+            );
+          }
           alert('Logged in');
           navigateTo('/');
           modal.style.display = 'none';
@@ -192,7 +199,7 @@ const registerVerify = async () => {
     jwtToken.token = registerData.token;
   }
   if (CurrentUser) {
-    setCookie('username', CurrentUser.userName, 1);
+    setCookie('username', CurrentUser.player.userName, 1);
     alert('Registered succesfully');
 
     var modal = document.getElementById('myModal');

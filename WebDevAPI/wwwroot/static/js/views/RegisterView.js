@@ -41,7 +41,6 @@ export default class extends AbstractView {
                         <label>Password</label>
                     </div>
                     <div>
-                    Check the captcha
                      ${assignCaptchaDiv()}
                     </div>
                 

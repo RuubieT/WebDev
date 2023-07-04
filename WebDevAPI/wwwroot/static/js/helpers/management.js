@@ -6,9 +6,10 @@ import {
   getData,
 } from './services/apiCallTemplates.js';
 import { DeleteUser, UpdateUserRole } from './services/auth.js';
+import { GetExistingRoles, GetUserRoles, GetUsers } from './services/player.js';
 
 async function createUserList() {
-  var data = await getAuthorizedData('api/User', jwtToken.token);
+  var data = await GetUsers(jwtToken.token);
 
   var userList = document.getElementById('userListDiv');
   if (!userList && data) {
@@ -42,7 +43,7 @@ async function createUserList() {
       var actiontd = document.createElement('td');
       actiontd.innerText = 'delete';
       actiontd.addEventListener('click', async () => {
-        await DeleteUser(element.email);
+        await DeleteUser(element.email, jwtToken.token);
         alert('Deleted: ' + element.email);
         deleteUserList();
         createUserList();
@@ -69,7 +70,7 @@ function deleteUserList() {
 }
 
 async function createRoleList() {
-  var data = await getAuthorizedData('api/User/UserRoles', jwtToken.token);
+  var data = await GetUserRoles(jwtToken.token);
   var roleList = document.getElementById('roleListDiv');
 
   if (!roleList && data) {
@@ -126,7 +127,7 @@ async function createRoleList() {
         selectbutton.classList.add('dropbtn');
         selectbutton.innerText = element.role[0];
 
-        var roles = await getAuthorizedData('api/User/Roles', jwtToken.token);
+        var roles = await GetExistingRoles(jwtToken.token);
 
         selectbutton.addEventListener('click', async (e) => {
           document.getElementById('roleDropdown').classList.toggle('show');
@@ -173,10 +174,13 @@ async function createRoleList() {
         button.addEventListener('click', async (e) => {
           e.preventDefault();
 
-          await UpdateUserRole({
-            email: element.email,
-            RoleName: selectbutton.innerText,
-          });
+          await UpdateUserRole(
+            {
+              email: element.email,
+              RoleName: selectbutton.innerText,
+            },
+            jwtToken.token,
+          );
 
           modal.style.display = 'none';
           deleteRoleList();

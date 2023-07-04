@@ -4,34 +4,51 @@ import {
   deletePlayButton,
   createPokerButtons,
 } from '../helpers/buttons.js';
-import { getTableCards, assignPokertable } from '../helpers/gamelogic.js';
+import { assignPokertable } from '../helpers/gamelogic.js';
 
 export default class extends AbstractView {
   constructor(params) {
     super(params);
     this.setTitle('Table');
 
-    // getTableCards();
     assignPokertable();
   }
 
   async getHtml() {
     return `
+   
     <div class="container">
+      <h1 id="tablename">Table 1</h1>
         <div class="table">
-            <div class="card-place" id="tableCardsDiv">
+          <div class="card-place" id="tableCardsDiv"/>
         </div>
         <div class="players" id="players">
             <div id="cards"></div>
         </div>
-    </div>
-   
-    <div class="pokerbuttons">
-     <div class="slidecontainer">
-  <input type="range" min="1" max="100" value="50" id="myRange">
-</div>
-<div  id="pokerbuttons"></div>
+      </div>
+      <div class="pokerbuttons">
+        <div class="slidecontainer">
+          <input type="range" min="1" max="100" value="50" id="myRange">
         </div>
+          <div id="pokerbuttons"/>
+      </div>
+      <div id="joincode"/>
+      
+      
+    
+    </div>
+     
+      
+        
+    
+    
+   
+    
+    
+    
+
+        
+    
         `;
   }
 }

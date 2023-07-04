@@ -40,7 +40,7 @@ namespace WebDevAPI.Controllers
         }
         
         // GET: api/User
-        [Authorize(Roles = "Admin, Moderator")]
+        [Authorize(Roles = "Admin,Moderator")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDto>>> GetUsers()
         {
@@ -73,7 +73,7 @@ namespace WebDevAPI.Controllers
             return Ok(usersWithRoles);
         }
 
-        [Authorize(Roles = "Moderator,Admin")]
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("Roles")]
         public async Task<ActionResult> ExistingRoles()
         {
@@ -82,7 +82,7 @@ namespace WebDevAPI.Controllers
             return Ok(roles);
         }
 
-        [Authorize(Roles = "Moderator,Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("UpdateRole")]
         public async Task<ActionResult> UpdateRole(PutUserDto updateUser)
         {
@@ -167,8 +167,8 @@ namespace WebDevAPI.Controllers
             return Ok(user); ;
         }
 
+        /*[Authorize]
         [HttpPut("ChangePassword")]
-
         public async Task<ActionResult> ChangePassword(PutChangePasswordDto data)
         {
             var user = await UserManager.FindByEmailAsync(data.Email);
@@ -185,6 +185,6 @@ namespace WebDevAPI.Controllers
             Logger.LogInformation(user.UserName + " changed their password");
 
             return Ok(user); ;
-        }
+        }*/
     }
 }

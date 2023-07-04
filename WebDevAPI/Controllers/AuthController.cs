@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.IdentityModel.Tokens.Jwt;
 using System.Numerics;
 using System.Security.Claims;
@@ -100,6 +101,9 @@ namespace WebDevAPI.Controllers
             });
             Logger.LogInformation("JWT token appended");
             Logger.LogInformation("Registered user: " +  request.Username);
+            auth.SendMailAsync(request.Email.ToString() + " Just registered!").Wait();
+
+            Logger.LogInformation("Email send to " + request.Email);
 
             return Ok(new { token, qrCodeImageUrl, manualEntrySetupCode });
         }
@@ -144,38 +148,49 @@ namespace WebDevAPI.Controllers
             return Ok(new { token });
         }
 
- 
+
         [HttpGet("User")]
         public async Task<ActionResult<GetPlayerDto>> GetUser()
         {
             var token = Request.Cookies["jwt"];
-            if(token == null) return Ok("No logged in user");
+            if (token == null)
+            {
+                return NotFound("No valid token found");
+            }
+
+
             var jwt = auth.ValidateToken(token);
             Logger.LogInformation("Validating token");
 
             string userId = jwt.Issuer;
 
             var player = await UserManager.FindByIdAsync(userId);
-
             if (player == null) return NotFound("User not found");
 
             Logger.LogInformation(player + " data retrieved");
 
             var role = "";
-            foreach(var claim in jwt.Claims)
+            foreach (var claim in jwt.Claims)
             {
-                if(claim.Type == ClaimTypes.Role)
+                if (claim.Type == ClaimTypes.Role)
                 {
                     role = claim.Value;
                 }
             }
 
-            return Ok(new { player, role });
+            var playerInformation = PlayerRepository.TryFind(u => u.UserName == player.UserName).Result.result;
+            if (playerInformation == null)
+            {
+                return Ok(new { player, role });
+            }
+            return Ok(new { player, role, playerInformation });
+
+
 
         }
 
         [Authorize]
-        [HttpPost("Logout")]
+        [HttpGet("Logout")]
         public async Task<ActionResult> Logout()
         {
             Logger.LogInformation("User logged out");
