@@ -24,18 +24,25 @@ namespace WebDevAPI.Controllers
 {
     [Route("api/Auth")]
     [ApiController]
-    public class AuthController : BaseController
+    public class AuthController : Controller
     {
-        private Auth auth;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly Auth Auth;
+        private readonly SignInManager<IdentityUser> SignInManager;
+        private readonly UserManager<IdentityUser> UserManager;
+        private readonly ILogger<BaseController> Logger;
+        private readonly IPlayerRepository PlayerRepository;
+        private readonly AuditScopeFactory AuditFactory;
 
-        public AuthController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
+
+        public AuthController(IConfiguration config, IPlayerRepository playerRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
         {
-            auth = new Auth(config);
-            _signInManager = signInManager;
+            Auth = new Auth(config);
+            SignInManager = signInManager;
+            UserManager = userManager;
+            Logger = logger;
+            PlayerRepository = playerRepository;
+            AuditFactory = new AuditScopeFactory();
         }
 
         [HttpPost("Register")]
@@ -48,7 +55,7 @@ namespace WebDevAPI.Controllers
             var userNameExists = await UserManager.FindByNameAsync(request.Username);
             if (userNameExists != null) return BadRequest("Username is already taken");
 
-            string key = auth.GenerateRandomString(10);
+            string key = Auth.GenerateRandomString(10);
 
             TwoFactorAuthenticator tfa = new TwoFactorAuthenticator();
             SetupCode setupInfo = tfa.GenerateSetupCode("S1144640 Web app", request.Email, key, false, 3);
@@ -79,7 +86,7 @@ namespace WebDevAPI.Controllers
                 await UserManager.AddToRoleAsync(player, "User");
                 Logger.LogInformation(request.Username + " was given the role of a user");
                 AuditFactory.Log("Create User", new { ExtraField = (request.Username + " was given the role of a user")});
-                await _signInManager.SignInAsync(player, isPersistent: false);
+                await SignInManager.SignInAsync(player, isPersistent: false);
             }
             catch (Exception ex)
             {
@@ -91,7 +98,7 @@ namespace WebDevAPI.Controllers
                 new Claim(ClaimTypes.Name, request.Username),
                 new Claim(ClaimTypes.Role, "User"),
             };
-            string token = auth.CreateToken(player.Id, claims);
+            string token = Auth.CreateToken(player.Id, claims);
             Logger.LogInformation("Creating a jwt token for " + request.Username);
 
             Response.Cookies.Append("jwt", token, new CookieOptions
@@ -101,7 +108,7 @@ namespace WebDevAPI.Controllers
             });
             Logger.LogInformation("JWT token appended");
             Logger.LogInformation("Registered user: " +  request.Username);
-            auth.SendMailAsync(request.Email.ToString() + " Just registered!").Wait();
+            Auth.SendMailAsync(request.Email.ToString() + " Just registered!").Wait();
 
             Logger.LogInformation("Email send to " + request.Email);
 
@@ -123,7 +130,7 @@ namespace WebDevAPI.Controllers
             var result = false;
             using (AuditFactory.Create("User:LoggedIn", () => user))
             {
-                result = await _signInManager.CanSignInAsync(user);
+                result = await SignInManager.CanSignInAsync(user);
             }
             
             if (result)
@@ -132,7 +139,7 @@ namespace WebDevAPI.Controllers
             }
 
             var claims = await UserManager.GetClaimsAsync(user);
-            string token = auth.CreateToken(user.Id, (List<Claim>)claims);
+            string token = Auth.CreateToken(user.Id, (List<Claim>)claims);
 
             Logger.LogInformation("Creating a jwt token for " + user.UserName);
 
@@ -159,7 +166,7 @@ namespace WebDevAPI.Controllers
             }
 
 
-            var jwt = auth.ValidateToken(token);
+            var jwt = Auth.ValidateToken(token);
             Logger.LogInformation("Validating token");
 
             string userId = jwt.Issuer;

@@ -21,15 +21,17 @@ namespace WebDevAPI.Controllers
     [Route("api/Player")]
     [ApiController]
     [Authorize(Roles ="User,Moderator,Admin")]
-    public class PlayerController : BaseController
+    public class PlayerController : Controller
     {
+        private readonly IPlayerRepository PlayerRepository;
+        private readonly IPlayerHandRepository PlayerHandRepository;
+        private readonly ILogger<BaseController> Logger;
 
-        public PlayerController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) 
-            : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
+        public PlayerController(IPlayerRepository playerRepository, IPlayerHandRepository playerHandRepository, ILogger<BaseController> logger)
         {
-
+            PlayerRepository = playerRepository;
+            PlayerHandRepository = playerHandRepository;
+            Logger = logger;
         }
 
         // GET: api/Player

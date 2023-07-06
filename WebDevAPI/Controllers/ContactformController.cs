@@ -19,14 +19,13 @@ namespace WebDevAPI.Controllers
     //[Authorize]
     [Route("api/Contactform")]
     [ApiController]
-    public class ContactformController : BaseController
+    public class ContactformController : ControllerBase
     {
-        public ContactformController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
-            SignInManager<IdentityUser> signInManager) : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
-        {
+        private readonly IContactFormRepository ContactFormRepository;
 
+        public ContactformController(IContactFormRepository contactFormRepository)
+        {
+            ContactFormRepository = contactFormRepository;
         }
 
         // GET: api/ContactformModels

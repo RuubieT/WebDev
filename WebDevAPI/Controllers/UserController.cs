@@ -27,16 +27,22 @@ namespace WebDevAPI.Controllers
     [Route("api/User")]
     [ApiController]
     [Authorize(Roles = "User,Moderator,Admin")]
-    public class UserController : BaseController
+    public class UserController : ControllerBase
     {
         private Auth auth;
+        private readonly UserManager<IdentityUser> UserManager;
+        private readonly ILogger<BaseController> Logger;
+        private readonly IPlayerRepository PlayerRepository;
+        private readonly RoleManager<IdentityRole> RoleManager;
 
         public UserController(IConfiguration config, IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) 
-            : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
+            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             auth = new Auth(config);
+            UserManager = userManager;
+            Logger = logger;
+            PlayerRepository = playerRepository;
+            RoleManager = roleManager;
         }
         
         // GET: api/User

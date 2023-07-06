@@ -18,15 +18,22 @@ namespace WebDevAPI.Controllers
     [Authorize(Roles = "User,Moderator,Admin")]
     [Route("api/Pokertable")]
     [ApiController]
-    public class PokerTableController : BaseController
+    public class PokerTableController : ControllerBase
     {
         DealCards DealCards;
+        private readonly ILogger<BaseController> Logger;
+        private readonly IPlayerRepository PlayerRepository;
+        private readonly IPokerTableRepository PokerTableRepository;
+        private readonly ICardRepository CardRepository;
+        private readonly IPlayerHandRepository PlayerHandRepository;
 
-        public PokerTableController(IContactFormRepository contactFormRepository, IPlayerRepository playerRepository, ICardRepository cardRepository,
-            IPlayerHandRepository playerHandRepository, IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) 
-            : base(contactFormRepository, playerRepository, cardRepository,
-            playerHandRepository, pokerTableRepository, userManager, roleManager, logger)
+        public PokerTableController(IPlayerRepository playerRepository, IPlayerHandRepository playerHandRepository, 
+            IPokerTableRepository pokerTableRepository, ILogger<BaseController> logger)
         {
+            Logger = logger;
+            PlayerRepository = playerRepository;
+            PokerTableRepository = pokerTableRepository;
+            PlayerHandRepository = playerHandRepository;
             DealCards = new DealCards();
         }
 
