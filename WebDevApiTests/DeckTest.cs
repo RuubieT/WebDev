@@ -5,10 +5,10 @@ using WebDevAPI.Logic.CardLogic;
 
 namespace WebDevApiTests
 {
-    public class DeckTests
+    public class DeckTest
     {
-        public DeckOfCards deck;
-        public Queue<Card> deckQueue;
+        private DeckOfCards deck;
+        private Queue<Card> deckQueue;
 
         [SetUp]
         public void Setup()
@@ -20,9 +20,9 @@ namespace WebDevApiTests
         }
 
         [Test]
-        public void Deck_Is_Not_Null()
+        public void Deck_Is_Not_Empty()
         {
-            Assert.IsNotNull(deck.getDeck);
+            Assert.AreNotEqual(0, deck.getDeck.Count);
 
         }
 
